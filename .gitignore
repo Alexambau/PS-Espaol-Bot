@@ -1,0 +1,11 @@
+﻿/node_modules
+/node_modules/*
+/logs
+/logs/*
+npm-debug.log
+config.js
+settings.json
+
+.hg
+.bzr
+.svn
