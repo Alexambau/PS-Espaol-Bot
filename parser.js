@@ -518,8 +518,7 @@ exports.parse = {
 				}
 			}
 			// moderation for stretching (over x consecutive characters in the message are the same)
-			//var stretchMatch = msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g); // matches the same character (or group of characters) 8 (or 5) or more times in a row
-			var stretchMatch = false; //disabled
+			var stretchMatch = msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g); // matches the same character (or group of characters) 8 (or 5) or more times in a row
 			if ((useDefault || modSettings['stretching'] !== 0) && stretchMatch) {
 				if (pointVal < 1) {
 					pointVal = 1;
