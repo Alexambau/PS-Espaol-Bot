@@ -156,22 +156,18 @@ exports.commands = {
 		if (!this.hasRank(by, '%@&#~') || room.charAt(0) === ',') return false;
 
 		var settable = {
+			banword: 1,
+			autoban: 1,
+			info: 1,
 			say: 1,
 			joke: 1,
 			choose: 1,
 			usagestats: 1,
+			helixesp: 1,
 			buzz: 1,
-			helix: 1,
-			survivor: 1,
-			games: 1,
-			wifi: 1,
-			monotype: 1,
-			autoban: 1,
-			happy: 1,
-			guia: 1,
-			studio: 1,
-			'switch': 1,
-			banword: 1
+			gg: 1,
+			busca 1
+
 		};
 		var modOpts = {
 			flooding: 1,
@@ -490,69 +486,10 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
-	helix: function(arg, by, room, con) {
-		if (!arg) return;
-		if (this.canUse('helix', room, by) || room.charAt(0) === ',') {
-			var text = '';
-		} else {
-			var text = '/pm ' + by + ', ';
-		}
 
-		var rand = Math.floor(20 * Math.random()) + 1;
-
-		switch (rand) {
-	 		case 1: text += "Las señales apuntan al sí."; break;
-	  		case 2: text += "Sí."; break;
-			case 3: text += "Respuesta borrosa, inténtalo de nuevo."; break;
-			case 4: text += "Sin lugar a duda."; break;
-			case 5: text += "Mis fuentes dicen que no."; break;
-			case 6: text += "Tal y como lo veo, sí"; break;
-			case 7: text += "Debes contar con ello."; break;
-			case 8: text += "Concéntrate y pregunta de nuevo."; break;
-			case 9: text += "Eso no es buena idea."; break;
-			case 10: text += "Definitivamente no"; break;
-			case 11: text += "Mejor no quieras saber la respuesta."; break;
-			case 12: text += "Muy Dudoso."; break;
-			case 13: text += "Sí - Definitivamente."; break;
-			case 14: text += "Es cierto."; break;
-			case 15: text += "No puedo predecir ahora mismo."; break;
-			case 16: text += "Muy probable."; break;
-			case 17: text += "Pregunta más tarde."; break;
-			case 18: text += "Mi respuesta es no."; break;
-			case 19: text += "Es Buena idea."; break;
-			case 20: text += "No cuentes con ello."; break;
-		}
-		this.say(con, room, text);
-	},
-
-	/**
-	 * Comandos especiales en español
-	 *
-	 * Comandos de ayuda, links, etc
-	 */
-	guias: 'guia',
-	guia: function(arg, by, room, con) {
-		var text = '';
-		if (!this.canUse('guia', room, by)) {
-			text += '/pm ' + by + ', ';
-		}
-		text += "Desde este índice (http://ps-salaespanol.proboards.com/thread/575/ndice-de-gu) podrás acceder a toda la información importante de la sala. By: Lost Seso";
-		this.say(con, room, text);
-	},
-	
-	reglas: 'rules',
-	rules: function(arg, by, room, con) {
-		var text = '';
-		if (!this.canUse('guia', room, by)) {
-			text += '/pm ' + by + ', ';
-		}
-		text += "Recuerda seguir las reglas de nuestra sala en todo momento: http://ps-salaespanol.weebly.com/reglas.html";
-		this.say(con, room, text);
-	},
-	
 	liga: function(arg, by, room, con) {
 		var text = '';
-		if (!this.canUse('guia', room, by)) {
+		if (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		}
 		text += "¿Tienes alguna duda sobre la Liga? ¡Revisa el **índice de la Liga** aquí!: (http://goo.gl/CxH2gi) By: xJoelituh";
@@ -562,7 +499,7 @@ exports.commands = {
 	foro: 'forum',
 	forum: function(arg, by, room, con) {
 		var text = '';
-		if (!this.canUse('guia', room, by)) {
+		if (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		}
 		text += "¡Visita nuestro foro para participar en multitud de actividades! http://ps-salaespanol.proboards.com/";
@@ -572,7 +509,7 @@ exports.commands = {
 	faqs: 'faq',
 	faq: function(arg, by, room, con) {
 		var text = '';
-		if (!this.canUse('guia', room, by)) {
+		if (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		}
 		text += "Preguntas frecuentes sobre el funcionamiento del chat: http://ps-salaespanol.weebly.com/faq.html";
@@ -580,32 +517,29 @@ exports.commands = {
 	},
 	
 	plug: function(arg, by, room, con) {
-		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
-			var text = '';
-		} else {
-			var text ='/pm ' + by + ', ';
-		}
+		var text '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		} 
 		text += 'Si quieres escuchar música y poder pasarlo bien hablando con gente, vente a nuestro plug oficial de la sala (https://plug.dj/salaesp/ ). Esperamos que lo disfrutes :^)';
 		this.say(con, room, text);
 	},
 	
 	suspect: function(arg, by, room, con) {
-		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
-			var text = '';
-		} else {
-                        var text = '/pm ' + by + ', ';
-                }
-			text +='Actualmente hay suspect de Greninja. ¿Qué significa eso? El Smogon Council pone un metagame sin el Pokémon que está en el suspect y la gente lucha por ganar X puntos de COIL, que son necesarios para poder votar en el foro de Smogon para decidir si ese Pokémon merece ser baneado o no';
+		var text '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		} 
+		text +='Actualmente hay suspect de Greninja. ¿Qué significa eso? El Smogon Council pone un metagame sin el Pokémon que está en el suspect y la gente lucha por ganar X puntos de COIL, que son necesarios para poder votar en el foro de Smogon para decidir si ese Pokémon merece ser baneado o no';
 		this.say(con, room, text);
 		
 	},
 	
 	torneo: function(arg, by, room, con) {
-		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
-			var text = '';
-		} else {
-                        var text = '/pm ' + by + ', ';
-                }
+		var text '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		} 
 			text +='Si quieres participar en un torneo tienes que esperar a que un moderador (@) o superior lo cree. Solo en ese momento se puede participar dandole al boton que pone "join". Para una explicación más elaborada, ve a esta pagina para un tutorial: http://ps-salaespanol.proboards.com/thread/405/';
 		this.say(con, room, text);	
 	
@@ -613,22 +547,20 @@ exports.commands = {
 	VoD: 'vod',
 	VOD: 'vod',
 	vod: function(arg, by, room, con) {
-		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
-			var text = '';
-		} else {
-                        var text = '/pm ' + by + ', ';
-                }
+		var text '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		} 
 			text +='VoD son las siglas de "Voiced of the Day" que se traduce al castellano como "Voiced por un dia". Este rango es precisamente esto, la oportunidad de obtener el rango de voiced (+) por un dia. Se suele dar a los ganadores de eventos y torneos. Para mas información ve a: http://bit.ly/1B714Tj';
 		this.say(con, room, text);	
 	
 	},
 
 	modchat: function(arg, by, room, con) {
-		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
-			var text = '';
-		} else {
-                        var text = '/pm ' + by + ', ';
-                }
+		var text '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		} 
 			text +='Si no puedes hablar en el chat, normalmente es porque esta puesto el "Autoconfirmed moderated chat". Mientras esta activado solo pueden hablar los usuarios que tengan una cuenta de mas de una semana y hayan ganado una batalla. Esto ayuda a evitar spam y situaciones problemáticas.';
 		this.say(con, room, text);	
 	
@@ -636,11 +568,10 @@ exports.commands = {
 	rango: 'rangos',
 	groups: 'rangos',
 	rangos: function(arg, by, room, con) {
-		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
-			var text = '';
-		} else {
-                        var text = '/pm ' + by + ', ';
-                }
+		var text '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		} 
 			text +='Esta sala esta liderada a base de una oligarquia meritocrática. Esto quiere decir que gobiernan unos pocos (el staff) que han ganado el rango a través de unos méritos particulares. Los rangos son:  VOICED (+), DRIVER (%), MODERADOR (@) y OWNER (#). Los usuarios voiced (+) son los usuarios ejemplares de la sala. Los drivers (%) son los vigilantes del chat. Estos usuarios pueden avisar y mutear (7-60min). Los moderadores (@) son usuarios de muchisima calidad. Pueden avisar, mutear y banear. Los owners (#) son los lideres del chat y pueden hacer muchas cosas :^)';
 	this.say(con, room, text);	
 	
@@ -649,24 +580,31 @@ exports.commands = {
 	castigos: 'sanciones',
 	sanciones: 'sanciones',
 	sanciones: function(arg, by, room, con) {
-		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
-			var text = '';
-		} else {
-                        var text = '/pm ' + by + ', ';
-                }	
+		var text '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		} 	
 			text +='En esta sala, es imperativo seguir unas normas básicas. Si un usuario rompe las reglas, el staff reserva el derecho de penar y sancionar a cualquier usuario. Las sanciones son estas: 1) AVISO/WARN  2) MUTE/SILENCIAR y 3) Banear/Aterrar';
 
 	this.say(con, room, text);	
-	
 	},
 	
+	staff: function(arg, by, room, con) {
+			if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		}
+		text += 'Revisa la lista de staff: http://bit.ly/1xbOjJZ';
+	
+	this.say(con, room, text);	
+	},
+	
+	
+	helix: 'helixesp',
 	helixesp: function(arg, by, room, con) {
-		if (this.canUse('helix', room, by) || room.charAt(0) === ',') {
-			var text = '';
-		} else {
+		var text = '';
+		if (!this.canUse('helixesp', room, by) {
 			var text = '/pm ' + by + ', ';
 		}
-
 		var rand = Math.floor(20 * Math.random()) + 1;
 
 		switch (rand) {
@@ -695,41 +633,28 @@ exports.commands = {
 	},
 
 	gg: function(arg, by, room, con) {
-		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
-                        var text = '';
-                } else {
-                        var text = '/pm ' + by + ', ';
-                }
+		var text = '';
+		if (!this.canUse('gg', room, by) {
+			var text = '/pm ' + by + ', ';
+		}
 		text += 'No entiendo gg';
 		this.say(con, room, text);
-
 	},
 	
 	busca: function(arg, by, room, con) {
-		if (this.hasRank(by, '%@#~') || room.charAt(0) === ',') {
-                        var text = '';
-                } else {
+		if (!this.canUse('busca', room, by) {
                         var text = '/pm ' + by + ', ';
-                }
+                } 
 		text += '[[' + stripCommands(arg) + ']]';
 		this.say(con, room, text);
 	},
-	
-	staff: function(arg, by, room, con) {
-		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
-			var text = '';
-		} else {
-			var text ='/pm ' + by + ', ';
-		}
-		text += 'Revisa la lista de staff: http://bit.ly/1xbOjJZ';
-		this.say(con, room, text);
-	},
+
 	
 	poke: function(arg, by, room, con) {
-		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
-			var text = '';
+		var rand = Math.floor(721 * Math.random()) + 1;
+		if (!this.canUse('info',room, by) {
+			var text = '/pm ' + by + ', Haz /dt ' + rand ' para ver que Pokémon aleatorio ha salido.';
 		}
-			var rand = Math.floor(721 * Math.random()) + 1;
 			text +='!dt ' + rand;
 		this.say(con, room, text);
 	},
