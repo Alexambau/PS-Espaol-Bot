@@ -602,7 +602,7 @@ exports.commands = {
 	helix: 'helixesp',
 	helixesp: function(arg, by, room, con) {
 		var text = '';
-		if (!this.canUse('helixesp', room, by) {
+		if (!this.canUse('helixesp', room, by)) {
 			var text = '/pm ' + by + ', ';
 		}
 		var rand = Math.floor(20 * Math.random()) + 1;
@@ -634,7 +634,7 @@ exports.commands = {
 
 	gg: function(arg, by, room, con) {
 		var text = '';
-		if (!this.canUse('gg', room, by) {
+		if (!this.canUse('gg', room, by)) {
 			var text = '/pm ' + by + ', ';
 		}
 		text += 'No entiendo gg';
@@ -643,7 +643,7 @@ exports.commands = {
 	
 	busca: function(arg, by, room, con) {
 		var text = '';
-		if (!this.canUse('busca', room, by) {
+		if (!this.canUse('busca', room, by)) {
                         var text = '/pm ' + by + ', ';
                 } 
 		text += '[[' + stripCommands(arg) + ']]';
@@ -654,8 +654,8 @@ exports.commands = {
 	poke: function(arg, by, room, con) {
 		var rand = Math.floor(721 * Math.random()) + 1;
 		var text = '';
-		if (!this.canUse('info',room, by) {
-			var text = '/pm ' + by + ', Haz /dt ' + rand ' para ver que Pokémon aleatorio ha salido.';
+		if (!this.canUse('info',room, by)) {
+			var text = '/pm ' + by + ', Haz /dt ' + rand + ' para ver que Pokémon aleatorio ha salido.';
 		}
 			text +='!dt ' + rand;
 		this.say(con, room, text);
