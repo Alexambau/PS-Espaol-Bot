@@ -53,7 +53,7 @@ exports.commands = {
 		try {
 			this.uncacheTree('./commands.js');
 			Commands = require('./commands.js').commands;
-			this.say(con, room, 'Commands reloaded.');
+			this.say(con, room, 'Comandos actualizados.');
 		} catch (e) {
 			error('failed to reload: ' + sys.inspect(e));
 		}
@@ -489,6 +489,7 @@ exports.commands = {
 		}
 		this.say(con, room, text);
 	},
+	
 	helix: function(arg, by, room, con) {
 		if (!arg) return;
 		if (this.canUse('helix', room, by) || room.charAt(0) === ',') {
