@@ -166,7 +166,7 @@ exports.commands = {
 			helixesp: 1,
 			buzz: 1,
 			gg: 1,
-			busca 1
+			busca: 1
 
 		};
 		var modOpts = {
