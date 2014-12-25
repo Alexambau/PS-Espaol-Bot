@@ -38,6 +38,7 @@ exports.parse = {
 	battleTurns: {},
 	chatLog: 0,
 	chatLogDay: 0,
+	busyInBattle: 0,
 
 	data: function(data, connection) {
 		if (data.substr(0, 1) === 'a') {
@@ -209,12 +210,13 @@ exports.parse = {
 				this.challenges = JSON.parse(message.substr(18));
 				if (this.challenges.challengesFrom) {
 					for (var i in this.challenges.challengesFrom) {
-						if (config.acceptAll || this.roomRanks[i] || config.excepts.indexOf(i) !== -1) {
+						if (!this.busyInBattle || config.acceptAll || this.roomRanks[i] || config.excepts.indexOf(i) !== -1) {
 							if (!(this.challenges.challengesFrom[i] in this.formats)) {
 								this.say(connection, this.room, '/reject ' + i);
 								continue;
 							}
 							this.say(connection, this.room, '/accept ' + i);
+							this.busyInBattle++;
 							console.log("Random Battle: ".green + "Se ha iniciado una batalla automatica contra " + i);
 						} else {
 							this.say(connection, this.room, '/reject ' + i);
@@ -240,6 +242,7 @@ exports.parse = {
 			case 'win':
 				if (this.battleDatas[this.room]) delete this.battleDatas[this.room];
 				if (this.battleTurns[this.room]) delete this.battleTurns[this.room];
+				this.busyInBattle--;
 				this.say(connection, this.room, '/leave');
 				if (lastMessage) this.room = '';
 				break;
