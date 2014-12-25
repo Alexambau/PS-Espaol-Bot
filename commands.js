@@ -584,9 +584,7 @@ exports.commands = {
 		} else {
 			var text ='/pm ' + by + ', ';
 		}
-		text += 'Si quieres escuchar música y poder pasarlo bien hablando con gente, vente a nuestro plug 
-
-oficial de la sala (https://plug.dj/salaesp/ ). Esperamos que lo disfrutes :^)';
+		text += 'Si quieres escuchar música y poder pasarlo bien hablando con gente, vente a nuestro plug oficial de la sala (https://plug.dj/salaesp/ ). Esperamos que lo disfrutes :^)';
 		this.say(con, room, text);
 	},
 	
@@ -596,9 +594,7 @@ oficial de la sala (https://plug.dj/salaesp/ ). Esperamos que lo disfrutes :^)';
 		} else {
                         var text = '/pm ' + by + ', ';
                 }
-			text +='Actualmente hay suspect de Greninja. ¿Qué significa eso? El Smogon Council pone un 
-metagame sin el Pokémon que está en el suspect y la gente lucha por ganar X puntos de COIL, que son necesarios para 
-poder votar en el foro de Smogon para decidir si ese Pokémon merece ser baneado o no';
+			text +='Actualmente hay suspect de Greninja. ¿Qué significa eso? El Smogon Council pone un metagame sin el Pokémon que está en el suspect y la gente lucha por ganar X puntos de COIL, que son necesarios para poder votar en el foro de Smogon para decidir si ese Pokémon merece ser baneado o no';
 		this.say(con, room, text);
 		
 	},
@@ -609,9 +605,7 @@ poder votar en el foro de Smogon para decidir si ese Pokémon merece ser baneado
 		} else {
                         var text = '/pm ' + by + ', ';
                 }
-			text +='Si quieres participar en un torneo tienes que esperar a que un moderador (@) o superior 
-lo cree. Solo en ese momento se puede participar dandole al boton que pone "join". Para una explicación más elaborada, 
-ve a esta pagina para un tutorial: http://ps-salaespanol.proboards.com/thread/405/';
+			text +='Si quieres participar en un torneo tienes que esperar a que un moderador (@) o superior lo cree. Solo en ese momento se puede participar dandole al boton que pone "join". Para una explicación más elaborada, ve a esta pagina para un tutorial: http://ps-salaespanol.proboards.com/thread/405/';
 		this.say(con, room, text);	
 	
 	},
@@ -623,9 +617,7 @@ ve a esta pagina para un tutorial: http://ps-salaespanol.proboards.com/thread/40
 		} else {
                         var text = '/pm ' + by + ', ';
                 }
-			text +='VoD son las siglas de "Voiced of the Day" que se traduce al castellano como "Voiced por 
-un dia". Este rango es precisamente esto, la oportunidad de obtener el rango de voiced (+) por un dia. Se suele dar a 
-los ganadores de eventos y torneos. Para mas información ve a: http://bit.ly/1B714Tj';
+			text +='VoD son las siglas de "Voiced of the Day" que se traduce al castellano como "Voiced por un dia". Este rango es precisamente esto, la oportunidad de obtener el rango de voiced (+) por un dia. Se suele dar a los ganadores de eventos y torneos. Para mas información ve a: http://bit.ly/1B714Tj';
 		this.say(con, room, text);	
 	
 	},
@@ -636,11 +628,7 @@ los ganadores de eventos y torneos. Para mas información ve a: http://bit.ly/1B
 		} else {
                         var text = '/pm ' + by + ', ';
                 }
-			text +='Si no puedes hablar en el chat, normalmente es porque esta puesto el "Autoconfirmed 
-
-moderated chat". Mientras esta activado solo pueden hablar los usuarios que tengan una cuenta de mas de una semana y 
-
-hayan ganado una batalla. Esto ayuda a evitar spam y situaciones problemáticas.';
+			text +='Si no puedes hablar en el chat, normalmente es porque esta puesto el "Autoconfirmed moderated chat". Mientras esta activado solo pueden hablar los usuarios que tengan una cuenta de mas de una semana y hayan ganado una batalla. Esto ayuda a evitar spam y situaciones problemáticas.';
 		this.say(con, room, text);	
 	
 	},
@@ -652,17 +640,7 @@ hayan ganado una batalla. Esto ayuda a evitar spam y situaciones problemáticas.
 		} else {
                         var text = '/pm ' + by + ', ';
                 }
-			text +='Esta sala esta liderada a base de una oligarquia meritocrática. Esto quiere decir que 
-
-gobiernan unos pocos (el staff) que han ganado el rango a través de unos méritos particulares. Los rangos son:  VOICED 
-
-(+), DRIVER (%), MODERADOR (@) y OWNER (#). Los usuarios voiced (+) son los usuarios ejemplares de la sala. Los drivers 
-
-(%) son los vigilantes del chat. Estos usuarios pueden avisar y mutear (7-60min). Los moderadores (@) son usuarios de 
-
-muchisima calidad. Pueden avisar, mutear y banear. Los owners (#) son los lideres del chat y pueden hacer muchas cosas 
-
-:^)';
+			text +='Esta sala esta liderada a base de una oligarquia meritocrática. Esto quiere decir que gobiernan unos pocos (el staff) que han ganado el rango a través de unos méritos particulares. Los rangos son:  VOICED (+), DRIVER (%), MODERADOR (@) y OWNER (#). Los usuarios voiced (+) son los usuarios ejemplares de la sala. Los drivers (%) son los vigilantes del chat. Estos usuarios pueden avisar y mutear (7-60min). Los moderadores (@) son usuarios de muchisima calidad. Pueden avisar, mutear y banear. Los owners (#) son los lideres del chat y pueden hacer muchas cosas :^)';
 	this.say(con, room, text);	
 	
 	},
@@ -675,11 +653,7 @@ muchisima calidad. Pueden avisar, mutear y banear. Los owners (#) son los lidere
 		} else {
                         var text = '/pm ' + by + ', ';
                 }	
-			text +='En esta sala, es imperativo seguir unas normas básicas. Si un usuario rompe las reglas, 
-
-el staff reserva el derecho de penar y sancionar a cualquier usuario. Las sanciones son estas: 1) AVISO/WARN  2) 
-
-MUTE/SILENCIAR y 3) Banear/Aterrar';
+			text +='En esta sala, es imperativo seguir unas normas básicas. Si un usuario rompe las reglas, el staff reserva el derecho de penar y sancionar a cualquier usuario. Las sanciones son estas: 1) AVISO/WARN  2) MUTE/SILENCIAR y 3) Banear/Aterrar';
 
 	this.say(con, room, text);	
 	
