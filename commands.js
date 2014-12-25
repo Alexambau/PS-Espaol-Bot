@@ -74,7 +74,7 @@ exports.commands = {
 	tell: 'say',
 	say: function(arg, by, room, con) {
 		if (!this.canUse('say', room, by)) return false;
-		this.say(con, room, stripCommands(arg)');
+		this.say(con, room, stripCommands(arg));
 	},
 	js: function(arg, by, room, con) {
 		if (config.excepts.indexOf(toId(by)) === -1) return false;
