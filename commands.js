@@ -517,7 +517,7 @@ exports.commands = {
 	},
 	
 	plug: function(arg, by, room, con) {
-		var text '';
+		var text = '';
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
@@ -526,7 +526,7 @@ exports.commands = {
 	},
 	
 	suspect: function(arg, by, room, con) {
-		var text '';
+		var text = '';
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
@@ -536,7 +536,7 @@ exports.commands = {
 	},
 	
 	torneo: function(arg, by, room, con) {
-		var text '';
+		var text = '';
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
@@ -547,7 +547,7 @@ exports.commands = {
 	VoD: 'vod',
 	VOD: 'vod',
 	vod: function(arg, by, room, con) {
-		var text '';
+		var text = '';
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
@@ -557,7 +557,7 @@ exports.commands = {
 	},
 
 	modchat: function(arg, by, room, con) {
-		var text '';
+		var text  = '';
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
@@ -568,7 +568,7 @@ exports.commands = {
 	rango: 'rangos',
 	groups: 'rangos',
 	rangos: function(arg, by, room, con) {
-		var text '';
+		var text = '';
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
@@ -580,7 +580,7 @@ exports.commands = {
 	castigos: 'sanciones',
 	sanciones: 'sanciones',
 	sanciones: function(arg, by, room, con) {
-		var text '';
+		var text = '';
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 	
@@ -642,6 +642,7 @@ exports.commands = {
 	},
 	
 	busca: function(arg, by, room, con) {
+		var text = '';
 		if (!this.canUse('busca', room, by) {
                         var text = '/pm ' + by + ', ';
                 } 
@@ -652,6 +653,7 @@ exports.commands = {
 	
 	poke: function(arg, by, room, con) {
 		var rand = Math.floor(721 * Math.random()) + 1;
+		var text = '';
 		if (!this.canUse('info',room, by) {
 			var text = '/pm ' + by + ', Haz /dt ' + rand ' para ver que Pokémon aleatorio ha salido.';
 		}
