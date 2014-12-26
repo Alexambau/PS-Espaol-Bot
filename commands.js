@@ -590,6 +590,7 @@ exports.commands = {
 	},
 	
 	staff: function(arg, by, room, con) {
+			var text = '';
 			if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		}
