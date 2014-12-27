@@ -696,7 +696,7 @@ exports.commands = {
 		if (!this.canUse('helixesp', room, by)) {
 			var text = '/pm ' + by + ', ';
 		}
-		var rand = Math.floor(20 * Math.random()) + 1;
+		var rand = Math.floor(22 * Math.random()) + 1;
 
 		switch (rand) {
 	 		case 1: text += "Todo apunta que sí."; break;
@@ -719,6 +719,8 @@ exports.commands = {
 			case 18: text += "Mis fuentes dicen que sí."; break;
 			case 19: text += "Parece que sí."; break;
 			case 20: text += "No cuentes con ello."; break;
+			case 21: text += "Eres un malo."; break;
+			case 22: text += "Te insultaria pero eres alguien importante en el chat."; break;
 		}
 		this.say(con, room, text);
 	},
