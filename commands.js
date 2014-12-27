@@ -417,7 +417,7 @@ exports.commands = {
 
 		var text = '';
 		if (removed.length) {
-			text += 'Usuario(s) "' + removed.join('", "') + '" correctaente eliminado(s) de la lista de Cero Tolerancia. ';
+			text += 'Usuario(s) "' + removed.join('", "') + '" correctamente eliminado(s) de la lista de Cero Tolerancia. ';
 			this.writeSettings();
 		}
 		if (notRemoved.length) text += (text.length ? 'El resto de ' : 'Los ') + ' usuarios especificados no estaban en la lista de Cero Tolerancia.';

@@ -562,7 +562,7 @@ exports.parse = {
 				if (config.privaterooms.indexOf(room) >= 0 && cmd === 'warn') cmd = 'mute'; // can't warn in private rooms
 				// if the bot has % and not @, it will default to hourmuting as its highest level of punishment instead of roombanning
 				if (chatData.points >= 4 && !this.hasRank(this.ranks[room] || ' ', '@&#~')) cmd = 'hourmute';
-				if (isZeroTol(toId(user), room)) { // if zero tolerance users break a rule they get an instant roomban or hourmute
+				if (this.isZeroTol(toId(user), room)) { // if zero tolerance users break a rule they get an instant roomban or hourmute
 					muteMessage = ', Tolerancia cero. Reglas: http://bit.ly/1abNG5E';
 					cmd = this.hasRank(this.ranks[room] || ' ', '@&#~') ? 'roomban' : 'hourmute';
 				}
