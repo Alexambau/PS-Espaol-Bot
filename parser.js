@@ -504,6 +504,18 @@ exports.parse = {
 					pointVal = (room === 'lobby') ? 5 : 4;
 				}
 			}
+			// moderation for porn/spam
+			if (useDefault || modSettings['porn'] !== 0 && pointVal < 2) {
+				if (config.bannedLinks) {
+					for (var i = 0; i < config.bannedLinks.length; i++) {
+						if (msg.toLowerCase().indexOf(config.bannedLinks[i]) > -1) {
+							pointVal = 4;
+							muteMessage = ', Moderación automática: Link con contenido prohibido';
+							break;
+						}
+					}
+				}
+			}
 			// moderation for spoiler
 			if (useDefault || modSettings['spoiler'] !== 0 && pointVal < 2) {
 				if (msg.toLowerCase().indexOf("spoiler:") > -1 || msg.toLowerCase().indexOf("spoilers:") > -1) {
