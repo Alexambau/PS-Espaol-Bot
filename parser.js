@@ -523,6 +523,13 @@ exports.parse = {
 					muteMessage = ', Moderación automática: Los spoilers no están permitidos Reglas: http://bit.ly/1abNG5E';
 				}
 			}
+			// moderation for youtube channel
+			if (useDefault || modSettings['youtube'] !== 0 && pointVal < 2) {
+				if (msg.toLowerCase().indexOf("youtube.com/channel/") > -1) {
+					pointVal = 2;
+					muteMessage = ', Moderación automática: Publicidad de canales de Youtube';
+				}
+			}
 			// moderation for banned words
 			if (useDefault || modSettings['bannedwords'] !== 0 && pointVal < 2) {
 				var banphraseSettings = this.settings.bannedphrases;
