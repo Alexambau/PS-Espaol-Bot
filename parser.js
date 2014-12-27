@@ -243,6 +243,7 @@ exports.parse = {
 				if (this.battleDatas[this.room]) delete this.battleDatas[this.room];
 				if (this.battleTurns[this.room]) delete this.battleTurns[this.room];
 				this.busyInBattle--;
+				this.say(connection, this.room, 'gg haxer');
 				this.say(connection, this.room, '/leave');
 				if (lastMessage) this.room = '';
 				break;
@@ -327,6 +328,7 @@ exports.parse = {
 			case 'J': case 'j':
 				var by = spl[2];
 				if (this.room && this.isBlacklisted(toId(by), this.room)) this.say(connection, this.room, '/roomban ' + by + ', Usuario baneado permanentemente');
+				if (this.room && (toId(by) == 'iyarito')) this.say (connection, this.room, 'Iyarito guapisima ♥');
 				this.updateSeen(by, spl[1], this.room || 'lobby');
 				if (toId(by) !== toId(config.nick) || ' +%@&#~'.indexOf(by.charAt(0)) === -1) {
 					if (lastMessage) this.room = '';
