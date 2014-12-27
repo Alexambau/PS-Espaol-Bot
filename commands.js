@@ -360,6 +360,94 @@ exports.commands = {
 		}
 		this.say(con, room, '/pm ' + by + ', ' + text);
 	},
+	zt: 'zerotol',
+	zerotol: function(arg, by, room, con) {
+		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
+		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, 'Para poder banear usuarios, el Bot requiere de rango @ o superior.');
+
+		arg = arg.split(',');
+		var added = [];
+		var illegalNick = [];
+		var alreadyAdded = [];
+		if (!arg.length || (arg.length === 1 && !arg[0].trim().length)) return this.say(con, room, 'Debes especificar al menos un usuario.');
+		for (var i = 0; i < arg.length; i++) {
+			var tarUser = toId(arg[i]);
+			if (tarUser.length < 1 || tarUser.length > 18) {
+				illegalNick.push(tarUser);
+				continue;
+			}
+			if (!this.zeroTolUser(tarUser, room)) {
+				alreadyAdded.push(tarUser);
+				continue;
+			}
+			added.push(tarUser);
+		}
+
+		var text = '';
+		if (added.length) {
+			text += 'Usuario(s) "' + added.join('", "') + '" correctamente agregado(s) a la lista de Cero Tolerancia. ';
+			this.writeSettings();
+		}
+		if (alreadyAdded.length) text += 'Usuario(s) "' + alreadyAdded.join('", "') + '" ya estaba(n) en la lista de Cero Tolerancia. ';
+		if (illegalNick.length) text += 'Todos los ' + (text.length ? 'demás ' : '') + 'usuarios tenian nombres incorrectos y no fueron agregados.';
+		this.say(con, room, text);
+	},
+	
+	unzt: 'unzerotol',
+	unzerotol: function(arg, by, room, con) {
+		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
+		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, config.nick + 'Para poder banear usuarios, el Bot requiere de rango @ o superior.');
+
+		arg = arg.split(',');
+		var removed = [];
+		var notRemoved = [];
+		if (!arg.length || (arg.length === 1 && !arg[0].trim().length)) return this.say(con, room, 'Debes especificar al menos un usuario.');
+		for (var i = 0; i < arg.length; i++) {
+			var tarUser = toId(arg[i]);
+			if (tarUser.length < 1 || tarUser.length > 18) {
+				notRemoved.push(tarUser);
+				continue;
+			}
+			if (!this.unzeroTolUser(tarUser, room)) {
+				notRemoved.push(tarUser);
+				continue;
+			}
+			removed.push(tarUser);
+		}
+
+		var text = '';
+		if (removed.length) {
+			text += 'Usuario(s) "' + removed.join('", "') + '" correctaente eliminado(s) de la lista de Cero Tolerancia. ';
+			this.writeSettings();
+		}
+		if (notRemoved.length) text += (text.length ? 'El resto de ' : 'Los ') + ' usuarios especificados no estaban en la lista de Cero Tolerancia.';
+		this.say(con, room, text);
+	},
+	vzt: 'viewzerotol',
+	viewzerotollist: 'viewzerotol',
+	viewzerotol: function(arg, by, room, con) {
+		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
+
+		var text = '';
+		if (!this.settings.zerotol || !this.settings.zerotol[room]) {
+			text = 'La lista de Cero Tolerancia de esta sala esta vacía.';
+		} else {
+			if (arg.length) {
+				var nick = toId(arg);
+				if (nick.length < 1 || nick.length > 18) {
+					text = 'Usuario incorrecto: "' + nick + '".';
+				} else {
+					text = 'El usuario "' + nick + '" ' + (nick in this.settings.zerotol[room] ? '' : 'NO ') + 'está en la lista de Cero Tolerancia de la sala ' + room + '.';
+				}
+			} else {
+				var nickList = Object.keys(this.settings.zerotol[room]);
+				if (!nickList.length) return this.say(con, room, '/pm ' + by + ', La lista de Cero Tolerancia de esta sala esta vacía.');
+				this.uploadToHastebin(con, room, by, 'Los siguientes usuarios están en la lista de Cero Tolerancia en ' + room + ':\n\n' + nickList.join('\n'))
+				return;
+			}
+		}
+		this.say(con, room, '/pm ' + by + ', ' + text);
+	},
 	banphrase: 'banword',
 	banword: function(arg, by, room, con) {
 		if (!this.canUse('banword', room, by)) return false;

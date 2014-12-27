@@ -424,6 +424,25 @@ exports.parse = {
 		delete this.settings.blacklist[room][user];
 		return true;
 	},
+		isBlacklisted: function(user, room) {
+		return (this.settings.blacklist && this.settings.blacklist[room] && this.settings.blacklist[room][user]);
+	},
+	isZeroTol: function(user, room) {
+		return (this.settings.zerotol && this.settings.zerotol[room] && this.settings.zerotol[room][user]);
+	},
+	zeroTolUser: function(user, room) {
+		if (!this.settings['zerotol']) this.settings['zerotol'] = {};
+		if (!this.settings.zerotol[room]) this.settings.zerotol[room] = {};
+
+		if (this.settings.zerotol[room][user]) return false;
+		this.settings.zerotol[room][user] = 1;
+		return true;
+	},
+	unzeroTolUser: function(user, room) {
+		if (!this.isZeroTol(user, room)) return false;
+		delete this.settings.zerotol[room][user];
+		return true;
+	},
 	uploadToHastebin: function(con, room, by, toUpload) {
 		var self = this;
 
@@ -543,7 +562,7 @@ exports.parse = {
 				if (config.privaterooms.indexOf(room) >= 0 && cmd === 'warn') cmd = 'mute'; // can't warn in private rooms
 				// if the bot has % and not @, it will default to hourmuting as its highest level of punishment instead of roombanning
 				if (chatData.points >= 4 && !this.hasRank(this.ranks[room] || ' ', '@&#~')) cmd = 'hourmute';
-				if (chatData.zeroTol > 4) { // if zero tolerance users break a rule they get an instant roomban or hourmute
+				if (isZeroTol(toId(user), room)) { // if zero tolerance users break a rule they get an instant roomban or hourmute
 					muteMessage = ', Tolerancia cero. Reglas: http://bit.ly/1abNG5E';
 					cmd = this.hasRank(this.ranks[room] || ' ', '@&#~') ? 'roomban' : 'hourmute';
 				}
