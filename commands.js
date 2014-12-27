@@ -662,5 +662,25 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
-	
+	sken: function(arg, by, room, con) {
+		var rand = Math.floor(10 * Math.random()) + 1;
+		var text = '';
+		if (toId(by) !== 'sken' ) {
+			if (!this.canUse('info',room,by)){
+			var text = '/pm ' + by + ', No eres Sken.';
+			} text += 'No eres Sken.';
+		}
+			switch (rand) {
+				case 1: text += "The opposing Tyranitar used Aerial Ace. Mega-Heracross fainted."; break;
+				case 2: text += "Eres un parguela"; break;
+				case 3: text += "He sido tu admirador durante mucho tiempo, pero me estás empezando a caer gordo, me estás arruinando la vida con tu presencia."; break;
+				case 4: text += "Sken worst mod 2015"; break;
+				case 5: text += "Axel </3 Sken"; break;
+				case 6: text += ""; break;
+				case 7: text += ""; break;
+				case 8: text += ""; break;
+				case 9: text += ""; break;
+				case 10: text += ""; break;
+		}
+			this.say(con, room, text);	
 };
