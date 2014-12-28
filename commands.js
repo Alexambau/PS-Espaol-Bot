@@ -93,7 +93,9 @@ exports.commands = {
 		console.log('Bot system was closed by '.red + by.red + '!'.red);
 		process.exit();
 	},
-	
+	batalla: 'allowbattle',
+	permitirbatalla: 'allowbattle',
+	allowbattles: 'allowbattle',
 	allowbattle: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '~')) return false;
 		if (toId(arg) === "off") {
@@ -757,26 +759,18 @@ exports.commands = {
 	sken: function(arg, by, room, con) {
 		var rand = Math.floor(5 * Math.random()) + 1;
 		var text = '';
-		if (toId(by) !== 'sken' ) {
-			if (!this.canUse('info',room,by)){
-			var text = '/pm ' + by + ', No eres Sken.';
-			text += 'No eres Sken.';
-			}
-			{
-			text += 'No eres Sken.';
-			}
-			if (toId(by) == 'sken') {
+			if (this.canUse('info',room,by) && (!toId(by) == 'sken')){
+				var text = '';
+				text +='No eres Sken.';
+			} else {
 			var text = '';			
 			switch (rand) 	{
 				case 1: text += "The opposing Tyranitar used Aerial Ace. Mega-Heracross fainted."; break;
 				case 2: text += "Eres un parguela"; break;
 				case 3: text += "He sido tu admirador durante mucho tiempo, pero me estás empezando a caer gordo, me estás arruinando la vida con tu presencia."; break;
-				case 4: text += "Sken worst mod 2015"; break;
+				case 4: text += "Sken, acaso te crees la divina papaya? Pues yo creo que no."; break;
 				case 5: text += "Axel </3 Sken"; break;
-				
-					}
-						}
-			}
-			this.say(con, room, text);	
-			},
+							}
+											}
+			this.say(con, room, text);}
 };

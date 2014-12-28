@@ -330,6 +330,7 @@ exports.parse = {
 				if (this.room && this.isBlacklisted(toId(by), this.room)) this.say(connection, this.room, '/roomban ' + by + ', Usuario baneado permanentemente');
 				if (this.room && (toId(by) == 'iyarito')) this.say (connection, this.room, 'Iyarito guapisima ♥');
 				if (this.room && (toId(by) == 'sken')) this.say (connection, this.room, 'Sken, te amo.');
+				if (this.room && (toId(by) == 'xjoelituh')) this.say (connection, this.room, 'Oh no, llego Joel.');
 				this.updateSeen(by, spl[1], this.room || 'lobby');
 				if (toId(by) !== toId(config.nick) || ' +%@&#~'.indexOf(by.charAt(0)) === -1) {
 					if (lastMessage) this.room = '';
