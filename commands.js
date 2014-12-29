@@ -111,7 +111,7 @@ exports.commands = {
 		if (!this.hasRank(by, '~')) return false;
 		if (toId(arg) === "off") {
 			config.acceptAll = false;
-			this.say(con, room, 'Modo restringido: Solo aceptare batallas de los usuarios de la lista de excepciones.');
+				this.say(con, room, 'Modo restringido: Solo aceptare batallas de los usuarios de la lista de excepciones.');
 		} else {
 			config.acceptAll = true;
 			this.say(con, room, 'Modo abierto: Aceptare los retos de todos los usuarios.');
@@ -155,7 +155,7 @@ exports.commands = {
 
 	settings: 'set',
 	set: function(arg, by, room, con) {
-		if (!this.hasRank(by, '%@&#~') || room.charAt(0) === ',') return false;
+		if (!this.hasRank(by, '#~') || room.charAt(0) === ',') return false;
 
 		var settable = {
 			banword: 1,
@@ -674,13 +674,24 @@ exports.commands = {
 	sanciones: function(arg, by, room, con) {
 		var text = '';
 		if  (!this.canUse('info', room, by)) {
-			text += '/pm ' + by + ', ';
+			text += '/pm ' + by + ', En esta sala, es imperativo seguir unas normas básicas. Si un usuario rompe las reglas, el staff reserva el derecho de penar y sancionar a cualquier usuario. Las sanciones son estas: 1) Aviso/Warn  2) Mute/Silenciar y 3) Banear';
 		} 	
 			text +='En esta sala, es imperativo seguir unas normas básicas. Si un usuario rompe las reglas, el staff reserva el derecho de penar y sancionar a cualquier usuario. Las sanciones son estas: 1) AVISO/WARN  2) MUTE/SILENCIAR y 3) Banear/Aterrar';
 
 	this.say(con, room, text);	
 	},
+
 	
+	reglas: function(arg, by, room, con) {
+		var text = '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		} 
+			text +='Revisa las reglas del chat aquí: http://bit.ly/1abNG5E';
+		this.say(con, room, text);	
+	
+	},
+
 	staff: function(arg, by, room, con) {
 			var text = '';
 			if  (!this.canUse('info', room, by)) {
@@ -688,7 +699,8 @@ exports.commands = {
 		}
 		text += 'Revisa la lista de staff: http://bit.ly/1xbOjJZ';
 	
-	this.say(con, room, text);	
+	this.say(con, room, text);
+			
 	},
 	
 	
@@ -735,7 +747,7 @@ exports.commands = {
 		text += 'No entiendo gg';
 		this.say(con, room, text);
 	},
-	
+	b: 'busca',
 	busca: function(arg, by, room, con) {
 		var text = '';
 		if (!this.canUse('busca', room, by)) {
@@ -756,6 +768,15 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
+	
+	/*prueba: function(arg, by, room, con) {
+		var actual = new Date();
+		var horas = actual.getHours();
+		var minutos = actual.getMinutes();
+		while (!minutos === 46) this.say(con, room, /modchat autoconfirmed);
+	},*/
+
+
 	sken: function(arg, by, room, con) {
 		var rand = Math.floor(5 * Math.random()) + 1;
 		var text = '';
@@ -769,8 +790,13 @@ exports.commands = {
 				case 2: text += "Eres un parguela"; break;
 				case 3: text += "He sido tu admirador durante mucho tiempo, pero me estás empezando a caer gordo, me estás arruinando la vida con tu presencia."; break;
 				case 4: text += "Sken, acaso te crees la divina papaya? Pues yo creo que no."; break;
-				case 5: text += "Axel </3 Sken"; break;
+				case 5: text += "Sken, te amo"; break;
 							}
 											}
-			this.say(con, room, text);}
+			this.say(con, room, text);
+
+	}
+	
+
+			
 };
