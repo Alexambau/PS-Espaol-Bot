@@ -168,7 +168,8 @@ exports.commands = {
 			helixesp: 1,
 			buzz: 1,
 			gg: 1,
-			busca: 1
+			busca: 1,
+			sken: 1
 
 		};
 		var modOpts = {
