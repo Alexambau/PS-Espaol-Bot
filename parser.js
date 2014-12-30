@@ -36,6 +36,7 @@ exports.parse = {
 	challenges: {},
 	battleDatas: {},
 	battleTurns: {},
+	RP: {},
 	chatLog: 0,
 	chatLogDay: 0,
 	busyInBattle: 0,
@@ -176,6 +177,8 @@ exports.parse = {
 					}
 					cmds.push('|/join ' + room);
 				}
+				
+				
 				for (var i in config.privaterooms) {
 					var room = toId(config.privaterooms[i]);
 					if (room === 'lobby' && config.serverid === 'showdown') {

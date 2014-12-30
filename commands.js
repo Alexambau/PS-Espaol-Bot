@@ -169,7 +169,8 @@ exports.commands = {
 			buzz: 1,
 			gg: 1,
 			busca: 1,
-			sken: 1
+			sken: 1,
+			setrp: 1
 
 		};
 		var modOpts = {
@@ -778,7 +779,7 @@ exports.commands = {
 	},*/
 
 
-	sken: function(arg, by, room, con) {
+	/*sken: function(arg, by, room, con) {
 		var rand = Math.floor(5 * Math.random()) + 1;
 		var text = '';
 			if (this.canUse('info',room,by) && (!toId(by) == 'sken')){
@@ -797,7 +798,188 @@ exports.commands = {
 			this.say(con, room, text);
 
 	}
-	
+	*/
 
-			
+	// Roleplaying commands
+	setrp: function(arg, by, room, con) {
+		if (!this.canUse('setrp', room, by)) return false;
+		if (!arg) return this.say(con, room, 'Por favor, introduce un RolePlay.');
+
+		this.RP[room].plot = arg;
+		if (this.RP[room].setAt) return this.say(con, room, 'The RP was set to ' + arg + '.');
+		this.say(con, room, 'The RP was set to ' + arg + '. Use .start to start the RP.');
+	},
+	rpstart: 'start',
+	start: function(arg, by, room, con) {
+		if (!this.canUse('setrp', room, by) || !(room in this.RP) || this.RP[room].setAt) return false;
+		if (!this.RP[room].plot) {
+			if (!arg) return this.say(con, room, 'Please set an RP before using .start, or specify an RP with .start to start one immediately.');
+			this.RP[room].plot = arg;
+		}
+
+		var now = new Date();
+		this.RP[room].setAt = now;
+		if (this.hasRank(this.ranks[room] || ' ', '%@#&~')) {
+			this.say(con, room, '/wall The RP has started.');
+		} else {
+			this.say(con, room, '**The RP has started.**');
+		}
+	},
+	pauserp: 'rppause',
+	rppause: function(arg, by, room, con) {
+		if (!this.canUse('setrp', room, by) || !(room in this.RP) || !this.RP[room].setAt || this.RP[room].pause) return false;
+
+		this.RP[room].pause = new Date();
+		if (this.hasRank(this.ranks[room] || ' ', '%@#&~')) {
+			this.say(con, room, '/wall RP pause');
+		} else {
+			this.say(con, room, '**RP pause**');
+		}
+	},
+	continuerp: 'rpcontinue',
+	rpcontinue: function(arg, by, room, con) {
+		if (!this.canUse('setrp', room, by) || !(room in this.RP) || !this.RP[room].setAt || !this.RP[room].pause) return false;
+
+		var paused = new Date(this.RP[room].pause);
+		var setAt = new Date(this.RP[room].setAt);
+		var diff = new Date();
+		diff.setTime(diff.getTime() - paused.getTime());
+		this.RP[room].setAt.setTime(setAt.getTime() + diff.getTime());
+
+		delete this.RP[room].pause;
+		if (this.hasRank(this.ranks[room] || ' ', '%@#&~')) {
+			this.say(con, room, '/wall RP continue');
+		} else {
+			this.say(con, room, '**RP continue**');
+		}
+	},
+	sethost: function(arg, by, room, con) {
+		if (!this.canUse('setrp', room, by) || !(room in this.RP) || !this.RP[room].plot) return false;
+		if (!arg) return this.say(con, room, 'Please enter a host.');
+
+		this.RP[room].host = arg;
+		this.say(con, room, 'The host was set to ' + arg + '.');
+	},
+	rmhost: function(arg, by, room, con) {
+		if (!this.canUse('setrp', room, by) || !(room in this.RP) || !this.RP[room].plot) return false;
+		if (!this.RP[room].host) return this.say(con, room, 'There is no host to remove.');
+
+		delete this.RP[room].host;
+		this.say(con, room, 'The host has been removed.');
+	},
+	rpend: 'endrp',
+	endrp: function(arg, by, room, con) {
+		if (!this.canUse('setrp', room, by) || !(room in this.RP) || !this.RP[room].plot) return false;
+		if (config.serverid === 'showdown' && this.RP[room].setAt) {
+			nextVoid = this.splitDoc(this.RP[room].plot);
+			if (this.RP.void[room].length === 2) this.RP.void[room].shift();
+			this.RP.void[room].push(nextVoid);
+		}
+
+		this.RP[room] = {};
+		if (this.hasRank(this.ranks[room] || ' ', '%@#&~')) {
+			this.say(con, room, '/wall The RP has ended.');
+		} else {
+			this.say(con, room, '**The RP has ended.**');
+		}
+	},
+	void: function(arg, by, room, con) {
+		if (config.serverid !== 'showdown' || !this.hasRank(by, '+%@#~') || !(room in this.RP) || this.RP[room].plot) return false;
+
+		var text = '';
+		var voided = this.RP.void[room];
+		switch (voided.length) {
+			case 2:
+				text += voided[0] + ' and ' + voided[1] + ' are void.';
+				break;
+			case 1:
+				text += voided[0] + ' is void. The second-last RP in this room is unknown.';
+				break;
+			case 0:
+				text += 'The last 2 RPs in this room are unknown.';
+				break;
+			default:
+				return this.say(con, room, 'Something went wrong with how void RPs are stored.');
+		}
+		var concurrent = (room === 'roleplaying') ? this.splitDoc(this.RP['amphyrp'].plot) : this.splitDoc(this.RP['roleplaying'].plot);
+		if (concurrent) text += ' The current RP in ' + ((room === 'roleplaying') ? 'AmphyRP' : 'Roleplaying') + ' is ' + concurrent + '.';
+
+		this.say(con, room, '**' + text + '**');
+	},
+	rp: function(arg, by, room, con) {
+		if (!(room === 'roleplayespaol')) return false;
+		if (this.RP[room].called) {
+			var text = '/pm ' + by + ', ';
+		} else {
+			var text = '';
+			var self = this;
+			this.RP[room].called = true;
+			setTimeout(function() { delete self.RP[room].called; }, 60 * 1000);
+		}
+		if (!this.RP[room].plot) return this.say(con, room, text + 'There is no RP.');
+		if (!this.RP[room].setAt) return this.say(con, room, text + 'The RP is ' + this.RP[room].plot + ', but it has not started yet. (Use .start when it is ready)');
+
+		var start = new Date(this.RP[room].setAt);
+		var now = (this.RP[room].pause) ? new Date(this.RP[room].pause) : new Date();
+		var diff = (now.getTime() - start.getTime()) / 1000;
+		var seconds = Math.floor(diff % 60);
+		diff /= 60;
+		var minutes = Math.floor(diff % 60);
+		diff /= 60;
+		var hours = Math.floor(diff % 24);
+		var progress = hours + ':' + ((minutes < 10) ? '0' + minutes : minutes) + ':' + ((seconds < 10) ? '0' + seconds : seconds);
+
+		if (this.RP[room].pause) return this.say(con, room, text + 'The RP is ' + this.RP[room].plot + ', but it is paused. Paused at: ' + progress);
+		this.say(con, room, text + 'The RP is ' + this.RP[room].plot + ', in progress for ' + progress + '.');
+	},
+	host: function(arg, by, room, con) {
+		if (!(room === 'roleplayespaol')) return false;
+		if (this.RP[room].hostCalled) {
+			var text = '/pm ' + by + ', ';
+		} else {
+			var text = '';
+			var self = this;
+			this.RP[room].hostCalled = true;
+			setTimeout(function() { delete self.RP[room].hostCalled; }, 60 * 1000);
+		}
+		if (!this.RP[room].host) return this.say(con, room, text + 'There is no host.');
+		this.say(con, room, text + 'The host is ' + this.RP[room].host + '.');
+	},
+	voice: function(arg, by, room, con) {
+		if (config.serverid !== 'showdown' || !('amphyrp' in this.RP) || room.charAt(0) !== ',') return false;
+
+		var freeDay = this.isFreeDay();
+		if (!freeDay && !this.RP['amphyrp'].plot) return this.say(con, room, '.voice can only be used after an RP has been set. Wait until the RP has been set before asking for voice.');
+		if (freeDay) return this.say(con, room, freeDay + ' is a free day, so voice can\'t be given out.');
+		this.say(con, 'amphyrp', '/roomvoice ' + by);
+	},
+	ampclear: function(arg, by, room, con) {
+		if (config.serverid !== 'showdown' || room !== 'amphyrp' || !this.hasRank(by, '@#~')) return false;
+		if (!this.isFreeDay()) {
+			if (this.RP['amphyrp'] && this.RP['amphyrp'].plot) return this.say(con, room, 'Please wait until the RP is over before clearing the voice list.');
+		} else {
+			this.say(con, room, '/modchat false');
+		}
+		this.say(con, room, '/roomauth');
+		setTimeout(function(self) {
+			if (self.amphyVoices.length === 0) return self.say(con, room, 'No roomvoices have been added yet.');
+
+			var len = self.amphyVoices.length;
+			for (var i = 0; i < len; i++) {
+				setTimeout(function(self, nick) {
+					self.say(con, room, '/deroomvoice ' + nick);
+				}, 1500*i, self, self.amphyVoices[i]);
+			}
+			if (len === 1) {
+				self.say(con, room, 'Deroomvoicing finished.');
+			} else {
+				self.say(con, room, 'Deroomvoicing will be finished in ' + ((len - 1) * 1.5) + ' seconds.');
+			}
+			self.amphyVoices = [];
+		}, 1000, this);
+	},	
+
+
+
+		
 };
