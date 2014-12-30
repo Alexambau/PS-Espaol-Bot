@@ -178,7 +178,13 @@ exports.parse = {
 					cmds.push('|/join ' + room);
 				}
 				
-				
+					for (var i = 0; i < config.rprooms.length; i++) {
+						this.RP[toId(config.rprooms[i])] = {};
+					}
+
+
+
+
 				for (var i in config.privaterooms) {
 					var room = toId(config.privaterooms[i]);
 					if (room === 'lobby' && config.serverid === 'showdown') {
@@ -186,7 +192,7 @@ exports.parse = {
 					}
 					cmds.push('|/join ' + room);
 				}
-
+	
 				var self = this;
 				if (cmds.length > 4) {
 					self.nextJoin = 0;
