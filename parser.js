@@ -71,8 +71,12 @@ exports.parse = {
 		var spl = message.split('|');
 		if (!spl[1]) {
 			spl = message.split('>');
-			if (spl[1]) this.room = spl[1];
-			return;
+			if (spl[1]) {
+				this.room = spl[1];
+				return;
+			} else {
+				spl = ['', 'raw', message];
+			}
 		}
 		if (config.logChat && this.room === config.logChat && spl[1] !== "pm") {
 			//log chat
@@ -532,7 +536,7 @@ exports.parse = {
 			seenAt: time
 		};
 		var chatData = this.chatData[user];
-		if (!chatData[room]) chatData[room] = {times:[], points:0, lastAction:0};
+		if (!chatData[room]) chatData[room] = {times:[], lastMessage: '#1', lastMessage2: '#2', points:0, lastAction:0};
 		chatData = chatData[room];
 
 		chatData.times.push(time);
@@ -571,18 +575,13 @@ exports.parse = {
 					muteMessage = ', Moderación automática: Los spoilers no están permitidos Reglas: http://bit.ly/1abNG5E';
 				}
 			}
-
 			//moderation for /me
-                        user = toId(user);
-                        if (useDefault || modSettings['me'] !== 0) {
-                                if (msg.toLowerCase().indexOf("/me") === 0) {
-                                        this.say(connection, room, '/redir ' + user + ', roleplayespaol');
-                                        this.say(connection, room, '/mn El usuario: ' + user + ' ha sido redirigido a Roleplay por uso del /me.');
-                                }
-                        }			
-
-
-
+			if (useDefault || modSettings['me'] !== 0) {
+				if (msg.toLowerCase().indexOf("/me") === 0) {
+					this.say(connection, room, '/redir ' + user + ', roleplayespaol');
+					this.say(connection, room, '/mn El usuario: ' + user + ' ha sido redirigido a Roleplay por uso del /me.');
+				}
+			}
 			// moderation for youtube channel
 			if (useDefault || modSettings['youtube'] !== 0 && pointVal < 2) {
 				if (msg.toLowerCase().indexOf("youtube.com/channel/") > -1) {
@@ -610,6 +609,27 @@ exports.parse = {
 				if (pointVal < 2) {
 					pointVal = 2;
 					muteMessage = ', Moderación automática: Flood Reglas: http://bit.ly/1abNG5E';
+				}
+			}
+			// moderation for spam L1 (repeat 3 times the same message in 6 secons or faster)
+			if (useDefault || modSettings['spam'] !== 0 && pointVal < 3) {
+				if (times.length >= 3 && (time - times[times.length - 3]) < FLOOD_MESSAGE_TIME && msg === chatData.lastMessage && chatData.lastMessage === chatData.lastMessage2) {
+					pointVal = 3;
+					muteMessage = ', Moderación automática: Detectado spammer de nivel 1';
+				}
+			}
+			//moderation for spam L2 (flooding with short messages: 8 or less chars)
+			if (useDefault || modSettings['spam'] !== 0 && pointVal < 3) {
+				if (isFlooding && msg.length < 8 && chatData.lastMessage.length < 8 && chatData.lastMessage2.length < 8) {
+					pointVal = 3;
+					muteMessage = ', Moderación automática: Detectado spammer de nivel 2';
+				}
+			}
+			//moderation for spam L3 (flooding with multiple lines)
+			if (useDefault || modSettings['spam'] !== 0 && pointVal < 4) {
+				if (isFlooding && toId(msg) === toId(chatData.lastMessage) && toId(chatData.lastMessage) === toId(chatData.lastMessage2)) {
+					pointVal = 4;
+					muteMessage = ', Moderación automática: Detectado spammer de nivel 3';
 				}
 			}
 			// moderation for caps (over x% of the letters in a line of y characters are capital)
@@ -652,6 +672,8 @@ exports.parse = {
 				this.say(connection, room, '/' + cmd + ' ' + user + muteMessage);
 			}
 		}
+		chatData.lastMessage2 = chatData.lastMessage;
+		chatData.lastMessage = msg;
 	},
 	processBattle: function(room, connection) {
 		this.say(connection, room, '/timer on');

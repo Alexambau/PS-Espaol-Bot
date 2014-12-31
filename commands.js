@@ -224,7 +224,8 @@ exports.commands = {
 			spoiler: 1,
 			porn: 1,
 			snen: 1,
-			me: 1
+			me: 1,
+			spam: 1
 		};
 
 		var opts = arg.split(',');
