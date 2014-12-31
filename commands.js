@@ -201,6 +201,7 @@ exports.commands = {
 		var settable = {
 			banword: 1,
 			autoban: 1,
+			me: 1,
 			info: 1,
 			say: 1,
 			joke: 1,
@@ -222,20 +223,21 @@ exports.commands = {
 			youtube: 1,
 			spoiler: 1,
 			porn: 1,
-			snen: 1
+			snen: 1,
+			me: 1
 		};
 
 		var opts = arg.split(',');
 		var cmd = toId(opts[0]);
 		if (cmd === 'mod' || cmd === 'm' || cmd === 'modding') {
-			if (!opts[1] || !toId(opts[1]) || !(toId(opts[1]) in modOpts)) return this.say(con, room, 'Comando Incoreecto: el modo correcto es ' + config.commandcharacter + 'set mod, [' +
+			if (!opts[1] || !toId(opts[1]) || !(toId(opts[1]) in modOpts)) return this.say(con, room, 'Comando Incorrecto: el modo correcto es ' + config.commandcharacter + 'set mod, [' +
 				Object.keys(modOpts).join('/') + '](, [on/off])');
 
 			if (!this.settings['modding']) this.settings['modding'] = {};
 			if (!this.settings['modding'][room]) this.settings['modding'][room] = {};
 			if (opts[2] && toId(opts[2])) {
 				if (!this.hasRank(by, '#~')) return false;
-				if (!(toId(opts[2]) in {on: 1, off: 1}))  return this.say(con, room, 'Comando Incoreecto: el modo correcto es ' + config.commandcharacter + 'set mod, [' +
+				if (!(toId(opts[2]) in {on: 1, off: 1}))  return this.say(con, room, 'Comando Incorrecto: el modo correcto es ' + config.commandcharacter + 'set mod, [' +
 					Object.keys(modOpts).join('/') + '](, [on/off])');
 				if (toId(opts[2]) === 'off') {
 					this.settings['modding'][room][toId(opts[1])] = 0;
@@ -312,6 +314,8 @@ exports.commands = {
 			}
 		}
 	},
+
+
 	blacklist: 'autoban',
 	ban: 'autoban',
 	ab: 'autoban',
@@ -812,11 +816,11 @@ exports.commands = {
 	},
 	
 	
-	/*prueba: function(arg, by, room, con) {
-		var actual = new Date();
-		var horas = actual.getHours();
-		var minutos = actual.getMinutes();
-		while (!minutos === 46) this.say(con, room, /modchat autoconfirmed);
+	/*	automodchat = function(arg, by, room, con);
+		var ejecucion = 5184000;
+		if ((getHours() === 2)){
+		setTimeOut(automodchat, ejecucion)
+		this.say(con, room, /modchat autoconfirmed)};
 	},*/
 
 
