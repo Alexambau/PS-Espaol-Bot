@@ -167,9 +167,46 @@ exports.parse = {
 				}
 
 				ok('logged in as ' + spl[2]);
+				
+				var datenow = Date.now();
+				
+				var formats = fs.createWriteStream("formats.js");
+				https.get("https://play.pokemonshowdown.com/data/formats.js?" + datenow, function(res) {
+					res.pipe(formats);
+				});
+				var formatsdata = fs.createWriteStream("formats-data.js");
+				https.get("https://play.pokemonshowdown.com/data/formats-data.js?" + datenow, function(res) {
+					res.pipe(formatsdata);
+				});
+				var pokedex = fs.createWriteStream("pokedex.js");
+				https.get("https://play.pokemonshowdown.com/data/pokedex.js?" + datenow, function(res) {
+					res.pipe(pokedex);
+				});
+				var moves = fs.createWriteStream("moves.js");
+				https.get("https://play.pokemonshowdown.com/data/moves.js?" + datenow, function(res) {
+					res.pipe(moves);
+				});
+				var abilities = fs.createWriteStream("abilities.js");
+				https.get("https://play.pokemonshowdown.com/data/abilities.js?" + datenow, function(res) {
+					res.pipe(abilities);
+				});
+				var items = fs.createWriteStream("items.js");
+				https.get("https://play.pokemonshowdown.com/data/items.js?" + datenow, function(res) {
+					res.pipe(items);
+				});
+				var learnsets = fs.createWriteStream("learnsets-g6.js");
+				https.get("https://play.pokemonshowdown.com/data/learnsets-g6.js?" + datenow, function(res) {
+					res.pipe(learnsets);
+				});
+				var aliases = fs.createWriteStream("aliases.js");
+				https.get("https://play.pokemonshowdown.com/data/aliases.js?" + datenow, function(res) {
+					res.pipe(aliases);
+				});
+
 
 				// Now join the rooms
 				var cmds = ['|/idle'];
+				var cmds = ['|/idle', '|/avatar 120']; 
 				for (var i in config.rooms) {
 					var room = toId(config.rooms[i]);
 					if (room === 'lobby' && config.serverid === 'showdown') {
@@ -194,12 +231,12 @@ exports.parse = {
 				}
 	
 				var self = this;
-				if (cmds.length > 4) {
+				if (cmds.length > 3) {
 					self.nextJoin = 0;
 					self.joinSpacer = setInterval(function(con, cmds) {
-						if (cmds.length > self.nextJoin + 3) {
-							send(con, cmds.slice(self.nextJoin, self.nextJoin + 3));
-							self.nextJoin += 3;
+						if (cmds.length > self.nextJoin + 2) {
+							send(con, cmds.slice(self.nextJoin, self.nextJoin + 2));
+							self.nextJoin += 2;
 						} else {
 							send(con, cmds.slice(self.nextJoin));
 							delete self.nextJoin;
