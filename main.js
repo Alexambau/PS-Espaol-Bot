@@ -112,9 +112,6 @@ if (!Object.select) {
 var sys = require('sys');
 global.colors = require('colors');
 
-global.update = Date.now();
-
-
 console.log('------------------------------------'.yellow);
 console.log('| Welcome to Pokemon Showdown Bot! |'.yellow);
 console.log('------------------------------------'.yellow);
