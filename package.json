@@ -11,6 +11,7 @@
 	},
 	"engineStrict": true,
 	"scripts": {"start": "node main.js"},
+	"main": "main.js",
 	"bin": "./main.js",
 	"repository": {
 		"type": "git",
