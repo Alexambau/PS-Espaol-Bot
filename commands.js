@@ -1038,13 +1038,13 @@ exports.commands = {
 		if (this.canUse('info', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		} else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
 			var formatsdata = require('./formats-data.js').BattleFormatsData;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		var pokemon = [];
 		var extractedmon = '';
@@ -1081,7 +1081,7 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
@@ -1090,7 +1090,7 @@ exports.commands = {
 			var abilities = require('./abilities.js').BattleAbilities;
 			var items = require('./items.js').BattleItems;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		var arg = toId(arg);
 		if (arg == "") return this.say(con, room, "Generazione di cosa?");
@@ -1136,14 +1136,14 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var aliases = require('./aliases.js').BattleAliases;
 			var formatsdata = require('./formats-data.js').BattleFormatsData;
 			var movedex = require('./moves.js').BattleMovedex;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		arg = arg.toLowerCase().replace(/[^a-zA-Z0-9,]/g,"").split(",");
 		var pokemon = arg[0];
@@ -1166,7 +1166,7 @@ exports.commands = {
 			else text += moves.substring(2);
 		}
 		else {
-			text += "Pokémon non trovato";
+			text += "Pokémon No encontrado";
 		}
 		this.say(con, room, text);
 	},
@@ -1175,15 +1175,15 @@ exports.commands = {
 		if (this.canUse('info', room, by) || room.charAt(0) === ',') {
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var trad = require('./tradobject.js').trad;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
-		if (parola == "") return this.say(con, room, "Cosa devo tradurre?");
+		if (parola == "") return this.say(con, room, "¿Que tengo que traducir?");
 		var parola = arg.toLowerCase().replace(/[^a-z0-9àèéìòù]/,"");
 		if (aliases[parola]) var aliasParola = aliases[parola].toLowerCase().replace(/[^a-z0-9àèéìòù]/,"");
 		
@@ -1193,9 +1193,9 @@ exports.commands = {
 		
 		for (var i in trad) {
 			for (var j in trad[i]) {
-				if (trad[i][j].en.replace(/[^a-z0-9àèéìòù]/,"") == parola) results.push({"trad": trad[i][j].it, "cat": i});
-				if (aliasParola && trad[i][j].en.replace(/[^a-z0-9àèéìòù]/,"") == aliasParola) results.push({"trad": trad[i][j].it, "cat": i});
-				if (trad[i][j].it.replace(/[^a-z0-9àèéìòù]/,"") == parola) results.push({"trad": trad[i][j].en, "cat": i});
+				if (trad[i][j].en.replace(/[^a-z0-9àèéìòù]/,"") == parola) results.push({"trad": trad[i][j].es, "cat": i});
+				if (aliasParola && trad[i][j].en.replace(/[^a-z0-9àèéìòù]/,"") == aliasParola) results.push({"trad": trad[i][j].es, "cat": i});
+				if (trad[i][j].es.replace(/[^a-z0-9àèéìòù]/,"") == parola) results.push({"trad": trad[i][j].en, "cat": i});
 			}
 		}
 		
@@ -1208,7 +1208,7 @@ exports.commands = {
 			}
 			return this.say(con, room, resultstext);
 		}
-		return this.say(con, room, "Non trovato");
+		return this.say(con, room, "No encontrado");
 	},	
 
 	heavyslam: function(arg, by, room, con) {
@@ -1216,13 +1216,13 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		var pokemon = arg.split(',');
 		pokemon[0] = toId(pokemon[0]);
@@ -1230,9 +1230,9 @@ exports.commands = {
 		if (aliases[pokemon[0]]) pokemon[0] = toId(aliases[pokemon[0]]);
 		if (aliases[pokemon[1]]) pokemon[1] = toId(aliases[pokemon[1]]);
 		if (pokedex[pokemon[0]]) var weight0 = pokedex[pokemon[0]].weightkg;
-		else return this.say(con, room, "Pokémon attaccante non trovato");
+		else return this.say(con, room, "Pokémon atacante no encontrado");
 		if (pokedex[pokemon[1]]) var weight1 = pokedex[pokemon[1]].weightkg;
-		else return this.say(con, room, "Pokémon difensore non trovato");
+		else return this.say(con, room, "Pokémon defensor no encontrado");
 		
 		text += "Heavy slam/Heat crash base power: ";
 		if (weight0 / weight1 <= 2) text += "40";
@@ -1249,13 +1249,13 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		var pokemon = toId(arg);
 		if (aliases[pokemon]) pokemon = toId(aliases[pokemon]);
@@ -1263,9 +1263,9 @@ exports.commands = {
 			if (pokedex[pokemon].prevo) {
 				text += pokedex[pokemon].prevo;
 			}
-			else text += pokemon + ' non ha una pre-evoluzione';
+			else text +='El Pokémon: ' + pokemon + ' no tiene preevolución.';
 		}
-		else text += "Pokémon non trovato";
+		else text += "Pokémon No encontrado";
 		this.say(con, room, text);
 	},	
 
@@ -1274,7 +1274,7 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
@@ -1282,7 +1282,7 @@ exports.commands = {
 			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		var arg = toId(arg);
 		if (aliases[arg]) arg = toId(aliases[arg]);
@@ -1315,9 +1315,9 @@ exports.commands = {
 			}
 		}
 		else {
-			text += "Non trovato";
+			text += "No encontrado";
 		}
-		if (text == '') text = 'Nessuna priority move trovata';
+		if (text == '') text = 'No se han encontrado movimientos de prioridad.';
 		this.say(con, room, text);
 	},
 
@@ -1326,7 +1326,7 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
@@ -1334,7 +1334,7 @@ exports.commands = {
 			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		var arg = toId(arg);
 		if (aliases[arg]) arg = toId(aliases[arg]);
@@ -1367,9 +1367,9 @@ exports.commands = {
 			}
 		}
 		else {
-			text += "Non trovato";
+			text += "No encontrado";
 		}
-		if (text == '') text = 'Nessuna boosting move trovata';
+		if (text == '') text = 'No se han encontrado movimientos de boosting';
 		this.say(con, room, text);
 	},
 
@@ -1378,7 +1378,7 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
@@ -1386,7 +1386,7 @@ exports.commands = {
 			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		var arg = toId(arg);
 		if (aliases[arg]) arg = toId(aliases[arg]);
@@ -1434,9 +1434,9 @@ exports.commands = {
 			}
 		}
 		else {
-			text += "Non trovato";
+			text += "No encontrado";
 		}
-		if (text == '') text = 'Nessuna recovery move trovata';
+		if (text == '') text = 'No se han encontrado movimientos de recuperación.';
 		this.say(con, room, text);
 	},
 
@@ -1446,7 +1446,7 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
@@ -1454,7 +1454,7 @@ exports.commands = {
 			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, '.');
 		}
 		var arg = toId(arg);
 		if (aliases[arg]) arg = toId(aliases[arg]);
@@ -1487,9 +1487,9 @@ exports.commands = {
 			}
 		}
 		else {
-			text += "Non trovato";
+			text += "No encontrado";
 		}
-		if (text == '') text = 'Nessuna hazard trovata';
+		if (text == '') text = 'No se han encontrado hazards disponibles.';
 		this.say(con, room, text);
 	},
 	
@@ -1499,7 +1499,7 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
@@ -1507,11 +1507,11 @@ exports.commands = {
 			var movedex = require('./moves.js').BattleMovedex;
 			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
 		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		
 		arg = arg.toLowerCase().replace(/[^a-z0-9,]/g, '').split(',');
-		if (!arg[1]) return this.say(con, room, 'Scrivi il Pokémon e il tipo');
+		if (!arg[1]) return this.say(con, room, 'Escribe el Pokémon y el tipo');
 		arg[0] = arg[0].replace(/[+-]/g,"");
 		arg[1] = arg[1].replace(/[+-]/g,"");
 		if (aliases[arg[0]]) arg[0] = toId(aliases[arg[0]]);
@@ -1525,9 +1525,9 @@ exports.commands = {
 			var pokemonarg = 0;
 			var typearg = 1;
 		}
-		else return this.say(con, room, 'Pokémon non trovato');
+		else return this.say(con, room, 'Pokémon No encontrado');
 		var types = ['bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flying', 'ghost', 'grass', 'ground', 'ice', 'normal', 'poison', 'psychic', 'rock', 'steel', 'water'];
-		if (types.indexOf(arg[typearg]) == -1) return this.say(con, room, 'Tipo non trovato');
+		if (types.indexOf(arg[typearg]) == -1) return this.say(con, room, 'Tipo No encontrado');
 		if (pokedex[arg[pokemonarg]]) {
 			var typemoves = [];
 			var pokemonToCheck = [arg[pokemonarg]];
@@ -1557,9 +1557,9 @@ exports.commands = {
 			}
 		}
 		else {
-			text += "Non trovato";
+			text += "No encontrado";
 		}
-		if (text == '') text = 'Nessuna ' + arg[typearg] + ' move trovata';
+		if (text == '') text = 'El movimiento:  ' + arg[typearg] + ' no ha sido encontrado';
 		this.say(con, room, text);
-	},		
+	}		
 };
