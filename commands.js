@@ -670,7 +670,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
-		text +='Actualmente hay suspect de Greninja. ¿Qué significa eso? El Smogon Council pone un metagame sin el Pokémon que está en el suspect y la gente lucha por ganar X puntos de COIL, que son necesarios para poder votar en el foro de Smogon para decidir si ese Pokémon merece ser baneado o no';
+		text +='El suspect de Greninja ha terminado, pero la votación todavía no ha comenzado. Por eso, hasta que termine la votación y se vea el resultado, Greninja seguirá siendo utilizable en la ladder de OU.';
 		this.say(con, room, text);
 		
 	},
