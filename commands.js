@@ -684,6 +684,16 @@ exports.commands = {
 		this.say(con, room, text);	
 	
 	},
+	
+	voiced: function(arg , by, room, con){
+		var text = '';
+		if (!this.canUse('info',room, by)){
+			text += '/pm ' + by + ', ';
+		}
+		text +='Si estas interesado en obtener el rango de voiced (+), primero tienes que seguir unos pasos. (http://bit.ly/1xWqypI). Ten en cuenta que pedir rango y comportarte bien solo por obtener rango no esta permitido. Si lo haces, tus posibilidades de ser voiced bajan mucho.';
+		this.say(con, room, text);
+	},
+	
 	VoD: 'vod',
 	VOD: 'vod',
 	vod: function(arg, by, room, con) {
