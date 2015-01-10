@@ -670,7 +670,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
-		text +='El suspect de Greninja ha terminado, pero la votación todavía no ha comenzado. Por eso, hasta que termine la votación y se vea el resultado, Greninja seguirá siendo utilizable en la ladder de OU.';
+		text +='El suspect de Greninja ha terminado, las votaciones estan en marcha. Terminaran el 12/01/2015.';
 		this.say(con, room, text);
 		
 	},
@@ -684,7 +684,7 @@ exports.commands = {
 		this.say(con, room, text);	
 	
 	},
-	
+
 	voiced: function(arg , by, room, con){
 		var text = '';
 		if (!this.canUse('info',room, by)){
@@ -693,7 +693,7 @@ exports.commands = {
 		text +='Si estas interesado en obtener el rango de voiced (+), primero tienes que seguir unos pasos. (http://bit.ly/1xWqypI). Ten en cuenta que pedir rango y comportarte bien solo por obtener rango no esta permitido. Si lo haces, tus posibilidades de ser voiced bajan mucho.';
 		this.say(con, room, text);
 	},
-	
+
 	VoD: 'vod',
 	VOD: 'vod',
 	vod: function(arg, by, room, con) {
@@ -827,36 +827,25 @@ exports.commands = {
 	},
 	
 	
-	/*	automodchat = function(arg, by, room, con);
-		var ejecucion = 5184000;
-		if ((getHours() === 2)){
-		setTimeOut(automodchat, ejecucion)
-		this.say(con, room, /modchat autoconfirmed)};
-	},*/
-
-
-	/*sken: function(arg, by, room, con) {
+	
+	sken: function(arg, by, room, con) {
+		if (toId(by) !== 'sken' && !this.canUse('sken', room, by)) return;
 		var rand = Math.floor(5 * Math.random()) + 1;
-		var text = '';
-			if (this.canUse('info',room,by) && (!toId(by) == 'sken')){
-				var text = '';
-				text +='No eres Sken.';
-			} else {
-			var text = '';			
+		var text = '';		
 			switch (rand) 	{
 				case 1: text += "The opposing Tyranitar used Aerial Ace. Mega-Heracross fainted."; break;
 				case 2: text += "Eres un parguela"; break;
 				case 3: text += "He sido tu admirador durante mucho tiempo, pero me estás empezando a caer gordo, me estás arruinando la vida con tu presencia."; break;
 				case 4: text += "Sken, acaso te crees la divina papaya? Pues yo creo que no."; break;
 				case 5: text += "Sken, te amo"; break;
-							}
-											}
+					}
 			this.say(con, room, text);
 
-	}
+	},
 	
-	*/
 	
+	
+
 	// Roleplaying Español Commands
 
 	setrp: function(arg, by, room, con) {
