@@ -701,7 +701,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
-			text +='VoD son las siglas de "Voiced of the Day" que se traduce al castellano como "Voiced por un dia". Este rango es precisamente esto, la oportunidad de obtener el rango de voiced (+) por un dia. Se suele dar a los ganadores de eventos y torneos. Para masinformación ve a: http://bit.ly/1B714Tj';
+			text +='VoD son las siglas de "Voiced of the Day" que se traduce al castellano como "Voiced por un dia". Este rango es precisamente esto, la oportunidad de obtener el rango de voiced (+) por un dia. Se suele dar a los ganadores de eventos y torneos. Para más información ve a: http://bit.ly/1B714Tj';
 		this.say(con, room, text);	
 	
 	},
@@ -826,6 +826,14 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
+	roleplay: function(arg, by, room, con) {
+		var text = '';
+		if (!this.canUse('info',room, by)) {
+			var text = '/invite ' + by + ' roleplayespaol';
+		}
+			var text = '/invite ' + arg + ' roleplayespaol';
+		this.say(con, room, 'Unios a la sala de Roleplay Español haciendo click aquí: http://play.pokemonshowdown.com/roleplayespaol');
+	},
 	
 	
 	sken: function(arg, by, room, con) {
