@@ -722,7 +722,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
-			text +='Esta sala esta liderada a base de una oligarquia meritocrática. Esto quiere decir que gobiernan unos pocos (el staff) que han ganado el rango a través de unos méritos particulares. Los rangos son:  VOICED (+), DRIVER (%), MODERADOR (@) y OWNER (#). Los usuarios voiced (+) son los usuarios ejemplares de la sala. Los drivers (%) son los vigilantes del chat. Estos usuarios pueden avisar y mutear (7-60min). Los moderadores (@) son usuarios de muchisima calidad. Pueden avisar, mutear y banear. Los owners (#) son los lideres del chat y pueden hacer muchas cosas :^)';
+			text +='Voiced (+): Usuario ejemplar   Driver (%): Authoridad del chat que puede avisar y silenciar  Moderador (@): Lo mismo que driver pero puede banear  Owner (#): Encargados de la sala';
 	this.say(con, room, text);	
 	
 	},
@@ -732,9 +732,9 @@ exports.commands = {
 	sanciones: function(arg, by, room, con) {
 		var text = '';
 		if  (!this.canUse('info', room, by)) {
-			text += '/pm ' + by + ', En esta sala, es imperativo seguir unas normas básicas. Si un usuario rompe las reglas, el staff reserva el derecho de penar y sancionar a cualquier usuario. Las sanciones son estas: 1) Aviso/Warn  2) Mute/Silenciar y 3) Banear';
+			text += '/pm ' + by + ', Warn (aviso): Un aviso por comportamiento inadecuado  Mute (silenciar): Cuando un aviso no es suficiente, el usuario puede ser silenciado por 7/60minutos  Ban (aterrar): En casos extremos, el usuario es echado del chat (temporalmente o por siempre)';
 		} 	
-			text +='En esta sala, es imperativo seguir unas normas básicas. Si un usuario rompe las reglas, el staff reserva el derecho de penar y sancionar a cualquier usuario. Las sanciones son estas: 1) AVISO/WARN  2) MUTE/SILENCIAR y 3) Banear/Aterrar';
+			text +='Warn (aviso): Un aviso por comportamiento inadecuado  Mute (silenciar): Cuando un aviso no es suficiente, el usuario puede ser silenciado por 7/60 min  Ban (aterrar): En casos extremos, el usuario es echado del chat (temporalmente o por siempre)';
 
 	this.say(con, room, text);	
 	},
