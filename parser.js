@@ -378,6 +378,8 @@ exports.parse = {
 			case 'J': case 'j':
 				var by = spl[2];
 				if (this.room && this.isBlacklisted(toId(by), this.room)) this.say(connection, this.room, '/roomban ' + by + ', Usuario baneado permanentemente');
+				if (this.room && (toId(by) == 'astara')) this.say (connection, this.room, 'Ha caido algo del espacio.');
+				if (this.room && (toId(by) == 'astyanax')) this.say (connection, this.room, 'Top kek :^)');
 				if (this.room && (toId(by) == 'iyarito')) this.say (connection, this.room, 'Iyarito guapisima ♥');
 				if (this.room && (toId(by) == 'sken')) this.say (connection, this.room, 'Sken, te amo.');
 				if (this.room && (toId(by) == 'xjoelituh')) this.say (connection, this.room, 'Oh no, llego Joel.');
