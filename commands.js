@@ -829,9 +829,9 @@ exports.commands = {
 	roleplay: function(arg, by, room, con) {
 		var text = '';
 		if (!this.canUse('info',room, by)) {
-			var text = '/invite ' + by + ' roleplayespaol';
+			text += '/invite ' + by + ', roleplayespaol';
 		}
-			var text = '/invite ' + arg + ' roleplayespaol';
+			text += '/invite ' + arg + ', roleplayespaol';
 		this.say(con, room, 'Unios a la sala de Roleplay Español haciendo click aquí: http://play.pokemonshowdown.com/roleplayespaol');
 	},
 	
