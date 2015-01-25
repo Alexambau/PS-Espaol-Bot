@@ -1095,7 +1095,7 @@ exports.trad = {
                 {"en": "hardy", "es": "Fuerte"},
                 {"en": "hasty", "es": "Activa"},
                 {"en": "impish", "es": "Agitada"},
-                {"en": "jolly", "es": "Alegre},
+                {"en": "jolly", "es": "Alegre"},
                 {"en": "lax", "es": "Floja"},
                 {"en": "lonely", "es": "Huraña"},
                 {"en": "mild", "es": "Afable"},
