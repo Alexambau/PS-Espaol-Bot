@@ -827,13 +827,9 @@ exports.commands = {
 	},
 	
 	roleplay: function(arg, by, room, con) {
-		var text = '';
-		if (!this.canUse('info',room, by)) {
-			text += '/invite ' + by + ', roleplayespaol';
-		}
-			text += '/invite ' + arg + ', roleplayespaol';
-		this.say(con, room, 'Unios a la sala de Roleplay Español haciendo click aquí: http://play.pokemonshowdown.com/roleplayespaol');
-	},
+                if (!this.canUse('info',room, by)) return this.say(con, "lobby", '/invite ' + by + ', roleplayespaol');
+                this.say(con, room, 'Unios a la sala de Roleplay Español haciendo click aquí: http://play.pokemonshowdown.com/roleplayespaol');
+        },
 	
 	
 	sken: function(arg, by, room, con) {
