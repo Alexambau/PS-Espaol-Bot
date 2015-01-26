@@ -13,6 +13,44 @@ exports.commands = {
 	 *
 	 * These commands are here to provideinformation about the bot.
 	 */
+	 
+	 updateserver: function (arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+
+		if (global.updateServerLock) {
+			return this.say(con, room, "Ya había una actualizacion en curso");
+		}
+
+		global.updateServerLock = true;
+
+		this.say(con, room, "Actualizando....");
+
+		var exec = require('child_process').exec;
+		exec('git diff-index --quiet HEAD --', function (error) {
+			var cmd = 'git pull --rebase';
+			if (error) {
+				if (error.code === 1) {
+					// The working directory or index have local changes.
+					cmd = 'git stash && ' + cmd + ' && git stash pop';
+				} else {
+					// The most likely case here is that the user does not have
+					// `git` on the PATH (which would be error.code === 127).
+					this.say(con, room, "Error:" + error);
+					global.updateServerLock = false;
+					return;
+				}
+			}
+			var entry = "Running `" + cmd + "`";
+			this.say(con, room, entry);
+			exec(cmd, function (error, stdout, stderr) {
+				("" + stdout + stderr).split("\n").forEach(function (s) {
+					this.say(con, room, s);
+				});
+				global.updateServerLock = false;
+			});
+		});
+	},
+	 
 	bot: 'about',
 	info: 'about',
 	about: function(arg, by, room, con) {
