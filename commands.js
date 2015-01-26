@@ -24,6 +24,7 @@ exports.commands = {
 		global.updateServerLock = true;
 
 		this.say(con, room, "Actualizando....");
+		var self = this;
 
 		var exec = require('child_process').exec;
 		exec('git diff-index --quiet HEAD --', function (error) {
@@ -35,16 +36,16 @@ exports.commands = {
 				} else {
 					// The most likely case here is that the user does not have
 					// `git` on the PATH (which would be error.code === 127).
-					this.say(con, room, "Error:" + error);
+					self.say(con, room, "Error:" + error);
 					global.updateServerLock = false;
 					return;
 				}
 			}
 			var entry = "Running `" + cmd + "`";
-			this.say(con, room, entry);
+			self.say(con, room, entry);
 			exec(cmd, function (error, stdout, stderr) {
 				("" + stdout + stderr).split("\n").forEach(function (s) {
-					this.say(con, room, s);
+					self.say(con, room, s);
 				});
 				global.updateServerLock = false;
 			});
