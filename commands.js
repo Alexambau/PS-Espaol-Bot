@@ -226,6 +226,42 @@ exports.commands = {
 		this.say(con, room, '/msg ' + by + ',Subiendo...');
 		this.uploadToHastebin(con, room, by, gtLog);
 	},
+	
+	tourhelp: function(arg, by, room, con) { 
+		if (!this.hasRank(by, '%@#&~')) return false;
+		this.say(con, room, 'Usa el comando así: ' + config.commandcharacter + 'tour [Tier], [TiempoEnSec], [Max-Jugadores], [AutoDQ] - Todo es opcional.');
+	},
+	
+	torneo: 'tour',
+	tournament: 'tour',
+	tour: function(arg, by, room, con) { 
+		if (!this.hasRank(by, '%@#&~') || room.charAt(0) === ',') return false;
+		arg = arg.replace(" ", "");
+		if (!arg || !arg.length) {
+			//default
+			this.tours[room] = {
+				players: 0,
+				maxPlayers: 0,
+				autodq: 2,
+				now: Date.now(),
+				timeout: 30000
+			};
+			this.say(con, room, '/tour new ou, elimination');
+		}
+		var args = arg.split(",");
+		if (!this.tourFormats || !this.tourFormats[toId(args[0])]) return this.say(con, room, 'El formato ' + toId(args[0]) + ' no se reconoce como un formato valido para un torneo');
+		this.tours[room] = {
+				players: 0,
+				maxPlayers: 0,
+				autodq: 2,
+				now: Date.now(),
+				timeout: 30000
+		};
+		if (args[1] && parseInt(args[1])) this.tours[room].timeout = parseInt(args[1]) * 1000;
+		if (args[2] && parseInt(args[2])) this.tours[room].maxPlayers = parseInt(args[2]);
+		if (args[3] && parseInt(args[3])) this.tours[room].autodq = parseInt(args[3]);
+		this.say(con, room, '/tour new ' + args[0] + ', elimination');
+	},
 
 	/**
 	 * Room Owner commands

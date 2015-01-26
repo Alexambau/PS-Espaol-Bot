@@ -32,6 +32,7 @@ exports.parse = {
 	chatData: {},
 	formats: {},
 	ranks: {},
+	tours: {},
 	roomRanks: {},
 	challenges: {},
 	battleDatas: {},
@@ -59,7 +60,7 @@ exports.parse = {
 		if (message.indexOf('\n') > -1) {
 			var spl = message.split('\n');
 			for (var i = 0, len = spl.length; i < len; i++) {
-				if (spl[i].split('|')[1] && (spl[i].split('|')[1] === 'init' || spl[i].split('|')[1] === 'tournament')) {
+				if (spl[i].split('|')[1] && (spl[i].split('|')[1] === 'init')) {
 					this.room = '';
 					break;
 				}
@@ -78,7 +79,7 @@ exports.parse = {
 				spl = ['', 'raw', message];
 			}
 		}
-		if (config.logChat && this.room === config.logChat && spl[1] !== "pm") {
+		if (config.logChat && this.room === config.logChat && spl[1] !== "pm" && spl[1] !== "tournament") {
 			//log chat
 			var f = new Date();
 			var fstr = toDoubleDigit(f.getDate()) + '_' + toDoubleDigit(f.getMonth() + 1) + '_' + f.getFullYear();
@@ -88,7 +89,21 @@ exports.parse = {
 			}
 			this.chatLog.write('[' + toDoubleDigit(f.getHours()) + ':' + toDoubleDigit(f.getMinutes()) + ':' + toDoubleDigit(f.getSeconds()) + '] ' + message + '\n');
 		}
-		
+		if (this.tours && this.tours[this.room] && !this.tours[this.room].started) {
+			var fTime = Date.now();
+			if ((fTime - this.tours[this.room].now) > this.tours[this.room].timeout) {
+				this.tours[this.room].started = true;
+				this.tours[this.room].maxPlayers = 1;
+				this.say(connection, this.room, '/tour start');
+				this.say(connection, this.room, '/tour autodq ' + this.tours[this.room].autodq);
+				if (spl[1] === "tournament" && spl[2] && spl[2] === "join") {
+					if (this.tours && this.tours[this.room]) {
+						this.tours[this.room].players++;
+					}
+					return;
+				}
+			}
+		}
 		switch (spl[1]) {
 			case 'challstr':
 				info('received challstr, logging in...');
@@ -347,13 +362,36 @@ exports.parse = {
 			case 'formats':
 				var dataFormat;
 				this.formats = {};
+				this.tourFormats = {};
 				for (var i = 1; i < spl.length; i++) {
 					if (!spl[i]) continue;
 					dataFormat = spl[i].split(',');
 					if (spl[i].indexOf("#") > -1) {
 						this.formats[toId(dataFormat[0])] = 1;
 					}
+					this.tourFormats[toId(dataFormat[0])] = 1;
 				}
+				break;
+			case 'tournament':
+				switch (spl[2]) {
+					case 'join':
+						if (this.tours && this.tours[this.room]) {
+							this.tours[this.room].players++;
+							if (this.tours[this.room].maxPlayers && (this.tours[this.room].players >= this.tours[this.room].maxPlayers)) {
+								this.say(connection, this.room, '/tour start');
+								this.say(connection, this.room, '/tour autodq ' + this.tours[this.room].autodq);
+							}
+						}
+						break;
+					case 'leave':
+						if (this.tours && this.tours[this.room]) this.tours[this.room].players--;
+						break;
+					case 'end':
+					case 'forceend':
+						if (this.tours && this.tours[this.room]) delete this.tours[this.room];
+						break;
+				}
+				if (lastMessage) this.room = '';
 				break;
 			case 'pm':
 				var by = spl[2];
