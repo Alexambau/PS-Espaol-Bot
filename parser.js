@@ -585,6 +585,7 @@ exports.parse = {
 		if (config.allowmute && this.hasRank(this.ranks[room] || ' ', '%@&#~') && config.whitelist.indexOf(user) === -1 && !is_staff) {
 			var useDefault = !(this.settings['modding'] && this.settings['modding'][room]);
 			var pointVal = 0;
+			var punishment = [];
 			var muteMessage = '';
 			var modSettings = useDefault ? null : this.settings['modding'][room];
 
@@ -609,10 +610,13 @@ exports.parse = {
 				}
 			}
 			// moderation for spoiler
-			if (useDefault || modSettings['spoiler'] !== 0 && pointVal < 2) {
+			if (useDefault || modSettings['spoiler'] !== 0) {
 				if (msg.toLowerCase().indexOf("spoiler:") > -1 || msg.toLowerCase().indexOf("spoilers:") > -1) {
-					pointVal = 2;
-					muteMessage = ', Moderación automática: Los spoilers no están permitidos Reglas: http://bit.ly/1abNG5E';
+					punishment.push("Uso del Spoiler");
+					if (pointVal < 2) {
+						pointVal = 2;
+						muteMessage = ', Moderación automática: Los spoilers no están permitidos Reglas: http://bit.ly/1abNG5E';
+					}
 				}
 			}
 			//moderation for /me
@@ -623,20 +627,44 @@ exports.parse = {
 				}
 			}
 			// moderation for youtube channel
-			if (useDefault || modSettings['youtube'] !== 0 && pointVal < 2) {
+			if (useDefault || modSettings['youtube'] !== 0) {
 				if (msg.toLowerCase().indexOf("youtube.com/channel/") > -1) {
-					pointVal = 2;
-					muteMessage = ', Moderación automática: Publicidad de canales de Youtube';
+					punishment.push("Publicidad");
+					if (pointVal < 2) {
+						pointVal = 2;
+						muteMessage = ', Moderación automática: Publicidad de canales de Youtube';
+					}
+				}
+			}
+			// moderation for inapropiate words
+			if (useDefault || modSettings['inapropiate'] !== 0) {
+				var banphraseSettings = this.settings.inapropiatephrases;
+				var inapropiatePhrases = !!banphraseSettings ? (Object.keys(banphraseSettings[room] || {})).concat(Object.keys(banphraseSettings['global'] || {})) : [];
+				for (var i = 0; i < inapropiatePhrases.length; i++) {
+					if (msg.toLowerCase().indexOf(inapropiatePhrases[i]) > -1) {
+						var msgrip = " " + msg + " ";
+						if (msgrip.toLowerCase().indexOf(" " + inapropiatePhrases[i] + " ") > -1) {
+							punishment.push("Lenguaje inapropiado");
+							if (pointVal < 2) {
+								pointVal = 2;
+								muteMessage = ', Moderación automática: Lenguaje inapropiado. Reglas: http://bit.ly/1abNG5E';
+							}
+							break;
+						}
+					}
 				}
 			}
 			// moderation for banned words
-			if (useDefault || modSettings['bannedwords'] !== 0 && pointVal < 2) {
+			if (useDefault || modSettings['bannedwords'] !== 0) {
 				var banphraseSettings = this.settings.bannedphrases;
 				var bannedPhrases = !!banphraseSettings ? (Object.keys(banphraseSettings[room] || {})).concat(Object.keys(banphraseSettings['global'] || {})) : [];
 				for (var i = 0; i < bannedPhrases.length; i++) {
 					if (msg.toLowerCase().indexOf(bannedPhrases[i]) > -1) {
-						pointVal = 2;
-						muteMessage = ', Moderación automática: Su mensaje contiene una frase prohibida Reglas: http://bit.ly/1abNG5E';
+						punishment("Frases prohibidas");
+						if (pointVal < 2) {
+							pointVal = 2;
+							muteMessage = ', Moderación automática: Su mensaje contiene una frase prohibida Reglas: http://bit.ly/1abNG5E';
+						}
 						break;
 					}
 				}
@@ -655,26 +683,20 @@ exports.parse = {
 			if (useDefault || modSettings['spam'] !== 0 && pointVal < 3) {
 				if (times.length >= 3 && (time - times[times.length - 3]) < FLOOD_MESSAGE_TIME && msg === chatData.lastMessage && chatData.lastMessage === chatData.lastMessage2) {
 					pointVal = 3;
-					muteMessage = ', Moderación automática: Detectado spammer de nivel 1';
+					muteMessage = ', Moderación automática: Detectado spammer tipo A';
 				}
 			}
 			//moderation for spam L2 (flooding with short messages: 8 or less chars)
-			if (useDefault || modSettings['spam'] !== 0 && pointVal < 3) {
-				if (isFlooding && msg.length < 8 && chatData.lastMessage.length < 8 && chatData.lastMessage2.length < 8) {
-					pointVal = 3;
-					muteMessage = ', Moderación automática: Detectado spammer de nivel 2';
-				}
-			}
-			//moderation for spam L3 (flooding with multiple lines)
 			if (useDefault || modSettings['spam'] !== 0 && pointVal < 4) {
-				if (isFlooding && toId(msg) === toId(chatData.lastMessage) && toId(chatData.lastMessage) === toId(chatData.lastMessage2)) {
+				if (isFlooding && msg.length < 8 && chatData.lastMessage.length < 8 && chatData.lastMessage2.length < 8) {
 					pointVal = 4;
-					muteMessage = ', Moderación automática: Detectado spammer de nivel 3';
+					muteMessage = ', Moderación automática: Detectado spammer tipo B';
 				}
 			}
 			// moderation for caps (over x% of the letters in a line of y characters are capital)
 			var capsMatch = msg.replace(/[^A-Za-z]/g, '').match(/[A-Z]/g);
 			if ((useDefault || modSettings['caps'] !== 0) && capsMatch && toId(msg).length > MIN_CAPS_LENGTH && (capsMatch.length >= Math.floor(toId(msg).length * MIN_CAPS_PROPORTION))) {
+				punishment.push("Caps");
 				if (pointVal < 1) {
 					pointVal = 1;
 					muteMessage = ', Moderación automática: Uso excesivo de las mayúsculas Reglas: http://bit.ly/1abNG5E';
@@ -682,10 +704,30 @@ exports.parse = {
 			}
 			// moderation for stretching (over x consecutive characters in the message are the same)
 			var stretchMatch = msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g); // matches the same character (or group of characters) 8 (or 5) or more times in a row
+			if (stretchMatch) punishment.push("Stretch");
 			if ((useDefault || modSettings['stretching'] !== 0) && stretchMatch) {
 				if (pointVal < 1) {
 					pointVal = 1;
 					muteMessage = ', Moderación automática: Alargar demasiado las palabras Reglas: http://bit.ly/1abNG5E';
+				}
+			}
+			//Double punishment
+			if (useDefault || modSettings['double'] !== 0 && pointVal > 0) {
+				if (punishment.length === 2) {
+					if (pointVal <= 2) {
+						pointVal = 2;
+						muteMessage = ', Doble infraccion: ' + punishment[0] + ' y ' + punishment[1] + ' .Reglas: http://bit.ly/1abNG5E';
+					}
+				} else if (punishment.length === 3) {
+					if (pointVal <= 3) {
+						pointVal = 3;
+						muteMessage = ', Triple infraccion: ' + punishment[0] + ', ' + punishment[1] + ' y ' + punishment[2] + ' .Reglas: http://bit.ly/1abNG5E';
+					}
+				}  else if (punishment.length > 3) {
+					if (pointVal <= 3) {
+						pointVal = 3;
+						muteMessage = ', Multiple infraccion: ' + punishment.join(", ") + ' .Reglas: http://bit.ly/1abNG5E';
+					}
 				}
 			}
 

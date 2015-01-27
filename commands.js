@@ -300,7 +300,9 @@ exports.commands = {
 			porn: 1,
 			snen: 1,
 			me: 1,
-			spam: 1
+			spam: 1,
+			double: 1,
+			inapropiate: 1
 		};
 
 		var opts = arg.split(',');
@@ -637,6 +639,74 @@ exports.commands = {
 				var banList = Object.keys(this.settings.bannedphrases[tarRoom]);
 				if (!banList.length) return this.say(con, room, "No hay frases prohibidas en esta sala.");
 				this.uploadToHastebin(con, room, by, "Las siguientes frases están prohibidas " + (room.charAt(0) === ',' ? "globalmente" : "en " + room) + ":\n\n" + banList.join('\n'))
+				return;
+			}
+		}
+		this.say(con, room, text);
+	},
+	
+	iw: 'inapropiateword',
+	inapropiateword: function(arg, by, room, con) {
+		if (!this.canUse('banword', room, by)) return false;
+		if (!this.settings.inapropiatephrases) this.settings.inapropiatephrases = {};
+		arg = arg.trim().toLowerCase();
+		if (!arg) return false;
+		var tarRoom = room;
+
+		if (room.charAt(0) === ',') {
+			if (!this.hasRank(by, '~')) return false;
+			tarRoom = 'global';
+		}
+
+		if (!this.settings.inapropiatephrases[tarRoom]) this.settings.inapropiatephrases[tarRoom] = {};
+		if (arg in this.settings.inapropiatephrases[tarRoom]) return this.say(con, room, "La frase \"" + arg + "\" ya estaba en la lista de lenguaje inapropiado.");
+		this.settings.inapropiatephrases[tarRoom][arg] = 1;
+		this.writeSettings();
+		this.say(con, room, "La frase \"" + arg + "\" está ahora en la lista de lenguaje inapropiado.");
+	},
+	uiw: 'uninapropiateword',
+	uninapropiateword: function(arg, by, room, con) {
+		if (!this.canUse('banword', room, by)) return false;
+		arg = arg.trim().toLowerCase();
+		if (!arg) return false;
+		var tarRoom = room;
+
+		if (room.charAt(0) === ',') {
+			if (!this.hasRank(by, '~')) return false;
+			tarRoom = 'global';
+		}
+
+		if (!this.settings.inapropiatephrases || !this.settings.inapropiatephrases[tarRoom] || !(arg in this.settings.inapropiatephrases[tarRoom])) 
+			return this.say(con, room, "La frase \"" + arg + "\" no estaba en la lista de lenguaje inapropiado.");
+		delete this.settings.inapropiatephrases[tarRoom][arg];
+		if (!Object.size(this.settings.inapropiatephrases[tarRoom])) delete this.settings.inapropiatephrases[tarRoom];
+		if (!Object.size(this.settings.inapropiatephrases)) delete this.settings.inapropiatephrases;
+		this.writeSettings();
+		this.say(con, room, "La frase \"" + arg + "\" ha dejado de estar en la lista de lenguaje inapropiado.");
+	},
+	viewinapropiatephrases: 'viewinapropiatewords',
+	viw: 'viewinapropiatewords',
+	viewinapropiatewords: function(arg, by, room, con) {
+		if (!this.canUse('banword', room, by)) return false;
+		arg = arg.trim().toLowerCase();
+		var tarRoom = room;
+
+		if (room.charAt(0) === ',') {
+			if (!this.hasRank(by, '~')) return false;
+			tarRoom = 'global';
+		}
+
+		var text = "";
+		if (!this.settings.inapropiatephrases || !this.settings.inapropiatephrases[tarRoom]) {
+			text = "No hay frases inapropiadas en esta sala.";
+		} else {
+			if (arg.length) {
+				text = "La frase \"" + arg + "\" " + (arg in this.settings.inapropiatephrases[tarRoom] ? "" : "NO ") + "es inapropiada " +
+					(room.charAt(0) === ',' ? "en todas partes" : "en " + room) + ".";
+			} else {
+				var banList = Object.keys(this.settings.inapropiatephrases[tarRoom]);
+				if (!banList.length) return this.say(con, room, "No hay frases inapropiadas en esta sala.");
+				this.uploadToHastebin(con, room, by, "Las siguientes frases son inapropiadas " + (room.charAt(0) === ',' ? "globalmente" : "en " + room) + ":\n\n" + banList.join('\n'))
 				return;
 			}
 		}
