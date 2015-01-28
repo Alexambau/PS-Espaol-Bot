@@ -92,6 +92,8 @@ exports.commands = {
 		try {
 			this.uncacheTree('./commands.js');
 			Commands = require('./commands.js').commands;
+			this.uncacheTree('./pokemon-ia.js');
+			ia = require('./pokemon-ia.js');
 			this.say(con, room, 'Comandos actualizados.');
 		} catch (e) {
 			error('failed to reload: ' + sys.inspect(e));
