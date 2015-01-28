@@ -97,6 +97,17 @@ exports.commands = {
 			error('failed to reload: ' + sys.inspect(e));
 		}
 	},
+	
+	reloadteams: function(arg, by, room, con) {
+		if (!this.hasRank(by, '#~')) return false;
+		try {
+			this.uncacheTree('./teams.js');
+			this.teams = require('./teams.js').teams;
+			this.say(con, room, 'Teams actualizados.');
+		} catch (e) {
+			error('failed to reload: ' + sys.inspect(e));
+		}
+	},
 
 	reloaddata: function(arg, by, room, con) {
 		if (config.excepts.indexOf(toId(by)) === -1 || room.charAt(0) !== ',') return false;
@@ -206,6 +217,29 @@ exports.commands = {
 	move: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '~')) return false;
 		this.moveBattle(room, con);
+	},
+	
+	jointours: function(arg, by, room, con) { 
+		if (!this.hasRank(by, '~')) return false;
+		if (toId(arg) === "off") {
+			config.joinTours = false;
+				this.say(con, room, 'Modo de union a torneos desactivado.');
+		} else {
+			config.joinTours = true;
+			this.say(con, room, 'Modo de union a torneos activado.');
+		}
+	},
+	
+	searchbattle: function(arg, by, room, con) { 
+		if (!this.hasRank(by, '~')) return false;
+		if (this.teams[toId(arg)]) this.say(con, room, '/useteam ' + this.teams[toId(arg)][Math.floor(Math.random()*this.teams[toId(arg)].length)]);
+		this.say(con, room, '/search ' + arg);
+	},
+	
+	jt: 'jointour',
+	jointour: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		this.say(con, room, "/tour join");
 	},
 	
 	getauth: function(arg, by, room, con) {

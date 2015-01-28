@@ -122,6 +122,7 @@ console.log('');
 
 // Config and config.js watching...
 global.fs = require('fs');
+global.ia = require('./pokemon-ia.js');
 if (!('existsSync' in fs)) {
 	fs.existsSync = require('path').existsSync;
 }
