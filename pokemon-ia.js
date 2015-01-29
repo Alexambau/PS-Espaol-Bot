@@ -85,7 +85,7 @@ function viableMoves(dataType, foeInfo, field, poke) {
 		if (dataMove.name === "Stealth Rock" && foeInfo.sr) continue;
 		if (dataMove.name === "Spikes" && foeInfo.spikes && foeInfo.spikes > 2) continue;
 		if (dataMove.name === "Toxic Spikes" && foeInfo.tSpikes && foeInfo.tSpikes > 1) continue;
-		if (dataMove.name === "Defog" && (!field || (!field.sr && field.spikes))) continue;
+		if (dataMove.name === "Defog" && (!field || (!field.sr && !field.spikes))) continue;
 		if (dataMove.name === "Disable" && foeInfo.disable) continue;
 		if (dataMove.name === "Leech Seed" && (foeInfo.leech || (data2.types[0] === "Grass" || (data2.types[1] && (data2.types[1] === "Grass"))))) continue;
 		if (dataMove.name in {"Refresh": 1, "Heal Bell": 1, "Aromatherapy": 1} && dataType.side.pokemon[0].condition.indexOf(" ") === -1) continue;
@@ -220,7 +220,7 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 		if (dataMove.name === "Stealth Rock" && foeInfo.sr) continue;
 		if (dataMove.name === "Spikes" && foeInfo.spikes && foeInfo.spikes > 2) continue;
 		if (dataMove.name === "Toxic Spikes" && foeInfo.tSpikes && foeInfo.tSpikes > 1) continue;
-		if (dataMove.name === "Defog" && (!field || (!field.sr && field.spikes))) continue;
+		if (dataMove.name === "Defog" && (!field || (!field.sr && !field.spikes))) continue;
 		if (dataMove.name === "Disable" && foeInfo.disable) continue;
 		if (dataMove.name === "Leech Seed" && (foeInfo.leech || (data2.types[0] === "Grass" || (data2.types[1] && (data2.types[1] === "Grass"))))) continue;
 		if (dataMove.name === "Wish" && field && field.lastMove && field.lastMove === "Wish") continue;
