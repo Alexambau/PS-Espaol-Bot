@@ -219,6 +219,8 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 	for (var i = 0; i < dataType.active[0].moves.length; i++) {
 		dataMove = movedex[toId(dataType.active[0].moves[i].move)];
 		if (!dataMove || dataType.active[0].moves[i].disabled) continue;
+		if (dataMove.category === "Physical" && field && field.boosts && field.boosts["atk"] && field.boosts["atk"] < -1) continue;
+		if (dataMove.category === "Special" && field && field.boosts && field.boosts["spa"] && field.boosts["spa"] < -1) continue;
 		if (dataMove.category === "Status" && has_ability(foeInfo["a"], ["Magic Bounce"])) continue;
 		if (dataMove.category === "Status" && foeInfo.substitute && dataMove.target !== "self" && dataMove.target !== "allySide" && dataMove.target !== "foeSide") continue;
 		if (dataMove.name === "Light Screen" && field && field.lightScreen) continue;
