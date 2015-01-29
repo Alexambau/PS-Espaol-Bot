@@ -928,7 +928,7 @@ exports.parse = {
 				var bannedPhrases = !!banphraseSettings ? (Object.keys(banphraseSettings[room] || {})).concat(Object.keys(banphraseSettings['global'] || {})) : [];
 				for (var i = 0; i < bannedPhrases.length; i++) {
 					if (msg.toLowerCase().indexOf(bannedPhrases[i]) > -1) {
-						punishment("Frases prohibidas");
+						punishment.push("Frases prohibidas");
 						if (pointVal < 2) {
 							pointVal = 2;
 							muteMessage = ', Moderación automática: Su mensaje contiene una frase prohibida Reglas: http://bit.ly/1abNG5E';
