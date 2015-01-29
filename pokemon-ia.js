@@ -188,6 +188,13 @@ function gen6_getGoodMoves(dataType, foeInfo, field) {
 		if (dataMove.category === "Physical" && field && field.boosts && field.boosts["atk"] && field.boosts["atk"] < -1) continue;
 		if (dataMove.category === "Special" && field && field.boosts && field.boosts["spa"] && field.boosts["spa"] < -1) continue;
 		if (dataMove.isViable && (dataMove.category in {"Physical": 1, "Special": 1})) {
+			if (pokemonA === "Loppuny" || dataType.active[0].baseAbility === "Scrappy") {
+				if (dataMove.name === "Fake Out") continue;
+				if (dataMove.type === data1.types[0] ||(data1.types[1] && dataMove.type === data1.types[1])) {
+					moves_V.push(dataMove.name);
+					continue;
+				}
+			}
 			if (inmune(dataMove, pokemonB)) continue;
 			if (dataMove.name === "Stored Power" && (!field || !field.boosts ||  ((!field.boosts["spa"] || field.boosts["spa"] < 2) && (!field.boosts["spd"] || field.boosts["spd"] < 2)))) continue;
 			if (dataMove.type === "Ground" && foeInfo.items && foeInfo.items["a"] && foeInfo.items["a"] === "Air Ballon") continue;
