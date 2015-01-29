@@ -44,6 +44,7 @@ exports.parse = {
 	battleFormats: {},
 	RP: {},
 	tourData: {},
+	ratedRoom: 0,
 	chatLog: 0,
 	chatLogDay: 0,
 	busyInBattle: 0,
@@ -312,6 +313,10 @@ exports.parse = {
 				break;
 			case 'title':
 				ok('joined ' + spl[2]);
+				if (lastMessage) this.room = '';
+				break;
+			case 'rated':
+				if (this.ratedRoom) this.say(connection, this.ratedRoom, 'http://play.pokemonshowdown.com/' + this.room);
 				if (lastMessage) this.room = '';
 				break;
 			case 'gametype':
