@@ -334,6 +334,9 @@ exports.gen6SinglesBattleResponse = function(battleData, foeInfo, field) {
 		if (good_moves.length) {
 			dt = Math.floor(good_moves.length * Math.random());
 			dt = good_moves[dt];
+		} else if (viable_moves.length) {
+			dt = Math.floor(viable_moves.length * Math.random());
+			dt = viable_moves[dt];
 		}
 		if (dataType.side.pokemon[0].canMegaEvo) {
 			dt += " mega";	//megaEvo
