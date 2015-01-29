@@ -9,4 +9,6 @@ exports.teams = {
 	]
 	"ou": ['Charizard||charizarditex||dragondance,flareblitz,roost,dragonclaw|Jolly|96,220,,,8,184|M||||]Breloom||focussash|H|spore,rocktomb,bulletseed,machpunch|Jolly|4,252,,,,252|||||]Rotom-Wash||leftovers||voltswitch,hydropump,willowisp,painsplit|Bold|252,,212,,,44|||||]Landorus-Therian||choicescarf||knockoff,earthquake,stoneedge,uturn|Jolly|,252,4,,,252|||||]Jirachi||leftovers||ironhead,wish,stealthrock,thunderwave|Jolly|252,,,,4,252|||||]Latios||lifeorb||dracometeor,earthquake,hiddenpowerfire,defog|Naive|,,16,240,,252||,30,,30,,30|||'
 	]
+	"ou":['Sylveon||choicespecs|H|hypervoice,hiddenpowerfire,psyshock,batonpass|Modest|236,,,252,,20||,30,,30,,30|||]Manaphy||leftovers||scald,psychic,tailglow,raindance|Timid|96,,,252,,160|||||]Cobalion||leftovers||ironhead,closecombat,voltswitch,stealthrock|Jolly|140,116,,,,252|||||]Landorus-Therian||softsand||earthquake,stoneedge,knockoff,uturn|Adamant|,252,4,,,252|||||]Mega-Manectric|manectric|manectite|1|thunderbolt,voltswitch,flamethrower,hiddenpowerice|Timid|,,4,252,,252||,30,30,,,|||]Hydreigon||choicescarf||dracometeor,darkpulse,earthpower,uturn|Modest|,4,,252,,252|||||'
+	]
 };
