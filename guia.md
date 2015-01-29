@@ -90,5 +90,4 @@ Comandos Administrativos Especiales:
  - `jointour:` Fuerza al bot a unirse a un torneo.
  - `sb [formato]:` Busca una batalla en ladder y devuelve el link a esta.
  - `getauth [sala]:` Guarda el roomauth de una sala como si fuese rango global.
- - `jointour:` Fuerza al bot a unirse a un torneo.
 
