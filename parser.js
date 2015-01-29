@@ -110,6 +110,7 @@ exports.parse = {
 				}
 			}
 		}
+		//console.log("DATA ( ".blue + this.room.blue + "): ".blue + message);
 		switch (spl[1]) {
 			case 'challstr':
 				info('received challstr, logging in...');
@@ -336,6 +337,13 @@ exports.parse = {
 				if (spl[3] && toId(spl[3]) !== toId(config.nick)) this.battleOpIds[this.room] = spl[2];
 				if (lastMessage) this.room = '';
 				break;
+			case 'callback':
+				if (spl[2] && spl[2] === "trapped") {
+					if (this.battleDatas[this.room] && this.battleDatas[this.room].active && this.battleDatas[this.room].active[0]) this.battleDatas[this.room].active[0].trapped = 1;
+					this.moveBattle(this.room, connection);
+				}
+				if (lastMessage) this.room = '';
+				break;
 			case 'switch':
 				if (this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
 					if (this.battleOpInfo[this.room]) {
@@ -347,7 +355,8 @@ exports.parse = {
 					} else {
 						this.battleOpInfo[this.room] = {};
 					}
-					this.battleOpInfo[this.room][spl[2].substr(2,1)] = spl[2].substr(5);
+					if (spl[3].indexOf(",") !== -1) this.battleOpInfo[this.room][spl[2].substr(2,1)] = spl[3].substr(0, spl[3].indexOf(","));
+					else this.battleOpInfo[this.room][spl[2].substr(2,1)] = spl[3];
 					if (spl[4] && spl[4].indexOf(" ") !== -1) {
 						var stateInfo = spl[4].substr(spl[4].indexOf(" ") + 1);
 						if (!this.battleOpInfo[this.room].status) this.battleOpInfo[this.room].status = {};
@@ -395,7 +404,8 @@ exports.parse = {
 			case 'detailschange':
 				if (spl.length < 4) return;
 				if (this.battleOpInfo[this.room]  && this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					this.battleOpInfo[this.room][spl[2].substr(2,1)] = spl[3].substr(0, spl[3].indexOf(","));
+					if (spl[3].indexOf(",") !== -1) this.battleOpInfo[this.room][spl[2].substr(2,1)] = spl[3].substr(0, spl[3].indexOf(","));
+					else this.battleOpInfo[this.room][spl[2].substr(2,1)] = spl[3];
 				}
 				if (lastMessage) this.room = '';
 				break;

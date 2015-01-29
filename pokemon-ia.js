@@ -39,10 +39,12 @@ function has_ability(pokemonA, abilities) {
 
 function goodMoves(dataType, foeInfo, field, poke) {
 	poke--;
-	pokemonB = foeInfo["a"];
+	var pokemonB = foeInfo["a"];
+	var pokemonA = dataType.side.pokemon[poke].details;
+	if (pokemonA.indexOf(",") !== -1) pokemonA = dataType.side.pokemon[0].details.substr(0, dataType.side.pokemon[poke].details.indexOf(","));
 	var pokedex = require('./pokedex.js').BattlePokedex;
 	var movedex = require('./moves.js').BattleMovedex;
-	var data1 = pokedex[toId(dataType.side.pokemon[poke].details.substr(0, dataType.side.pokemon[poke].details.indexOf(",")))];
+	var data1 = pokedex[toId(pokemonA)];
 	var data2 = pokedex[toId(pokemonB)];
 	if (!data1 || !data2) return [];
 	var dataMove;
@@ -62,10 +64,13 @@ function goodMoves(dataType, foeInfo, field, poke) {
 
 function viableMoves(dataType, foeInfo, field, poke) {
 	poke--;
+	var pokemonB = foeInfo["a"];
+	var pokemonA = dataType.side.pokemon[poke].details;
+	if (pokemonA.indexOf(",") !== -1) pokemonA = dataType.side.pokemon[0].details.substr(0, dataType.side.pokemon[poke].details.indexOf(","));
 	var pokedex = require('./pokedex.js').BattlePokedex;
 	var movedex = require('./moves.js').BattleMovedex;
-	var data1 = pokedex[toId(dataType.side.pokemon[poke].details.substr(0, dataType.side.pokemon[poke].details.indexOf(",")))];
-	var data2 = pokedex[toId(foeInfo["a"])];
+	var data1 = pokedex[toId(pokemonA)];
+	var data2 = pokedex[toId(pokemonB)];
 	if (!data1 || !data2) return [];
 	var dataMove;
 	var moves_V = [];
@@ -164,12 +169,17 @@ function gen6_getDisadvantage(pokemonA, pokemonB) {
 }
 
 function gen6_getGoodMoves(dataType, foeInfo, field) {
-	pokemonB = foeInfo["a"];
+	var pokemonB = foeInfo["a"];
+	var pokemonA = dataType.side.pokemon[0].details;
+	if (pokemonA.indexOf(",") !== -1) pokemonA = dataType.side.pokemon[0].details.substr(0, dataType.side.pokemon[0].details.indexOf(","));
 	var pokedex = require('./pokedex.js').BattlePokedex;
 	var movedex = require('./moves.js').BattleMovedex;
-	var data1 = pokedex[toId(dataType.side.pokemon[0].details.substr(0, dataType.side.pokemon[0].details.indexOf(",")))];
+	var data1 = pokedex[toId(pokemonA)];
 	var data2 = pokedex[toId(pokemonB)];
-	if (!data1 || !data2) return [];
+	if (!data1 || !data2) {
+		console.log("algo va mal: " + toId(dataType.side.pokemon[0].details.substr(0, dataType.side.pokemon[0].details.indexOf(","))) + "/" + pokemonB);
+		return [];
+	}
 	var dataMove;
 	var moves_V = [];
 	for (var i = 0; i < dataType.active[0].moves.length; i++) {
@@ -182,7 +192,6 @@ function gen6_getGoodMoves(dataType, foeInfo, field) {
 			if (dataMove.name === "Stored Power" && (!field || !field.boosts ||  ((!field.boosts["spa"] || field.boosts["spa"] < 2) && (!field.boosts["spd"] || field.boosts["spd"] < 2)))) continue;
 			if (dataMove.type === "Ground" && foeInfo.items && foeInfo.items["a"] && foeInfo.items["a"] === "Air Ballon") continue;
 			if (gen6_get_mux(dataMove.type, data2.types) > 1 || (gen6_get_mux(dataMove.type, data2.types) === 1 && (dataMove.type === data1.types[0] ||(data1.types[1] && dataMove.type === data1.types[1])))) moves_V.push(dataMove.name);
-			if (dataMove.heal && parseInt(dataType.side.pokemon[0].condition.substr(0, dataType.side.pokemon[0].condition.indexOf("/"))) !== parseInt(dataType.side.pokemon[0].condition.substr(dataType.side.pokemon[0].condition.indexOf("/") + 1))) moves_V.push(dataMove.name);
 		}
 	}
 	if (moves_V.length) return moves_V.randomize();
@@ -190,10 +199,13 @@ function gen6_getGoodMoves(dataType, foeInfo, field) {
 }
 
 function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
+	var pokemonB = foeInfo["a"];
+	var pokemonA = dataType.side.pokemon[0].details;
+	if (pokemonA.indexOf(",") !== -1) pokemonA = dataType.side.pokemon[0].details.substr(0, dataType.side.pokemon[0].details.indexOf(","));
 	var pokedex = require('./pokedex.js').BattlePokedex;
 	var movedex = require('./moves.js').BattleMovedex;
-	var data1 = pokedex[toId(dataType.side.pokemon[0].details.substr(0, dataType.side.pokemon[0].details.indexOf(",")))];
-	var data2 = pokedex[toId(foeInfo["a"])];
+	var data1 = pokedex[toId(pokemonA)];
+	var data2 = pokedex[toId(pokemonB)];
 	if (!data1 || !data2) return [];
 	var dataMove;
 	var moves_V = [];
@@ -215,7 +227,7 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 		if (dataMove.name in {"Refresh": 1, "Heal Bell": 1, "Aromatherapy": 1} && dataType.side.pokemon[0].condition.indexOf(" ") === -1) continue;
 		if (dataMove.weather && field && field.weather && toId(field.weather) in {'desolateland': 1, 'primordialsea': 1, 'deltastream': 1}) continue;
 		if (dataMove.weather && field && field.weather && toId(field.weather) === toId(dataMove.weather)) continue;
-		if (dataMove.name in {"Taunt": 1, "Fake Out": 1, "Endeavor": 1, "Trick Room": 1}) continue; //dificult moves (too much information required)
+		if (dataMove.name in {"Taunt": 1, "Fake Out": 1, "Endeavor": 1, "Trick Room": 1, "Encore": 1}) continue; //dificult moves (too much information required)
 		if (dataMove.target === "self" && dataMove.category === "Status") {
 			if (dataMove.volatileStatus && dataMove.volatileStatus === "protect" && (!field || !field.lastMove || field.lastMove in {"Protect": 1, "Detect": 1})) continue;
 			if ((dataMove.name === "Rest" || dataMove.name === "Pain Split" || dataMove.heal) && parseInt(dataType.side.pokemon[0].condition.substr(0, dataType.side.pokemon[0].condition.indexOf("/"))) === parseInt(dataType.side.pokemon[0].condition.substr(dataType.side.pokemon[0].condition.indexOf("/") + 1))) continue;
@@ -264,7 +276,7 @@ exports.gen6SinglesBattleResponse = function(battleData, foeInfo, field) {
 	var dataType = battleData;
 	if (dataType.active) {
 		//decision
-		if (!foeInfo || !foeInfo["a"] || !battleData.side) return;
+		if (!foeInfo || !foeInfo["a"] || !battleData.side) return exports.randomBattleResponse(battleData);
 		var dis = gen6_getDisadvantage(dataType.side.pokemon[0].details.substr(0, dataType.side.pokemon[0].details.indexOf(",")), foeInfo["a"]);
 		var chosen = can_switch(battleData, dis, foeInfo, field);
 		var good_moves = gen6_getGoodMoves(battleData, foeInfo, field);
@@ -272,7 +284,7 @@ exports.gen6SinglesBattleResponse = function(battleData, foeInfo, field) {
 		if (chosen && !good_moves.length && !dataType.active[0].trapped) {
 			return '/sw ' + chosen;
 		}
-		if (!viable_moves.length && !dataType.active[0].trapped) {
+		if (!good_moves.length && !viable_moves.length && !dataType.active[0].trapped) {
 			var pokeL = 0, chosen = -1;
 			var disaux, disAdvantage = -1;
 			var posibbles = [];
