@@ -91,3 +91,44 @@ Comandos Administrativos Especiales:
  - `sb [formato]:` Busca una batalla en ladder y devuelve el link a esta.
  - `getauth [sala]:` Guarda el roomauth de una sala como si fuese rango global.
 
+
+Moderación Automática
+------------
+
+El bot detecta infracciones comunes y aplica una sanción automáticamente. Esta sanción va aumentando con la reincidencia. Actualmente estas son las infracciones que sanciona el bot (entre paréntesis la sanción mínima):
+
+- **BannedWords:** sanciona los mensajes que contengan alguna frase de la lista negra. (Mute)
+- **Inapropiate:** sanciona los mensajes que contengan palabras de una lista, pero estas deben encontrarse separadas, sin que formen parte de otras palabras. (Mute)
+- **Spoiler:** sanciona el uso del spoiler. (Mute)
+- **Flooding:** sanciona el flood, es decir, mensajes cortos muy rapidos. (Mute)
+- **Caps:** sanciona en caso de un uso excesivo de las mayúsculas. (Warn)
+- **Stretching:** sanciona en caso de que se alarguen las palabras exesivamente. (Warn)
+- **Spam:** Detecta si se está produciendo spam de 2 tipos: Tipo A (repetir) y Tipo B (flood + shitposting). (HourMute)
+- **Youtube:** sanciona la publicidad de canales de Youtube. (Mute)
+- **Porn:** sanciona los links pornográficos. (RoomBan)
+
+En caso de cometerse una infracción múltiple, la sanción será la suma resultante de las sanciones por cada una de las infracciones. Por lo que no se recomienda que councidan banwords con la lista de inapropiate u otras sanciones.
+
+
+Batallas, torneos y ladder
+------------
+
+El bot cuenta con un sistema mediante el cual puede aceptar retos de otros usuarios, participar en torneos o buscar batallas en ladder. Además, posee varios algoritmos para mejorar su comportamiento en los combates y para agilizar la toma de decisiones. A pesar de esto, el estilo de combate del bot es aleatorio con una cierta mejora en las tiers individuales de la sexta generación.
+
+Para controlar esta funcionalidad destacan los siguienes comandos:
+
+ - `allowbattle [on/off]:` Activa o desactiva las batallas automáticas.
+ - `allowbattleall [on/off]:` Si se activa, el bot acepta todos los retos.
+ - `move:` Fuerza al bot a tomar una decision en una batalla si este no la toma.
+ - `jointours [on/off]:` Activa o desactiva la participación del bot en torneos random.
+ - `jointour:` Fuerza al bot a unirse a un torneo.
+ - `sb [formato]:` Busca una batalla en ladder y devuelve el link a esta.
+ 
+
+Créditos
+------------
+
+ - Quinella (Desarrollo del bot original)
+ - Ecuacion (Desarrollo)
+ - TalkTakesTime (Desarrollo del bot original)
+ - xJoelituh (Desarrollo)
