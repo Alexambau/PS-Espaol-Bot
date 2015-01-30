@@ -863,7 +863,7 @@ exports.parse = {
 			var snenMatch = msg.toLowerCase().match(/snen/g);
 			if ((useDefault || modSettings['snen'] !== 0) && snenMatch && snenMatch.length > 6) {
 				if (pointVal < 4) {
-					muteMessage = ', Moderación automática: Detectado spammer tipo "snen" Reglas: http://bit.ly/1abNG5E';
+					muteMessage = ', Moderación automática: Detectado spammer tipo "snen"';
 					pointVal = (room === 'lobby') ? 5 : 4;
 				}
 			}
@@ -885,7 +885,7 @@ exports.parse = {
 					punishment.push("Uso del Spoiler");
 					if (pointVal < 2) {
 						pointVal = 2;
-						muteMessage = ', Moderación automática: Los spoilers no están permitidos Reglas: http://bit.ly/1abNG5E';
+						muteMessage = ', Moderación automática: Los spoilers no están permitidos. Reglas: http://bit.ly/1abNG5E';
 					}
 				}
 			}
@@ -902,7 +902,7 @@ exports.parse = {
 					punishment.push("Publicidad");
 					if (pointVal < 2) {
 						pointVal = 2;
-						muteMessage = ', Moderación automática: Publicidad de canales de Youtube';
+						muteMessage = ', Moderación automática: Publicidad de canales de Youtube. Reglas: http://bit.ly/1abNG5E';
 					}
 				}
 			}
@@ -933,7 +933,7 @@ exports.parse = {
 						punishment.push("Frases prohibidas");
 						if (pointVal < 2) {
 							pointVal = 2;
-							muteMessage = ', Moderación automática: Su mensaje contiene una frase prohibida Reglas: http://bit.ly/1abNG5E';
+							muteMessage = ', Moderación automática: Su mensaje contiene una frase prohibida. Reglas: http://bit.ly/1abNG5E';
 						}
 						break;
 					}
@@ -946,7 +946,7 @@ exports.parse = {
 			if ((useDefault || modSettings['flooding'] !== 0) && isFlooding) {
 				if (pointVal < 2) {
 					pointVal = 2;
-					muteMessage = ', Moderación automática: Flood Reglas: http://bit.ly/1abNG5E';
+					muteMessage = ', Moderación automática: Flood. Reglas: http://bit.ly/1abNG5E';
 				}
 			}
 			// moderation for spam L1 (repeat 3 times the same message in 6 secons or faster)
@@ -969,7 +969,7 @@ exports.parse = {
 				punishment.push("Caps");
 				if (pointVal < 1) {
 					pointVal = 1;
-					muteMessage = ', Moderación automática: Uso excesivo de las mayúsculas Reglas: http://bit.ly/1abNG5E';
+					muteMessage = ', Moderación automática: Uso excesivo de las mayúsculas. Reglas: http://bit.ly/1abNG5E';
 				}
 			}
 			// moderation for stretching (over x consecutive characters in the message are the same)
@@ -978,7 +978,7 @@ exports.parse = {
 			if ((useDefault || modSettings['stretching'] !== 0) && stretchMatch) {
 				if (pointVal < 1) {
 					pointVal = 1;
-					muteMessage = ', Moderación automática: Alargar demasiado las palabras Reglas: http://bit.ly/1abNG5E';
+					muteMessage = ', Moderación automática: Alargar demasiado las palabras. Reglas: http://bit.ly/1abNG5E';
 				}
 			}
 			//Double punishment
@@ -986,20 +986,20 @@ exports.parse = {
 				if (punishment.length === 2) {
 					if (punishment.indexOf("Frases prohibidas") === -1 && punishment.indexOf("Uso del Spoiler") === -1 && pointVal <= 2) {
 						pointVal = 2;
-						muteMessage = ', Doble infraccion: ' + punishment[0] + ' y ' + punishment[1] + ' .Reglas: http://bit.ly/1abNG5E';
+						muteMessage = ', Doble infraccion: ' + punishment[0] + ' y ' + punishment[1] + '. Reglas: http://bit.ly/1abNG5E';
 					} else if (pointVal <= 3) {
 						pointVal = 3;
-						muteMessage = ', Doble infraccion: ' + punishment[0] + ' y ' + punishment[1] + ' .Reglas: http://bit.ly/1abNG5E';
+						muteMessage = ', Doble infraccion: ' + punishment[0] + ' y ' + punishment[1] + '. Reglas: http://bit.ly/1abNG5E';
 					}
 				} else if (punishment.length === 3) {
 					if (pointVal <= 3) {
 						pointVal = 3;
-						muteMessage = ', Triple infraccion: ' + punishment[0] + ', ' + punishment[1] + ' y ' + punishment[2] + ' .Reglas: http://bit.ly/1abNG5E';
+						muteMessage = ', Triple infraccion: ' + punishment[0] + ', ' + punishment[1] + ' y ' + punishment[2] + '. Reglas: http://bit.ly/1abNG5E';
 					}
 				}  else if (punishment.length > 3) {
 					if (pointVal <= 3) {
 						pointVal = 3;
-						muteMessage = ', Multiple infraccion: ' + punishment.join(", ") + ' .Reglas: http://bit.ly/1abNG5E';
+						muteMessage = ', Multiple infraccion: ' + punishment.join(", ") + '. Reglas: http://bit.ly/1abNG5E';
 					}
 				}
 			}
