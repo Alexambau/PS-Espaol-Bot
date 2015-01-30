@@ -185,11 +185,11 @@ function gen6_getGoodMoves(dataType, foeInfo, field) {
 	for (var i = 0; i < dataType.active[0].moves.length; i++) {
 		dataMove = movedex[toId(dataType.active[0].moves[i].move)];
 		if (!dataMove || dataType.active[0].moves[i].disabled) continue;
+		if (dataMove.name === "Fake Out" && field && field.lastMove) continue;
 		if (dataMove.category === "Physical" && field && field.boosts && field.boosts["atk"] && field.boosts["atk"] < -1) continue;
 		if (dataMove.category === "Special" && field && field.boosts && field.boosts["spa"] && field.boosts["spa"] < -1) continue;
 		if (dataMove.isViable && (dataMove.category in {"Physical": 1, "Special": 1})) {
 			if (pokemonA === "Loppuny" || dataType.active[0].baseAbility === "Scrappy") {
-				if (dataMove.name === "Fake Out") continue;
 				if (dataMove.type === data1.types[0] ||(data1.types[1] && dataMove.type === data1.types[1])) {
 					moves_V.push(dataMove.name);
 					continue;
@@ -223,6 +223,9 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 		if (dataMove.category === "Special" && field && field.boosts && field.boosts["spa"] && field.boosts["spa"] < -1) continue;
 		if (dataMove.category === "Status" && has_ability(foeInfo["a"], ["Magic Bounce"])) continue;
 		if (dataMove.category === "Status" && foeInfo.substitute && dataMove.target !== "self" && dataMove.target !== "allySide" && dataMove.target !== "foeSide") continue;
+		if (dataMove.name === "Fake Out" && field && field.lastMove) continue;
+		if (dataMove.name === "Rest" && dataType.side.pokemon[0].condition.indexOf(" ") !== -1 && toId(dataType.side.pokemon[0].condition.substr(dataType.side.pokemon[0].condition.indexOf(" "))) === "slp") continue;
+		if (dataMove.name === "Sleep Talk" && (dataType.side.pokemon[0].condition.indexOf(" ") === -1 || toId(dataType.side.pokemon[0].condition.substr(dataType.side.pokemon[0].condition.indexOf(" "))) !== "slp")) continue;
 		if (dataMove.name === "Light Screen" && field && field.lightScreen) continue;
 		if (dataMove.name === "Reflect" && field && field.reflect) continue;
 		if (dataMove.name === "Sticky Web" && foeInfo.sticky) continue;
@@ -236,7 +239,7 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 		if (dataMove.name in {"Refresh": 1, "Heal Bell": 1, "Aromatherapy": 1} && dataType.side.pokemon[0].condition.indexOf(" ") === -1) continue;
 		if (dataMove.weather && field && field.weather && toId(field.weather) in {'desolateland': 1, 'primordialsea': 1, 'deltastream': 1}) continue;
 		if (dataMove.weather && field && field.weather && toId(field.weather) === toId(dataMove.weather)) continue;
-		if (dataMove.name in {"Taunt": 1, "Fake Out": 1, "Endeavor": 1, "Trick Room": 1, "Encore": 1}) continue; //dificult moves (too much information required)
+		if (dataMove.name in {"Taunt": 1, "Endeavor": 1, "Trick Room": 1, "Encore": 1}) continue; //dificult moves (too much information required)
 		if (dataMove.target === "self" && dataMove.category === "Status") {
 			if (dataMove.volatileStatus && dataMove.volatileStatus === "protect" && (!field || !field.lastMove || field.lastMove in {"Protect": 1, "Detect": 1})) continue;
 			if ((dataMove.name === "Rest" || dataMove.name === "Pain Split" || dataMove.heal) && parseInt(dataType.side.pokemon[0].condition.substr(0, dataType.side.pokemon[0].condition.indexOf("/"))) === parseInt(dataType.side.pokemon[0].condition.substr(dataType.side.pokemon[0].condition.indexOf("/") + 1))) continue;
@@ -325,9 +328,11 @@ exports.gen6SinglesBattleResponse = function(battleData, foeInfo, field) {
 		}
 		var moveData;
 		var movedex = require('./moves.js').BattleMovedex;
-		for (var i = 0; i < viable_moves.length; i++) {
-			moveData = movedex[toId(viable_moves[i])];
-			if (moveData && moveData.category === "Status") good_moves.push(viable_moves[i]);
+		if (good_moves.length) {
+			for (var i = 0; i < viable_moves.length; i++) {
+				moveData = movedex[toId(viable_moves[i])];
+				if (moveData && moveData.category === "Status") good_moves.push(viable_moves[i]);
+			}
 		}
 		var dt = Math.floor(dataType.active[0].moves.length * Math.random());
 		var breakLoop = 0;

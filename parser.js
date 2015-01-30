@@ -372,6 +372,7 @@ exports.parse = {
 					if (this.battleFields[this.room].substitute) delete this.battleFields[this.room].substitute;
 					if (this.battleFields[this.room].disable) delete this.battleFields[this.room].disable;
 					if (this.battleFields[this.room].boosts) delete this.battleFields[this.room].boosts;
+					if (this.battleFields[this.room].lastMove) delete this.battleFields[this.room].lastMove;
 				}
 				if (lastMessage) this.room = '';
 				break;
@@ -391,6 +392,7 @@ exports.parse = {
 					if (this.battleFields[this.room].substitute) delete this.battleFields[this.room].substitute;
 					if (this.battleFields[this.room].disable) delete this.battleFields[this.room].disable;
 					if (this.battleFields[this.room].boosts) delete this.battleFields[this.room].boosts;
+					if (this.battleFields[this.room].lastMove) delete this.battleFields[this.room].lastMove;
 				}
 				if (lastMessage) this.room = '';
 				break;
