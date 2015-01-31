@@ -191,6 +191,7 @@ var connect = function(retry) {
 
 		connection.on('error', function(err) {
 			error('connection error: ' + sys.inspect(err));
+			process.exit(-1);
 		});
 
 		connection.on('close', function() {

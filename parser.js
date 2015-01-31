@@ -177,6 +177,7 @@ exports.parse = {
 
 				req.on('error', function(err) {
 					error('login error: ' + sys.inspect(err));
+					process.exit(-1);
 				});
 
 				if (data) {
