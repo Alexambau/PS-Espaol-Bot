@@ -193,10 +193,10 @@ exports.commands = {
 		if (!this.hasRank(by, '~')) return false;
 		if (toId(arg) === "off") {
 			this.say(con, room, '/away');
-			this.say(con, room, 'Sistema de batallas random automaticas desactivado');
+			this.say(con, room, 'Sistema de batallas automaticas desactivado');
 		} else {
 			this.say(con, room, '/back');
-			this.say(con, room, 'Sistema de batallas random automaticas activado');
+			this.say(con, room, 'Sistema de batallas automaticas activado');
 		}
 	},
 	
@@ -217,7 +217,7 @@ exports.commands = {
 	},
 	
 	move: function(arg, by, room, con) { 
-		if (!this.hasRank(by, '~')) return false;
+		if (!this.hasRank(by, '+%@#~')) return false;
 		this.moveBattle(room, con);
 	},
 	
@@ -239,7 +239,7 @@ exports.commands = {
 		if (this.teams[toId(arg)]) this.say(con, room, '/useteam ' + this.teams[toId(arg)][Math.floor(Math.random()*this.teams[toId(arg)].length)]);
 		this.say(con, room, '/search ' + arg);
 	},
-	
+	tourjoin: 'jointour',
 	jt: 'jointour',
 	jointour: function(arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
@@ -249,21 +249,9 @@ exports.commands = {
 	getauth: function(arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
 		this.say(con, arg || room, "/roomauth");
-		this.say(con, "lobby", '/msg ' + by + ',Lista de auth leída, compruebe la consola.');
+		this.say(con, room, '/msg ' + by + ',Lista de auth leída, compruebe la consola.');
 	},
 	
-	uploadlog: function(arg, by, room, con) {
-		if (!this.hasRank(by, '~')) return false;
-		var dateG = arg.replace("/", "_").replace("/", "_");
-		dateG = dateG.replace("-", "_").replace("-", "_");
-		if (!fs.existsSync("logs/chatlog_" + dateG + ".log")) {
-			this.say(con, room, '/msg ' + by + ',El log que busca no existe.');
-			return;
-		}
-		var gtLog = dateG.replace("_","-").replace("_","-") + "\n-------------------------------\n\n" + fs.readFileSync("logs/chatlog_" + dateG + ".log").toString();
-		this.say(con, room, '/msg ' + by + ',Subiendo...');
-		this.uploadToHastebin(con, room, by, gtLog);
-	},
 	
 	tourhelp: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '%@#&~')) return false;
@@ -273,7 +261,7 @@ exports.commands = {
 	torneo: 'tour',
 	tournament: 'tour',
 	tour: function(arg, by, room, con) { 
-		if (!this.hasRank(by, '%@#&~') || room.charAt(0) === ',') return false;
+		if (!this.hasRank(by, '@#&~') || room.charAt(0) === ',') return false;
 		arg = arg.replace(" ", "");
 		if (!arg || !arg.length) {
 			//default
