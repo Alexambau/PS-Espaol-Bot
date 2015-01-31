@@ -874,15 +874,6 @@ exports.parse = {
 		this.roomLogs[room].users[2] = this.roomLogs[room].users[1];
 		this.roomLogs[room].users[1] = this.roomLogs[room].users[0];
 		this.roomLogs[room].users[0] = user;
-		
-		var times = chatData.times;
-		var fastmessage = (times.length >= FLOOD_MESSAGE_NUM && (time - times[times.length - FLOOD_MESSAGE_NUM]) < FLOOD_MESSAGE_TIME);
-		if (config.allowmute && config.whitelist.indexOf(user) === -1 && !is_staff && fastmessage) {
-			if (this.roomLogs[room].users[3] === this.roomLogs[room].users[2] && this.roomLogs[room].users[2] === this.roomLogs[room].users[1] && this.roomLogs[room].users[1] === this.roomLogs[room].users[0]) {
-				if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) this.say(connection, room, '/hm ' + user + ", Moderación automática: Detectado spammer tipo C");
-				else this.say(connection, room, '/rb ' + user + ", Moderación automática: Detectado spammer tipo C");
-			}
-		}
 
 		// this deals with punishing rulebreakers, but note that the bot can't think, so it might make mistakes
 		if (config.allowmute && this.hasRank(this.ranks[room] || ' ', '%@&#~') && config.whitelist.indexOf(user) === -1 && !is_staff) {
@@ -891,6 +882,18 @@ exports.parse = {
 			var punishment = [];
 			var muteMessage = '';
 			var modSettings = useDefault ? null : this.settings['modding'][room];
+			
+			// moderation for spam
+			if (useDefault || modSettings['spam'] !== 0 && pointVal < 4) {
+				var times = chatData.times;
+				var fastmessage = (times.length >= FLOOD_MESSAGE_NUM && (time - times[times.length - FLOOD_MESSAGE_NUM]) < FLOOD_MESSAGE_TIME);
+				if (config.allowmute && config.whitelist.indexOf(user) === -1 && !is_staff && fastmessage) {
+					if (this.roomLogs[room].users[3] === this.roomLogs[room].users[2] && this.roomLogs[room].users[2] === this.roomLogs[room].users[1] && this.roomLogs[room].users[1] === this.roomLogs[room].users[0]) {
+						muteMessage = ', Moderación automática: Detectado spammer de nivel 3';
+						pointVal = (room === 'lobby') ? 5 : 4;
+					}
+				}
+			}
 
 			// moderation for spamming "snen" multiple times on a line (a la the snen spammer)
 			var snenMatch = msg.toLowerCase().match(/snen/g);
@@ -986,14 +989,14 @@ exports.parse = {
 			if (useDefault || modSettings['spam'] !== 0 && pointVal < 3) {
 				if (times.length >= 3 && (time - times[times.length - 3]) < FLOOD_MESSAGE_TIME && msg === chatData.lastMessage && chatData.lastMessage === chatData.lastMessage2) {
 					pointVal = 3;
-					muteMessage = ', Moderación automática: Detectado spammer tipo A';
+					muteMessage = ', Moderación automática: Detectado spammer de nivel 1';
 				}
 			}
 			//moderation for spam L2 (flooding with short messages: 8 or less chars)
 			if (useDefault || modSettings['spam'] !== 0 && pointVal < 4) {
 				if (isFlooding && msg.length < 8 && chatData.lastMessage.length < 8 && chatData.lastMessage2.length < 8) {
 					pointVal = 4;
-					muteMessage = ', Moderación automática: Detectado spammer tipo B';
+					muteMessage = ', Moderación automática: Detectado spammer de nivel 2';
 				}
 			}
 			// moderation for caps (over x% of the letters in a line of y characters are capital)

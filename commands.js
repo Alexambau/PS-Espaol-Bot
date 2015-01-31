@@ -249,7 +249,7 @@ exports.commands = {
 	getauth: function(arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
 		this.say(con, arg || room, "/roomauth");
-		this.say(con, room, '/msg ' + by + ',Lista de auth leída, compruebe la consola.');
+		this.say(con, "lobby", '/msg ' + by + ',Lista de auth leída, compruebe la consola.');
 	},
 	
 	uploadlog: function(arg, by, room, con) {
