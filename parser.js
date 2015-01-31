@@ -879,8 +879,8 @@ exports.parse = {
 		var fastmessage = (times.length >= FLOOD_MESSAGE_NUM && (time - times[times.length - FLOOD_MESSAGE_NUM]) < FLOOD_MESSAGE_TIME);
 		if (config.allowmute && config.whitelist.indexOf(user) === -1 && !is_staff && fastmessage) {
 			if (this.roomLogs[room].users[3] === this.roomLogs[room].users[2] && this.roomLogs[room].users[2] === this.roomLogs[room].users[1] && this.roomLogs[room].users[1] === this.roomLogs[room].users[0]) {
-				if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) this.say(connection, room, '/hm ' + user + ", Spammer");
-				else this.say(connection, room, '/rb ' + user + ", Spammer");
+				if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) this.say(connection, room, '/hm ' + user + ", Moderación automática: Detectado spammer tipo C");
+				else this.say(connection, room, '/rb ' + user + ", Moderación automática: Detectado spammer tipo C");
 			}
 		}
 
