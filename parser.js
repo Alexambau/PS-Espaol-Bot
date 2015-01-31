@@ -829,6 +829,7 @@ exports.parse = {
 	processChatData: function(user, room, connection, msg) {
 		// NOTE: this is still in early stages
 		var is_staff = false;
+		if (room.indexOf("battle") > -1) return;
 		if (!this.roomLogs[room]) this.roomLogs[room] = {
 			times: [0, 0, 0, 0],
 			users: ['', '', '', ''],
@@ -836,7 +837,6 @@ exports.parse = {
 			complete: 0
 		};
 		if (this.roomLogs[room].complete < 4) this.roomLogs[room].complete++;
-		if (room.indexOf("battle") > -1) return;
 		if (toId(user.substr(1)) === toId(config.nick)) {
 			this.ranks[room] = user.charAt(0);
 			return;
