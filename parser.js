@@ -43,6 +43,7 @@ exports.parse = {
 	battleFields: {},
 	battleFormats: {},
 	RP: {},
+	roomLogs: {},
 	tourData: {},
 	ratedRoom: 0,
 	chatLog: 0,
@@ -828,6 +829,13 @@ exports.parse = {
 	processChatData: function(user, room, connection, msg) {
 		// NOTE: this is still in early stages
 		var is_staff = false;
+		if (!this.roomLogs[room]) this.roomLogs[room] = {
+			times: [0, 0, 0, 0],
+			users: ['', '', '', ''],
+			msgs: ['', '', '', ''],
+			complete: 0
+		};
+		if (this.roomLogs[room].complete < 4) this.roomLogs[room].complete++;
 		if (room.indexOf("battle") > -1) return;
 		if (toId(user.substr(1)) === toId(config.nick)) {
 			this.ranks[room] = user.charAt(0);
@@ -850,6 +858,31 @@ exports.parse = {
 		chatData = chatData[room];
 
 		chatData.times.push(time);
+		
+		//anti spam
+		this.roomLogs[room].times[3] = this.roomLogs[room].times[2];
+		this.roomLogs[room].times[2] = this.roomLogs[room].times[1];
+		this.roomLogs[room].times[1] = this.roomLogs[room].times[0];
+		this.roomLogs[room].times[0] = time;
+		
+		this.roomLogs[room].msgs[3] = this.roomLogs[room].msgs[2];
+		this.roomLogs[room].msgs[2] = this.roomLogs[room].msgs[1];
+		this.roomLogs[room].msgs[1] = this.roomLogs[room].msgs[0];
+		this.roomLogs[room].msgs[0] = msg;
+		
+		this.roomLogs[room].users[3] = this.roomLogs[room].users[2];
+		this.roomLogs[room].users[2] = this.roomLogs[room].users[1];
+		this.roomLogs[room].users[1] = this.roomLogs[room].users[0];
+		this.roomLogs[room].users[0] = user;
+		
+		var times = chatData.times;
+		var fastmessage = (times.length >= FLOOD_MESSAGE_NUM && (time - times[times.length - FLOOD_MESSAGE_NUM]) < FLOOD_MESSAGE_TIME);
+		if (config.allowmute && config.whitelist.indexOf(user) === -1 && !is_staff && fastmessage) {
+			if (this.roomLogs[room].users[3] === this.roomLogs[room].users[2] && this.roomLogs[room].users[2] === this.roomLogs[room].users[1] && this.roomLogs[room].users[1] === this.roomLogs[room].users[0]) {
+				if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) this.say(connection, room, '/hm ' + user + ", Spammer");
+				else this.say(connection, room, '/rb ' + user + ", Spammer");
+			}
+		}
 
 		// this deals with punishing rulebreakers, but note that the bot can't think, so it might make mistakes
 		if (config.allowmute && this.hasRank(this.ranks[room] || ' ', '%@&#~') && config.whitelist.indexOf(user) === -1 && !is_staff) {
