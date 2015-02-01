@@ -92,7 +92,7 @@ function viableMoves(dataType, foeInfo, field, poke) {
 		if (dataMove.weather && field && field.weather && toId(field.weather) in {'desolateland': 1, 'primordialsea': 1, 'deltastream': 1}) continue;
 		if (dataMove.weather && field && field.weather && toId(field.weather) === toId(dataMove.weather)) continue;
 
-		if (dataMove.name in {"Taunt": 1, "Fake Out": 1, "Endeavor": 1, "Trick Room": 1, "Healing Wish": 1}) continue; //dificult moves (too much information required)
+		if (dataMove.name in {"Taunt": 1, "Endeavor": 1, "Trick Room": 1, "Healing Wish": 1}) continue; //dificult moves (too much information required)
 		if (dataMove.status) {
 			if (dataMove.status && ((foeInfo.status && foeInfo.status["a"]) || foeInfo.substitute || has_ability(foeInfo["a"], ["Magic Bounce"]))) continue;
 			if ((dataMove.status === "tox" || dataMove.status === "psn") && (data2.types[0] === "Poison" || data2.types[0] === "Steel" || (data2.types[1] && (data2.types[1] === "Poison" || data2.types[1] === "Steel")))) continue;
@@ -239,7 +239,7 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 		if (dataMove.name in {"Refresh": 1, "Heal Bell": 1, "Aromatherapy": 1} && dataType.side.pokemon[0].condition.indexOf(" ") === -1) continue;
 		if (dataMove.weather && field && field.weather && toId(field.weather) in {'desolateland': 1, 'primordialsea': 1, 'deltastream': 1}) continue;
 		if (dataMove.weather && field && field.weather && toId(field.weather) === toId(dataMove.weather)) continue;
-		if (dataMove.name in {"Taunt": 1, "Endeavor": 1, "Trick Room": 1, "Encore": 1}) continue; //dificult moves (too much information required)
+		if (dataMove.name in {"Taunt": 1, "Endeavor": 1, "Trick Room": 1, "Encore": 1, "Lunar Dance": 1, "Healing Wish": 1}) continue; //dificult moves (too much information required)
 		if (dataMove.target === "self" && dataMove.category === "Status") {
 			if (dataMove.volatileStatus && dataMove.volatileStatus === "protect" && (!field || !field.lastMove || field.lastMove in {"Protect": 1, "Detect": 1})) continue;
 			if ((dataMove.name === "Rest" || dataMove.name === "Pain Split" || dataMove.heal) && parseInt(dataType.side.pokemon[0].condition.substr(0, dataType.side.pokemon[0].condition.indexOf("/"))) === parseInt(dataType.side.pokemon[0].condition.substr(dataType.side.pokemon[0].condition.indexOf("/") + 1))) continue;

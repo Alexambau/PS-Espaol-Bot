@@ -249,7 +249,7 @@ exports.commands = {
 	getauth: function(arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
 		this.say(con, arg || room, "/roomauth");
-		this.say(con, room, '/msg ' + by + ',Lista de auth leída, compruebe la consola.');
+		this.say(con, room, 'Lista de auth de la sala ' + (arg || room) + ' leida con éxito.');
 	},
 	
 	
@@ -275,6 +275,10 @@ exports.commands = {
 			this.say(con, room, '/tour new ou, elimination');
 		}
 		var args = arg.split(",");
+		if (toId(args[0]) === "random") args[0] = "randombattle";
+		if (toId(args[0]) === "randomdobles") args[0] = "randomdoublesbattle";
+		if (toId(args[0]) === "randomtriples") args[0] = "randomtriplesbattle";
+		if (toId(args[0]) === "vgc" || toId(args[0]) === "vgc2015") args[0] = "Battle Spot Doubles (VGC 2015)";
 		if (!this.tourFormats || !this.tourFormats[toId(args[0])]) return this.say(con, room, 'El formato ' + toId(args[0]) + ' no se reconoce como un formato valido para un torneo');
 		this.tours[room] = {
 				players: 0,
