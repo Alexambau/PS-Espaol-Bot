@@ -234,7 +234,7 @@ exports.commands = {
 	
 	sb: 'searchbattle',
 	searchbattle: function(arg, by, room, con) { 
-		if (!this.hasRank(by, '~')) return false;
+		if (!this.hasRank(by, '%@#~')) return false;
 		this.ratedRoom = room;
 		if (this.teams[toId(arg)]) this.say(con, room, '/useteam ' + this.teams[toId(arg)][Math.floor(Math.random()*this.teams[toId(arg)].length)]);
 		this.say(con, room, '/search ' + arg);
