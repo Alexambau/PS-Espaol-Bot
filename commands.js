@@ -252,6 +252,16 @@ exports.commands = {
 		this.say(con, room, 'Lista de auth de la sala ' + (arg || room) + ' leida con éxito.');
 	},
 	
+	botdelogs: 'logs',
+	logs: function(arg, by, room, con) {
+		if (this.hasRank(by, '#~') || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			var text = '/pm ' + by + ', ';
+		}
+		text += 'Funcionamiento del Bot de Logs: https://gist.github.com/Ecuacion/7752c39555178f8a4b1d';
+		this.say(con, room, text);
+	},
 	
 	tourhelp: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '%@#&~')) return false;
