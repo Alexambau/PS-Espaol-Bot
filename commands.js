@@ -74,7 +74,7 @@ exports.commands = {
 		if (config.botguide) {
 			text += 'Guia acerca del Bot y su funcionamiento: ' + config.botguide;
 		} else {
-			text += 'No hay ninguna guía para el Bot. Contacta con un Room Owner para preguntar dudas.';
+			text += 'Guia acerca del Bot y su funcionamiento: https://github.com/Ecuacion/PS-Espaol-Bot/blob/master/guia.md';
 		}
 		this.say(con, room, text);
 	},

@@ -68,6 +68,7 @@ Comandos de Moderacion:
  - `viw:` Muestra la lista de lenguaje inapropiado.
  - `tourhelp:` Muestra como debe usarse el comando tour.
  - `tour:` Crea un torneo y lo incia automaticamente.
+ - `logs:` Link con la guía de uso del Bot de Logs.
   
   
 Comandos de Programación:
