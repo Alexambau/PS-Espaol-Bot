@@ -91,6 +91,8 @@ Comandos Administrativos Especiales:
  - `jointour:` Fuerza al bot a unirse a un torneo.
  - `sb [formato]:` Busca una batalla en ladder y devuelve el link a esta.
  - `getauth [sala]:` Guarda el roomauth de una sala como si fuese rango global.
+ - `jf [set/delete], [usuario], [frase]:` Establece una frase que el bot dice cuando cierto usuario entra a una sala.
+ - `vjf:` Muestra las frases de entrada adjudicadas en una sala.
 
 
 Moderación Automática
