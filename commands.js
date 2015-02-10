@@ -316,6 +316,7 @@ exports.commands = {
 		var settable = {
 			banword: 1,
 			autoban: 1,
+			joinphrase: 1,
 			me: 1,
 			info: 1,
 			say: 1,
@@ -751,6 +752,75 @@ exports.commands = {
 			}
 		}
 		this.say(con, room, text);
+	},
+	
+	jf: 'joinphrase',
+	joinphrase: function(arg, by, room, con) {
+		if (!this.canUse('joinphrase', room, by)) return false;
+		if (!this.settings.joinphrases) this.settings.joinphrases = {};
+		var args = arg.split(",");
+		if (args.length < 2) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "joinphrase [set/delete], [usuario], [frase]");
+		if (toId(args[0]) !== "delete" && args.length === 2) {
+			arg = "set," + toId(args[0]) + "," + arg.substr(args[0].length + 1);
+			args = arg.split(",");
+		}
+		arg = arg.substr(args[0].length + args[1].length + 2);
+		arg = arg.trim();
+		var user = toId(args[1]);
+		if (!user) return false;
+		var tarRoom = room;
+		if (room.charAt(0) === ',') {
+			if (!this.hasRank(by, '~')) return false;
+			tarRoom = 'global';
+		}
+		switch (toId(args[0])) {
+			case 'set':
+			case 'add':
+			case 'change':
+				if (!arg) return false;
+				if (args.length < 3) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "joinphrase [set/delete], [usuario], [frase]");
+				if (!this.settings.joinphrases[tarRoom]) this.settings.joinphrases[tarRoom] = {};
+				this.settings.joinphrases[tarRoom][user] = stripCommands(arg);
+				this.writeSettings();
+				this.say(con, room, "La frase de entrada para el usuario " + user + " ha sido modificada " + ((tarRoom === 'global') ? 'para todas las salas.' : 'para esta sala.'));
+				break;
+			case 'delete':
+				if (!this.settings.joinphrases[tarRoom]) this.settings.joinphrases[tarRoom] = {};
+				if (!this.settings.joinphrases[tarRoom][user]) return this.say(con, room, "No existía ninguna frase de entrada para el usuario " + user + ((tarRoom === 'global') ? ' en todas las salas.' : ' en esta sala.'));
+				delete this.settings.joinphrases[tarRoom][user];
+				this.writeSettings();
+				this.say(con, room, "La frase de entrada para el usuario " + user + " ha sido eliminada " + ((tarRoom === 'global') ? 'para todas las salas.' : 'para esta sala.'));
+				break;
+			default:
+				return this.say(con, room, "Use el comando así: " + config.commandcharacter + "joinphrase [set/delete], [usuario], [frase]");
+		}
+	},
+	
+	vjf: 'viewjoinphrases',
+	viewjoinphrases: function(arg, by, room, con) {
+		if (!this.canUse('joinphrase', room, by)) return false;
+		if (!this.settings.joinphrases) this.settings.joinphrases = {};
+		arg = toId(arg);
+		var tarRoom = room;
+
+		if (room.charAt(0) === ',') {
+			if (!this.hasRank(by, '~')) return false;
+			tarRoom = 'global';
+		}
+		if (!this.settings.joinphrases[tarRoom]) this.settings.joinphrases[tarRoom] = {};
+		
+		if (arg) {
+			if (arg.length < 1 || arg.length > 18) return this.say(con, room, "El nick que ha especificado no es válido.");
+			if (this.settings.joinphrases[tarRoom][arg]) return this.say(con, room, this.settings.joinphrases[tarRoom][arg]);
+			else return this.say(con, room, "No hay ninguna frase de entrada adjudicada a " + arg + ".");
+		}
+		
+		var List = [];
+		for (var i in this.settings.joinphrases[tarRoom]) {
+			List.push(i + " => " + this.settings.joinphrases[tarRoom][i]);
+		}
+		if (!List.length) return this.say(con, room, "No hay frases de entrada en esta sala.");
+		this.uploadToHastebin(con, room, by, "Las siguientes frases de entada estan adjudicadas " + (room.charAt(0) === ',' ? "en todas las salas" : "en " + room) + ":\n\n" + List.join('\n'));
 	},
 
 	/**

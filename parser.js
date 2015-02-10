@@ -231,8 +231,11 @@ exports.parse = {
 				https.get("https://play.pokemonshowdown.com/data/aliases.js?" + datenow, function(res) {
 					res.pipe(aliases);
 				});
-				this.teams = require('./teams.js').teams;
-
+				try {
+					this.teams = require('./teams.js').teams;
+				} catch (e) {
+					error('failed to load teams: ' + sys.inspect(e));
+				}
 
 				// Now join the rooms
 				var cmds = ['|/idle'];
@@ -688,11 +691,16 @@ exports.parse = {
 			case 'J': case 'j':
 				var by = spl[2];
 				if (this.room && this.isBlacklisted(toId(by), this.room)) this.say(connection, this.room, '/roomban ' + by + ', Usuario baneado permanentemente');
-				if (this.room && (toId(by) == 'astara')) this.say (connection, this.room, 'Ha caido algo del espacio.');
+				/*if (this.room && (toId(by) == 'astara')) this.say (connection, this.room, 'Ha caido algo del espacio.');
 				if (this.room && (toId(by) == 'astyanax')) this.say (connection, this.room, 'Top kek :^)');
 				if (this.room && (toId(by) == 'iyarito')) this.say (connection, this.room, 'Iyarito guapisima ♥');
 				if (this.room && (toId(by) == 'sken')) this.say (connection, this.room, 'Sken, te amo.');
-				if (this.room && (toId(by) == 'xjoelituh')) this.say (connection, this.room, 'Oh no, llego Joel.');
+				if (this.room && (toId(by) == 'xjoelituh')) this.say (connection, this.room, 'Oh no, llego Joel.');*/
+				if (this.room && this.settings.joinphrases && this.settings.joinphrases[this.room] && this.settings.joinphrases[this.room][toId(by)]) {
+					this.say(connection, this.room, this.settings.joinphrases[this.room][toId(by)]);
+				} else if (this.room && this.settings.joinphrases && this.settings.joinphrases['global'] && this.settings.joinphrases['global'][toId(by)]) {
+					this.say(connection, this.room, this.settings.joinphrases['global'][toId(by)]);
+				}
 				this.updateSeen(by, spl[1], this.room || 'lobby');
 				if (toId(by) !== toId(config.nick) || ' +%@&#~'.indexOf(by.charAt(0)) === -1) {
 					if (lastMessage) this.room = '';
@@ -766,7 +774,7 @@ exports.parse = {
 		var canUse = false;
 		var ranks = ' +%@&#~';
 		if (!this.settings[cmd] || !(room in this.settings[cmd])) {
-			canUse = this.hasRank(user, ranks.substr(ranks.indexOf((cmd === 'autoban' || cmd === 'banword') ? '#' : config.defaultrank)));
+			canUse = this.hasRank(user, ranks.substr(ranks.indexOf((cmd === 'autoban' || cmd === 'banword' || cmd === 'joinphrase') ? '#' : config.defaultrank)));
 		} else if (this.settings[cmd][room] === true) {
 			canUse = true;
 		} else if (ranks.indexOf(this.settings[cmd][room]) > -1) {
