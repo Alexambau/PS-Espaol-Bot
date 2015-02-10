@@ -116,6 +116,14 @@ exports.parse = {
 		switch (spl[1]) {
 			case 'challstr':
 				info('received challstr, logging in...');
+				
+				setTimeout(function() {
+					if (!global.loggedin) {
+						error('log in timeout, trying again...');
+						this.message(message, connection, lastMessage);
+					}
+				}.bind(this), 30000);
+				
 				var id = spl[2];
 				var str = spl[3];
 
@@ -157,7 +165,7 @@ exports.parse = {
 						if (data.indexOf('heavy load') !== -1) {
 							error('the login server is under heavy load; trying again in one minute');
 							setTimeout(function() {
-								this.message(message);
+								this.message(message, connection, lastMessage);
 							}.bind(this), 60000);
 							return;
 						}
@@ -171,6 +179,7 @@ exports.parse = {
 								process.exit(-1);
 							}
 						} catch (e) {}
+						info('Sending log in data...');
 						send(connection, '|/trn ' + config.nick + ',0,' + data);
 					}.bind(this));
 				}.bind(this));
@@ -196,6 +205,7 @@ exports.parse = {
 				}
 
 				ok('logged in as ' + spl[2]);
+				global.loggedin = true;
 				
 				var datenow = Date.now();
 				
