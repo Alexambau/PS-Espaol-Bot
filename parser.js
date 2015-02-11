@@ -556,6 +556,7 @@ exports.parse = {
 				if (this.battleOpIds[this.room]) delete this.battleOpIds[this.room];
 				if (this.battleFormats[this.room]) delete this.battleFormats[this.room];
 				this.busyInBattle--;
+				if (this.busyInBattle < 0) this.busyInBattle = 0;
 				if (spl[2] && toId(spl[2]) === toId(config.nick)) {
 					//win
 					this.say(connection, this.room, ':P noob');

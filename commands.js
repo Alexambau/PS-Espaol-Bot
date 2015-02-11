@@ -925,7 +925,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
-		text +='El suspect de Greninja ha terminado, las votaciones estan en marcha. Terminaran el 12/01/2015.';
+		text +='Actualmente está en marcha el suspect a Mega Metagross. Los que quieran votar tienen hasta el 25 Feb para conseguir 2700 Coil en la ladder de suspect. Toda la info aquí: http://www.smogon.com/forums/threads/np-oras-ou-suspect-process-round-2-spider-man.3529407/';
 		this.say(con, room, text);
 		
 	},
