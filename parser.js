@@ -909,7 +909,10 @@ exports.parse = {
 				var fastmessage = (times.length >= FLOOD_MESSAGE_NUM && (time - times[times.length - FLOOD_MESSAGE_NUM]) < FLOOD_MESSAGE_TIME);
 				if (config.allowmute && config.whitelist.indexOf(user) === -1 && !is_staff && fastmessage) {
 					if (this.roomLogs[room].users[3] === this.roomLogs[room].users[2] && this.roomLogs[room].users[2] === this.roomLogs[room].users[1] && this.roomLogs[room].users[1] === this.roomLogs[room].users[0]) {
-						muteMessage = ', Moderación automática: Detectado spammer de nivel 3';
+						muteMessage = ', Moderación automática: Detectado spammer de nivel ' + ((msg.length < 10) ? '2' : '3');
+						if (msg.toLowerCase().indexOf("http://") > -1 || msg.toLowerCase().indexOf("https://") > -1 || msg.toLowerCase().indexOf("www.") > -1 || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
+							muteMessage = ', Moderación automática: Detectado spammer de nivel ' + ((msg.length < 10) ? '4' : '5');
+						}
 						pointVal = (room === 'lobby') ? 5 : 4;
 					}
 				}
@@ -1010,6 +1013,10 @@ exports.parse = {
 				if (times.length >= 3 && (time - times[times.length - 3]) < FLOOD_MESSAGE_TIME && msg === chatData.lastMessage && chatData.lastMessage === chatData.lastMessage2) {
 					pointVal = 3;
 					muteMessage = ', Moderación automática: Detectado spammer de nivel 1';
+					if (msg.toLowerCase().indexOf("http://") > -1 || msg.toLowerCase().indexOf("https://") > -1 || msg.toLowerCase().indexOf("www.") > -1 || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
+							muteMessage = ', Moderación automática: Detectado spammer de nivel ' + ((msg.length < 10) ? '2' : '4');
+							if (msg.length >= 10) pointVal = 4;
+					}
 				}
 			}
 			//moderation for spam L2 (flooding with short messages: 8 or less chars)

@@ -106,7 +106,7 @@ El bot detecta infracciones comunes y aplica una sanción automáticamente. Esta
 - **Flooding:** sanciona el flood, es decir, mensajes cortos muy rapidos. (Mute)
 - **Caps:** sanciona en caso de un uso excesivo de las mayúsculas. (Warn)
 - **Stretching:** sanciona en caso de que se alarguen las palabras exesivamente. (Warn)
-- **Spam:** Detecta si se está produciendo spam de 3 niveles: Nivel 1 (repetir), Nivel 2 (flood + shitposting) y Nivel 3 (Spam de Copy/paste de varias lineas). (HourMute o Roomban)
+- **Spam:** Detecta si se está produciendo spam de 3 niveles: Nivel 1 (repetir), Nivel 2 (flood + shitposting), Nivel 3 (Spam de Copy/paste de varias lineas), Nivel 4 (Spam nivel 1 con negritas, repeticiones o links), Nivel 5 (Spam nivel 3 con negritas, repeticiones o links). (HourMute o Roomban)
 - **Youtube:** sanciona la publicidad de canales de Youtube. (Mute)
 - **Porn:** sanciona los links pornográficos. (RoomBan)
 
