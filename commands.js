@@ -1000,7 +1000,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
-			text +='Revisa las reglas del chat aquí: http://bit.ly/1abNG5E';
+			text +='/wall Revisa las reglas del chat aquí: http://bit.ly/1abNG5E';
 		this.say(con, room, text);	
 	
 	},
