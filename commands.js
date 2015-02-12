@@ -498,7 +498,7 @@ exports.commands = {
 
 		var text = '';
 		if (removed.length) {
-			text += 'Usuario(s) "' + removed.join('", "') + '" correctaente eliminado(s) de la lista negra. ';
+			text += 'Usuario(s) "' + removed.join('", "') + '" correctamente eliminado(s) de la lista negra. ';
 			this.writeSettings();
 		}
 		if (notRemoved.length) text += (text.length ? 'El resto de ' : 'Los ') + ' usuarios especificados no estaban en la lista negra.';
@@ -512,7 +512,7 @@ exports.commands = {
 
 		var text = '';
 		if (!this.settings.blacklist || !this.settings.blacklist[room]) {
-			text = 'La litsta negra de esta sala esta vacía.';
+			text = 'La lista negra de esta sala esta vacía.';
 		} else {
 			if (arg.length) {
 				var nick = toId(arg);
@@ -820,7 +820,7 @@ exports.commands = {
 			List.push(i + " => " + this.settings.joinphrases[tarRoom][i]);
 		}
 		if (!List.length) return this.say(con, room, "No hay frases de entrada en esta sala.");
-		this.uploadToHastebin(con, room, by, "Las siguientes frases de entada estan adjudicadas " + (room.charAt(0) === ',' ? "en todas las salas" : "en " + room) + ":\n\n" + List.join('\n'));
+		this.uploadToHastebin(con, room, by, "Las siguientes frases de entrada estan adjudicadas " + (room.charAt(0) === ',' ? "en todas las salas" : "en " + room) + ":\n\n" + List.join('\n'));
 	},
 
 	/**
