@@ -49,6 +49,7 @@ exports.parse = {
 	chatLog: 0,
 	chatLogDay: 0,
 	busyInBattle: 0,
+	recentPMInfo: {},
 
 	data: function(data, connection) {
 		if (data.substr(0, 1) === 'a') {
@@ -737,6 +738,10 @@ exports.parse = {
 		if (room.charAt(0) === ',' && message.substr(0,8) === '/invite ' && this.hasRank(by, '~') && !(config.serverid === 'showdown' && toId(message.substr(8)) === 'lobby')) {
 			this.say(connection, '', '/join ' + message.substr(8));
 		}
+		if (room.charAt(0) === ',' && message.substr(0, config.commandcharacter.length) !== config.commandcharacter && !this.recentPMInfo[toId(by)]) {
+			this.recentPMInfo[toId(by)] = 1;
+			this.say(connection, '', '/pm ' + by + ', Hola, soy un bot para Pokemon Showdown. Si tienes alguna duda sobre mi funcionamiento escribe **,help**. No estoy programado para mantener conversaciones, por lo tanto dirígete a otro moderador/owner para cualquier consulta.');
+		}
 		if (message.substr(0, config.commandcharacter.length) !== config.commandcharacter || toId(by) === toId(config.nick)) {
 			return;
 		}
@@ -1108,7 +1113,9 @@ exports.parse = {
 		if (decision) this.say(connection, room, decision);
 		return;
 	},
+	
 	cleanChatData: function () {
+		this.recentPMInfo = {};
 		var chatData = this.chatData;
 		for (var user in chatData) {
 			for (var room in chatData[user]) {

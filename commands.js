@@ -72,7 +72,8 @@ exports.commands = {
 			var text = '/pm ' + by + ', ';
 		}
 		if (config.botguide) {
-			text += 'Guia acerca del Bot y su funcionamiento: ' + config.botguide;
+			//text += 'Guia acerca del Bot y su funcionamiento: ' + config.botguide;
+			text += 'Guia acerca del Bot y su funcionamiento: https://github.com/Ecuacion/PS-Espaol-Bot/blob/master/guia.md';
 		} else {
 			text += 'Guia acerca del Bot y su funcionamiento: https://github.com/Ecuacion/PS-Espaol-Bot/blob/master/guia.md';
 		}
