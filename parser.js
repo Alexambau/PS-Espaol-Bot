@@ -929,6 +929,17 @@ exports.parse = {
 					}
 				}
 			}
+			
+			if (useDefault || modSettings['spam'] !== 0 && pointVal < 4) {
+				if (times.length >= 2 && (time - times[times.length - 2]) < (FLOOD_MESSAGE_TIME / 2)) {
+					var indicA = msg.length - msg.toLowerCase().replace(" ", "a").replace(/[^a-z0-9.*+?^=!:${}()|\[\]\/\\]/g, '').length;
+					var indicB = msg.length - msg.toLowerCase().replace(" ", "a").replace(/[^a-z0-9.*+?^=!:${}()|\[\]\/\\]/g, '').length;
+					if (indicA + indicB > 150) {
+						muteMessage = ', Moderación automática: Spam de caracteres Unicode. Reglas: http://bit.ly/1abNG5E';
+						pointVal = 4;
+					}
+				}
+			}
 
 			// moderation for spamming "snen" multiple times on a line (a la the snen spammer)
 			var snenMatch = msg.toLowerCase().match(/snen/g);
