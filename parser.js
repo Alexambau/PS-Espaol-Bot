@@ -509,6 +509,7 @@ exports.parse = {
 					if (spl[3].indexOf("Substitute") !== -1) this.battleOpInfo[this.room].substitute = true;
 					if (spl[3].indexOf("Diable") !== -1) this.battleOpInfo[this.room].disable = true;
 					if (spl[3].indexOf("Leech Seed") !== -1) this.battleOpInfo[this.room].leech = true;
+					if (spl[3].indexOf("Taunt") !== -1) this.battleOpInfo[this.room].taunt = true;
 				} else if (this.battleOpIds[this.room]) {
 					if (!this.battleFields[this.room]) this.battleFields[this.room] = {};
 					if (spl[3] === "Substitute") this.battleFields[this.room].substitute = true;
@@ -520,6 +521,7 @@ exports.parse = {
 					if (spl[3].indexOf("Substitute") !== -1) this.battleOpInfo[this.room].substitute = false;
 					if (spl[3].indexOf("Diable") !== -1) this.battleOpInfo[this.room].disable = false;
 					if (spl[3].indexOf("Leech Seed") !== -1) this.battleOpInfo[this.room].leech = false;
+					if (spl[3].indexOf("Taunt") !== -1) this.battleOpInfo[this.room].taunt = false;
 				} else if (this.battleOpIds[this.room]) {
 					if (!this.battleFields[this.room]) this.battleFields[this.room] = {};
 					if (spl[3] === "Substitute") this.battleFields[this.room].substitute = false;
@@ -914,11 +916,16 @@ exports.parse = {
 				var fastmessage = (times.length >= FLOOD_MESSAGE_NUM && (time - times[times.length - FLOOD_MESSAGE_NUM]) < FLOOD_MESSAGE_TIME);
 				if (config.allowmute && config.whitelist.indexOf(user) === -1 && !is_staff && fastmessage) {
 					if (this.roomLogs[room].users[3] === this.roomLogs[room].users[2] && this.roomLogs[room].users[2] === this.roomLogs[room].users[1] && this.roomLogs[room].users[1] === this.roomLogs[room].users[0]) {
-						muteMessage = ', Moderación automática: Detectado spammer de nivel ' + ((msg.length < 10) ? '3' : '4');
-						if (msg.toLowerCase().indexOf("http://") > -1 || msg.toLowerCase().indexOf("https://") > -1 || msg.toLowerCase().indexOf("www.") > -1 || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
-							muteMessage = ', Moderación automática: Detectado spammer de nivel ' + ((msg.length < 10) ? '4' : '5');
+						if (msg.length < 10) {
+							muteMessage = ', Moderación automática: Flood intenso. Reglas: http://bit.ly/1abNG5E';
+							pointVal = 3;
+						} else if (msg.toLowerCase().indexOf("http://") > -1 || msg.toLowerCase().indexOf("https://") > -1 || msg.toLowerCase().indexOf("www.") > -1) {
+							muteMessage = ', Moderación automática: Spam de links. Reglas: http://bit.ly/1abNG5E';
+							pointVal = 4;
+						} else {
+							muteMessage = ', Moderación automática: Spam de múltiple línea. Reglas: http://bit.ly/1abNG5E';
+							pointVal = 4;
 						}
-						pointVal = (room === 'lobby') ? 5 : 4;
 					}
 				}
 			}
@@ -981,7 +988,7 @@ exports.parse = {
 							punishment.push("Lenguaje inapropiado");
 							if (pointVal < 2) {
 								pointVal = 2;
-								muteMessage = ', Moderación automática: Lenguaje inapropiado. Reglas: http://bit.ly/1abNG5E';
+								muteMessage = ', Moderación automática: Su mensaje contiene una frase inapropiada. Reglas: http://bit.ly/1abNG5E';
 							}
 							break;
 						}
@@ -1017,23 +1024,22 @@ exports.parse = {
 			if (useDefault || modSettings['spam'] !== 0 && pointVal < 3) {
 				if (times.length >= 3 && (time - times[times.length - 3]) < FLOOD_MESSAGE_TIME && msg === chatData.lastMessage && chatData.lastMessage === chatData.lastMessage2) {
 					pointVal = 3;
-					muteMessage = ', Moderación automática: Detectado spammer de nivel 1';
-					if (msg.toLowerCase().indexOf("http://") > -1 || msg.toLowerCase().indexOf("https://") > -1 || msg.toLowerCase().indexOf("www.") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
-						muteMessage = ', Moderación automática: Detectado spammer de nivel ' + ((msg.length < 10) ? '3' : '4');
-						if (msg.length >= 10 && msg.toLowerCase().indexOf("pokemonshowdown.com") === -1) pointVal = 4;
-						else if (msg.toLowerCase().indexOf("pokemonshowdown.com") > -1) muteMessage = ', Moderación automática: Detectado spammer de nivel 1';
-					} else if (msg.toLowerCase().indexOf("**") > -1) {
-						muteMessage = ', Moderación automática: Detectado spammer de nivel ' + ((msg.length < 10) ? '2' : '3');
-						if (msg.length >= 10 && msg.toLowerCase().indexOf("pokemonshowdown.com") === -1) pointVal = 4;
-						else if (msg.toLowerCase().indexOf("pokemonshowdown.com") > -1) muteMessage = ', Moderación automática: Detectado spammer de nivel 1';
+					muteMessage = ', Moderación automática: Detectado posible spammer. Reglas: http://bit.ly/1abNG5E';
+					if (msg.toLowerCase().indexOf("http://") > -1 || msg.toLowerCase().indexOf("https://") > -1 || msg.toLowerCase().indexOf("www.") > -1) {
+						muteMessage = ', Moderación automática: Spam de links. Reglas: http://bit.ly/1abNG5E';
+						if (msg.toLowerCase().indexOf("pokemonshowdown.com") === -1) pointVal = 4;
+						else muteMessage = ', Moderación automática: Spam de links a combates. Reglas: http://bit.ly/1abNG5E';
+					} else if (msg.replace(/[^A-Za-z]/g, '').match(/[A-Z]/g) || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
+						muteMessage = ', Moderación automática: Spam de línea simple. Reglas: http://bit.ly/1abNG5E';
+						pointVal = 4;
 					}
 				}
 			}
 			//moderation for spam L2 (flooding with short messages: 8 or less chars)
-			if (useDefault || modSettings['spam'] !== 0 && pointVal < 4) {
-				if (isFlooding && msg.length < 8 && chatData.lastMessage.length < 8 && chatData.lastMessage2.length < 8) {
-					pointVal = 4;
-					muteMessage = ', Moderación automática: Detectado spammer de nivel 2';
+			if (useDefault || modSettings['flood'] !== 0 && pointVal < 4) {
+				if (isFlooding && msg.length < 10) {
+					pointVal = 3;
+					muteMessage = ', Moderación automática: Flood intenso. Reglas: http://bit.ly/1abNG5E';
 				}
 			}
 			// moderation for caps (over x% of the letters in a line of y characters are capital)
@@ -1072,7 +1078,7 @@ exports.parse = {
 				}  else if (punishment.length > 3) {
 					if (pointVal <= 3) {
 						pointVal = 3;
-						muteMessage = ', Multiple infraccion: ' + punishment.join(", ") + '. Reglas: http://bit.ly/1abNG5E';
+						muteMessage = ', Múltiple infraccion: ' + punishment.join(", ") + '. Reglas: http://bit.ly/1abNG5E';
 					}
 				}
 			}

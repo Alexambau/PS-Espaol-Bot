@@ -1,24 +1,18 @@
 /*
+	Random and pseudo-random battle request system
 */
 
 /* functions */
 
-function gen6_get_mux (typeA, typesB) {
+function gen6_get_mux (typeA, typesB, not_inmune) {
 	var mux = 1;
-	if (exports.TypeChartGen6[typesB[0]].damageTaken[typeA] === 1) {
-		mux *= 2;
-	} else if (exports.TypeChartGen6[typesB[0]].damageTaken[typeA] === 2) {
-		mux /= 2;
-	} else if (exports.TypeChartGen6[typesB[0]].damageTaken[typeA] === 3) {
-		mux = 0;
-	}
-	if (typesB[1]) {
-		if (exports.TypeChartGen6[typesB[1]].damageTaken[typeA] === 1) {
+	for (var i = 0; i < typesB.length; i++) {
+		if (exports.TypeChartGen6[typesB[i]].damageTaken[typeA] === 1) {
 			mux *= 2;
-		} else if (exports.TypeChartGen6[typesB[1]].damageTaken[typeA] === 2) {
+		} else if (exports.TypeChartGen6[typesB[i]].damageTaken[typeA] === 2) {
 			mux /= 2;
-		} else if (exports.TypeChartGen6[typesB[1]].damageTaken[typeA] === 3) {
-			mux = 0;
+		} else if (exports.TypeChartGen6[typesB[i]].damageTaken[typeA] === 3) {
+			if (!not_inmune) mux = 0;
 		}
 	}
 	return mux;
@@ -181,10 +175,28 @@ function gen6_getGoodMoves(dataType, foeInfo, field) {
 		return [];
 	}
 	var dataMove;
+	var not_inmune;
 	var moves_V = [];
 	for (var i = 0; i < dataType.active[0].moves.length; i++) {
 		dataMove = movedex[toId(dataType.active[0].moves[i].move)];
+		not_inmune = false;
 		if (!dataMove || dataType.active[0].moves[i].disabled) continue;
+		//modify move
+		switch (dataType.active[0].baseAbility) {
+			case 'Aerilate':
+				if (dataMove.type === "Normal") dataMove.type === "Flying";
+				break;
+			case 'Pixilate':
+				if (dataMove.type === "Normal") dataMove.type === "Fairy";
+				break;
+			case 'Refrigerate':
+				if (dataMove.type === "Normal") dataMove.type === "Ice";
+				break;
+		}
+		if (dataMove.name === "Judgment") dataMove.type = data1.types[0];
+		//not inmune
+		if (dataType.active[0].baseAbility === "Scrappy" && dataMove.type in {"Normal": 1, "Fighting": 1}) not_inmune = true;
+		//check
 		if (dataMove.name === "Fake Out" && field && field.lastMove) continue;
 		if (dataMove.category === "Physical" && field && field.boosts && field.boosts["atk"] && field.boosts["atk"] < -1) continue;
 		if (dataMove.category === "Special" && field && field.boosts && field.boosts["spa"] && field.boosts["spa"] < -1) continue;
@@ -198,7 +210,7 @@ function gen6_getGoodMoves(dataType, foeInfo, field) {
 			if (inmune(dataMove, pokemonB)) continue;
 			if (dataMove.name === "Stored Power" && (!field || !field.boosts ||  ((!field.boosts["spa"] || field.boosts["spa"] < 2) && (!field.boosts["spd"] || field.boosts["spd"] < 2)))) continue;
 			if (dataMove.type === "Ground" && foeInfo.items && foeInfo.items["a"] && foeInfo.items["a"] === "Air Ballon") continue;
-			if (gen6_get_mux(dataMove.type, data2.types) > 1 || (gen6_get_mux(dataMove.type, data2.types) === 1 && (dataMove.type === data1.types[0] ||(data1.types[1] && dataMove.type === data1.types[1])))) moves_V.push(dataMove.name);
+			if (gen6_get_mux(dataMove.type, data2.types, not_inmune) > 1 || (gen6_get_mux(dataMove.type, data2.types, not_inmune) === 1 && (dataMove.type === data1.types[0] || dataType.active[0].baseAbility === "Protean" || (data1.types[1] && dataMove.type === data1.types[1])))) moves_V.push(dataMove.name);
 		}
 	}
 	if (moves_V.length) return moves_V.randomize();
@@ -215,10 +227,28 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 	var data2 = pokedex[toId(pokemonB)];
 	if (!data1 || !data2) return [];
 	var dataMove;
+	var not_inmune;
 	var moves_V = [];
 	for (var i = 0; i < dataType.active[0].moves.length; i++) {
 		dataMove = movedex[toId(dataType.active[0].moves[i].move)];
+		not_inmune = false;
 		if (!dataMove || dataType.active[0].moves[i].disabled) continue;
+		//modify move
+		switch (dataType.active[0].baseAbility) {
+			case 'Aerilate':
+				if (dataMove.type === "Normal") dataMove.type === "Flying";
+				break;
+			case 'Pixilate':
+				if (dataMove.type === "Normal") dataMove.type === "Fairy";
+				break;
+			case 'Refrigerate':
+				if (dataMove.type === "Normal") dataMove.type === "Ice";
+				break;
+		}
+		if (dataMove.name === "Judgment") dataMove.type = data1.types[0];
+		//not inmune
+		if (dataType.active[0].baseAbility === "Scrappy" && dataMove.type in {"Normal": 1, "Fighting": 1}) not_inmune = true;
+		//check
 		if (dataMove.category === "Physical" && field && field.boosts && field.boosts["atk"] && field.boosts["atk"] < -1) continue;
 		if (dataMove.category === "Special" && field && field.boosts && field.boosts["spa"] && field.boosts["spa"] < -1) continue;
 		if (dataMove.category === "Status" && has_ability(foeInfo["a"], ["Magic Bounce"])) continue;
@@ -226,6 +256,7 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 		if (dataMove.name === "Fake Out" && field && field.lastMove) continue;
 		if (dataMove.name === "Rest" && dataType.side.pokemon[0].condition.indexOf(" ") !== -1 && toId(dataType.side.pokemon[0].condition.substr(dataType.side.pokemon[0].condition.indexOf(" "))) === "slp") continue;
 		if (dataMove.name === "Sleep Talk" && (dataType.side.pokemon[0].condition.indexOf(" ") === -1 || toId(dataType.side.pokemon[0].condition.substr(dataType.side.pokemon[0].condition.indexOf(" "))) !== "slp")) continue;
+		if (dataMove.name === "Taunt" && foeInfo && foeInfo.taunt) continue;
 		if (dataMove.name === "Light Screen" && field && field.lightScreen) continue;
 		if (dataMove.name === "Reflect" && field && field.reflect) continue;
 		if (dataMove.name === "Sticky Web" && foeInfo.sticky) continue;
@@ -239,7 +270,7 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 		if (dataMove.name in {"Refresh": 1, "Heal Bell": 1, "Aromatherapy": 1} && dataType.side.pokemon[0].condition.indexOf(" ") === -1) continue;
 		if (dataMove.weather && field && field.weather && toId(field.weather) in {'desolateland': 1, 'primordialsea': 1, 'deltastream': 1}) continue;
 		if (dataMove.weather && field && field.weather && toId(field.weather) === toId(dataMove.weather)) continue;
-		if (dataMove.name in {"Taunt": 1, "Endeavor": 1, "Trick Room": 1, "Encore": 1, "Lunar Dance": 1, "Healing Wish": 1}) continue; //dificult moves (too much information required)
+		if (dataMove.name in {"Baton pass": 1, "Endeavor": 1, "Trick Room": 1, "Encore": 1, "Lunar Dance": 1, "Healing Wish": 1}) continue; //dificult moves (too much information required)
 		if (dataMove.target === "self" && dataMove.category === "Status") {
 			if (dataMove.volatileStatus && dataMove.volatileStatus === "protect" && (!field || !field.lastMove || field.lastMove in {"Protect": 1, "Detect": 1})) continue;
 			if ((dataMove.name === "Rest" || dataMove.name === "Pain Split" || dataMove.name === "Synthesis" || dataMove.heal) && parseInt(dataType.side.pokemon[0].condition.substr(0, dataType.side.pokemon[0].condition.indexOf("/"))) === parseInt(dataType.side.pokemon[0].condition.substr(dataType.side.pokemon[0].condition.indexOf("/") + 1))) continue;
@@ -253,7 +284,7 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 			if ((dataMove.status === "brn") && (data2.types[0] === "Fire" || (data2.types[1] && (data2.types[1] === "Fire")))) continue;
 		}
 		if (dataMove.target !== "self" && dataMove.target !== "allySide" && dataMove.target !== "foeSide") {
-			if (gen6_get_mux(dataMove.type, data2.types) === 0) continue;
+			if (gen6_get_mux(dataMove.type, data2.types) === 0 && !not_inmune) continue;
 			if (dataMove.type === "Ground" && foeInfo.items && foeInfo.items["a"] && foeInfo.items["a"] === "Air Ballon") continue;
 			if (inmune(dataMove, foeInfo["a"]) && dataType.active[0].baseAbility !== "Mold Breaker") continue;
 		}
@@ -265,7 +296,7 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 
 /* Battle Response Methods*/
 
-exports.getBattleResponse = function(battleData, foeInfo, field, format) {
+exports.getBattleResponse = function(battleData, foeInfo, field, format, forcerandom) {
 	if (!battleData || !format || !format.gametype || !format.gen || !format.tier) return;
 	try {
 		var pokedex = require('./pokedex.js').BattlePokedex;
@@ -274,7 +305,7 @@ exports.getBattleResponse = function(battleData, foeInfo, field, format) {
 		error('failed to load pokemon data: ' + sys.inspect(e));
 		return "/leave";
 	}
-	if (format.gametype === "singles" && format.gen === "6" && toId(format.tier).indexOf("metron") === -1) return exports.gen6SinglesBattleResponse(battleData, foeInfo, field);
+	if (!forcerandom && format.gametype === "singles" && format.gen === "6" && toId(format.tier).indexOf("metron") === -1) return exports.gen6SinglesBattleResponse(battleData, foeInfo, field);
 	if (format.gametype === "singles") {
 		return exports.randomBattleResponse(battleData);
 	} else if (format.gametype === "doubles") {
