@@ -193,10 +193,10 @@ exports.commands = {
 	allowbattle: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '~')) return false;
 		if (toId(arg) === "off") {
-			this.say(con, room, '/away');
+			this.say(con, 'lobby', '/away');
 			this.say(con, room, 'Sistema de batallas automaticas desactivado');
 		} else {
-			this.say(con, room, '/back');
+			this.say(con, 'lobby', '/back');
 			this.say(con, room, 'Sistema de batallas automaticas activado');
 		}
 	},
@@ -240,7 +240,7 @@ exports.commands = {
 		if (!this.formats || (!this.formats[toId(arg)] && (!this.teams || !this.teams[toId(arg)]))) return this.say(con, room, 'No poseo equipos para jugar en el formato ' + toId(arg) + '. Por favor edite teams.js');
 		this.ratedRoom = room;
 		if (this.teams[toId(arg)]) this.say(con, room, '/useteam ' + this.teams[toId(arg)][Math.floor(Math.random()*this.teams[toId(arg)].length)]);
-		this.say(con, room, '/search ' + arg);
+		this.say(con, 'lobby', '/search ' + arg);
 	},
 	chall: 'challenge',
 	challenge: function(arg, by, room, con) { 
@@ -250,7 +250,7 @@ exports.commands = {
 		if (!this.tourFormats || !this.tourFormats[toId(args[1])]) return this.say(con, room, 'El formato ' + toId(args[1]) + ' no se reconoce como un formato válido');
 		if (!this.formats || (!this.formats[toId(args[1])] && (!this.teams || !this.teams[toId(args[1])]))) return this.say(con, room, 'No poseo equipos para jugar en el formato ' + toId(args[1]) + '. Por favor edite teams.js');
 		if (this.teams[toId(args[1])]) this.say(con, room, '/useteam ' + this.teams[toId(args[1])][Math.floor(Math.random()*this.teams[toId(args[1])].length)]);
-		this.say(con, room, '/challenge ' + toId(args[0]) + ", " + toId(args[1]));
+		this.say(con, 'lobby', '/challenge ' + toId(args[0]) + ", " + toId(args[1]));
 	},
 	tourjoin: 'jointour',
 	jt: 'jointour',
