@@ -90,6 +90,7 @@ Comandos Administrativos Especiales:
  - `jointours [on/off]:` Activa o desactiva la participación del bot en torneos random.
  - `jointour:` Fuerza al bot a unirse a un torneo.
  - `sb [formato]:` Busca una batalla en ladder y devuelve el link a esta.
+ - `chall [usuario], [formato]:` Se utiliza para que el bot rete a un usuario.
  - `getauth [sala]:` Guarda el roomauth de una sala como si fuese rango global.
  - `jf [set/delete], [usuario], [frase]:` Establece una frase que el bot dice cuando cierto usuario entra a una sala.
  - `vjf:` Muestra las frases de entrada adjudicadas en una sala.
@@ -106,7 +107,7 @@ El bot detecta infracciones comunes y aplica una sanción automáticamente. Esta
 - **Flooding:** sanciona el flood, es decir, mensajes cortos muy rapidos. (Mute)
 - **Caps:** sanciona en caso de un uso excesivo de las mayúsculas. (Warn)
 - **Stretching:** sanciona en caso de que se alarguen las palabras exesivamente. (Warn)
-- **Spam:** Detecta si se está produciendo spam de 3 niveles: Nivel 1 (repetir), Nivel 2 (flood + shitposting), Nivel 3 (Spam de Copy/paste de varias lineas). El nivel aumenta por spammear links, negritas o repeticiones hasta el nivel 5.
+- **Spam:** Detecta si se está produciendo spam, entendiendose por spam repetir uno o varios mensajes muchas veces, probablemente con intenciones publicitarias. (RoomBan)
 - **Youtube:** sanciona la publicidad de canales de Youtube. (Mute)
 - **Porn:** sanciona los links pornográficos. (RoomBan)
 
@@ -126,6 +127,7 @@ Para controlar esta funcionalidad destacan los siguienes comandos:
  - `jointours [on/off]:` Activa o desactiva la participación del bot en torneos random.
  - `jointour:` Fuerza al bot a unirse a un torneo.
  - `sb [formato]:` Busca una batalla en ladder y devuelve el link a esta.
+ - `chall [usuario], [formato]:` Se utiliza para que el bot rete a un usuario.
  
 
 Créditos
