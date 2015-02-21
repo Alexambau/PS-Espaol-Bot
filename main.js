@@ -201,7 +201,7 @@ var connect = function(retry) {
 
 			setTimeout(function() {
 				connect(true);
-			}, 60000);
+			}, 10000);
 		});
 
 		connection.on('message', function(message) {

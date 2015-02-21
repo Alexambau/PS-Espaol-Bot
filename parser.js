@@ -1036,14 +1036,15 @@ exports.parse = {
 				if (times.length >= 3 && (time - times[times.length - 3]) < FLOOD_MESSAGE_TIME && msg === chatData.lastMessage && chatData.lastMessage === chatData.lastMessage2) {
 					pointVal = 3;
 					muteMessage = ', Moderación automática: Detectado posible spammer. Reglas: http://bit.ly/1abNG5E';
+					var capsMatch_K = msg.replace(/[^A-Za-z]/g, '').match(/[A-Z]/g);
 					if (msg.toLowerCase().indexOf("http://") > -1 || msg.toLowerCase().indexOf("https://") > -1 || msg.toLowerCase().indexOf("www.") > -1) {
 						muteMessage = ', Moderación automática: Spam de links. Reglas: http://bit.ly/1abNG5E';
 						if (msg.toLowerCase().indexOf("pokemonshowdown.com") === -1) pointVal = 4;
 						else muteMessage = ', Moderación automática: Spam de links a combates. Reglas: http://bit.ly/1abNG5E';
-					} else if (msg.replace(/[^A-Za-z]/g, '').match(/[A-Z]/g) || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
+					} else if ((capsMatch_K && toId(msg).length > MIN_CAPS_LENGTH && (capsMatch.length >= Math.floor(toId(msg).length * MIN_CAPS_PROPORTION))) || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
 						muteMessage = ', Moderación automática: Spam de línea simple. Reglas: http://bit.ly/1abNG5E';
 						pointVal = 4;
-					}
+					} 
 				}
 			}
 			//moderation for spam L2 (flooding with short messages: 8 or less chars)
