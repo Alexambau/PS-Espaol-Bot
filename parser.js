@@ -1041,7 +1041,7 @@ exports.parse = {
 						muteMessage = ', Moderación automática: Spam de links. Reglas: http://bit.ly/1abNG5E';
 						if (msg.toLowerCase().indexOf("pokemonshowdown.com") === -1) pointVal = 4;
 						else muteMessage = ', Moderación automática: Spam de links a combates. Reglas: http://bit.ly/1abNG5E';
-					} else if ((capsMatch_K && toId(msg).length > MIN_CAPS_LENGTH && (capsMatch.length >= Math.floor(toId(msg).length * MIN_CAPS_PROPORTION))) || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
+					} else if ((capsMatch_K && toId(msg).length > MIN_CAPS_LENGTH && (capsMatch_K.length >= Math.floor(toId(msg).length * MIN_CAPS_PROPORTION))) || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
 						muteMessage = ', Moderación automática: Spam de línea simple. Reglas: http://bit.ly/1abNG5E';
 						pointVal = 4;
 					} 
