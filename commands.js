@@ -944,14 +944,17 @@ exports.commands = {
 			case 'ou':
 				text +='Actualmente está en marcha el suspect a Mega Metagross. Los que quieran votar tienen hasta el 25 Feb para conseguir 2700 Coil en la ladder de suspect. Toda la info aquí: http://www.smogon.com/forums/threads/np-oras-ou-suspect-process-round-2-spider-man.3529407/';
 				break;
-			case 'lc':
-				text += 'Actualmente se está llevando a cabo un suspect en LC (http://pastebin.com/uQYgG6Hc). Los participantes tienen hasta el 6 de Marzo para obtener 1950 Coil en la ladder de Suspect. Toda la info aquí: http://www.smogon.com/forums/threads/suspect-test-5.3530228/';
+			case 'uu':
+				text +='En UU se está llevando a cabo el suspect de Serperior. Los que quieran votar tienen hasta el 8 de Marzo para conseguir 2500 Coil en la ladder de suspect. Toda la info aquí: http://www.smogon.com/forums/threads/np-uu-stage-2-1-you-are-invited.3530610/';
 				break;
 			case 'ru':
 				text += 'En RU hay suspect de Pangoro y Moltres. Los participantes tienen hasta el 26 de Febrero para obtener 2400 Coil en la ladder de Suspect. Toda la info aquí: http://www.smogon.com/forums/threads/np-ru-stage-7-of-moons-birds-and-monsters.3529590/';
 				break;
 			case 'nu':
 				text += 'En NU hay suspect de Mega-Steelix y Heliolisk. Los participantes tienen hasta el 26 de Febrero para obtener 2400 Coil en la ladder de Suspect. Toda la info aquí: http://www.smogon.com/forums/threads/np-stage-4-celebration-steelixite-heliolisk-suspect-read-post-117.3528871/page-5#post-6046215';
+				break;
+			case 'lc':
+				text += 'Actualmente se está llevando a cabo un suspect en LC (http://pastebin.com/uQYgG6Hc). Los participantes tienen hasta el 6 de Marzo para obtener 1950 Coil en la ladder de Suspect. Toda la info aquí: http://www.smogon.com/forums/threads/suspect-test-5.3530228/';
 				break;
 			default:
 				text +='No se reconoce el comando dentro de ' + config.commandcharacter + 'suspect';
