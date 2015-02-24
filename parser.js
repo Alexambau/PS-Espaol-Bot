@@ -971,13 +971,6 @@ exports.parse = {
 					}
 				}
 			}
-			//moderation for /me
-			if (useDefault || modSettings['me'] !== 0) {
-				if (msg.toLowerCase().indexOf("/me") === 0) {
-					this.say(connection, room, '/redir ' + user + ', roleplayespaol');
-					this.say(connection, room, '/mn El usuario: ' + user + ' ha sido redirigido a Roleplay por uso del /me.');
-				}
-			}
 			// moderation for youtube channel
 			if (useDefault || modSettings['youtube'] !== 0) {
 				if (msg.toLowerCase().indexOf("youtube.com/channel/") > -1) {
