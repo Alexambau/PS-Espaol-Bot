@@ -1114,9 +1114,9 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
-	roleplay: function(arg, by, room, con) {
-                if (!this.canUse('info',room, by)) return this.say(con, "lobby", '/invite ' + by + ', roleplayespaol');
-                this.say(con, room, 'Unios a la sala de Roleplay Español haciendo click aquí: http://play.pokemonshowdown.com/roleplayespaol');
+	eventos: function(arg, by, room, con) {
+                if (!this.canUse('info',room, by)) return this.say(con, "lobby", '/invite ' + by + ', eventos');
+                this.say(con, room, 'Unios a la sala de Eventos haciendo click aquí: http://play.pokemonshowdown.com/eventos');
         },
 	
 	
