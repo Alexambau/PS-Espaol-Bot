@@ -50,6 +50,7 @@ exports.parse = {
 	chatLogDay: 0,
 	busyInBattle: 0,
 	recentPMInfo: {},
+	sicCache: '',
 
 	data: function(data, connection) {
 		if (data.substr(0, 1) === 'a') {

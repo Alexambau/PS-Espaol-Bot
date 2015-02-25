@@ -51,9 +51,60 @@ exports.commands = {
 			});
 		});
 	},
+	
+	
+	ic: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		if (!this.settings.infocmds) this.settings.infocmds = {};
+		if (!arg || !arg.length) return;
+		var args = arg.split(" ");
+		var cmdTable = {
+			info: 1,
+			suspect: 1
+		};
+		var cmdId = '';
+		var cmdArgs = '';
+		if (args[0] === "-s") {
+			if (!this.sicCache.length) this.say(con, room, "No hay datos ic guardados temporalmente");
+			if (!args[1]) return;
+			cmdId = toId(args[1]);
+			if (!cmdTable[cmdId]) {
+				return this.say(con, room, "No se reconoce el comando. La lista de comandos dinámicos es [" + Object.keys(cmdTable).join(", ") + "]");
+			}
+			if (!args[2]) return this.say(con, room, "Debes especificar un argumento");
+			cmdArgs = toId(args[2]);
+			if (!this.settings.infocmds[cmdId]) this.settings.infocmds[cmdId] = {};
+			this.settings.infocmds[cmdId][cmdArgs] = this.sicCache;
+			this.writeSettings();
+			this.say(con, room, "Comando dinámico **" + config.commandcharacter + cmdId + " " + cmdArgs + "** ha sido modificado.");
+		} else if (args[0] === "-d") {
+			if (!args[1]) return;
+			cmdId = toId(args[1]);
+			if (!cmdTable[cmdId]) {
+				return this.say(con, room, "No se reconoce el comando. La lista de comandos dinámicos es [" + Object.keys(cmdTable).join(", ") + "]");
+			}
+			if (!args[2]) return this.say(con, room, "Debes especificar un argumento");
+			cmdArgs = toId(args[2]);
+			if (!this.settings.infocmds[cmdId]) this.settings.infocmds[cmdId] = {};
+			if (this.settings.infocmds[cmdId][cmdArgs]) delete this.settings.infocmds[cmdId][cmdArgs];
+			else return this.say(con, room, "No existía el subcomando que se quería borrar");
+			this.writeSettings();
+			this.say(con, room, "Comando dinámico **" + config.commandcharacter + cmdId + " " + cmdArgs + "** ha sido borrado.");
+		} else if (args[0] === "-n") {
+			this.sicCache = '';
+			this.say(con, room, "Datos temporales [ic] borrados");
+		} else if (args[0] === "-v") {
+			if (!this.sicCache.length) this.say(con, room, "No hay datos ic guardados temporalmente");
+			this.say(con, room, this.sicCache);
+		} else if (args[0] === "-h") {
+			this.say(con, room, "Use el comando así: " + config.commandcharacter + "ic -[s/d/n/v] [comando] [argumento] " + " o bien " + config.commandcharacter + "ic [texto] para guardar temporalmente datos.");
+		} else {
+			this.sicCache = stripCommands(arg);
+			this.say(con, room, "Datos guardados temporalemnte. Ahora puede asignar la información a un comando dinámico.");
+		}
+	},
 	 
 	bot: 'about',
-	info: 'about',
 	about: function(arg, by, room, con) {
 		if (this.hasRank(by, '#~') || room.charAt(0) === ',') {
 			var text = '';
@@ -933,30 +984,42 @@ exports.commands = {
 	},
 	
 	suspect: function(arg, by, room, con) {
+		if (!this.settings.infocmds) this.settings.infocmds = {};
+		if (!this.settings.infocmds.suspect) this.settings.infocmds.suspect = {};
 		var text = '';
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		}
-		if (!arg) arg = '';
-		switch (toId(arg)) {
-			case '':
-			case 'ou':
-				text +='Actualmente está en marcha el suspect a Mega Metagross. Los que quieran votar tienen hasta el 25 Feb para conseguir 2700 Coil en la ladder de suspect. Toda la info aquí: http://www.smogon.com/forums/threads/np-oras-ou-suspect-process-round-2-spider-man.3529407/';
-				break;
-			case 'uu':
-				text +='En UU se está llevando a cabo el suspect de Serperior. Los que quieran votar tienen hasta el 8 de Marzo para conseguir 2500 Coil en la ladder de suspect. Toda la info aquí: http://www.smogon.com/forums/threads/np-uu-stage-2-1-you-are-invited.3530610/';
-				break;
-			case 'ru':
-				text += 'En RU hay suspect de Pangoro y Moltres. Los participantes tienen hasta el 26 de Febrero para obtener 2400 Coil en la ladder de Suspect. Toda la info aquí: http://www.smogon.com/forums/threads/np-ru-stage-7-of-moons-birds-and-monsters.3529590/';
-				break;
-			case 'nu':
-				text += 'En NU hay suspect de Mega-Steelix y Heliolisk. Los participantes tienen hasta el 26 de Febrero para obtener 2400 Coil en la ladder de Suspect. Toda la info aquí: http://www.smogon.com/forums/threads/np-stage-4-celebration-steelixite-heliolisk-suspect-read-post-117.3528871/page-5#post-6046215';
-				break;
-			case 'lc':
-				text += 'Actualmente se está llevando a cabo un suspect en LC (http://pastebin.com/uQYgG6Hc). Los participantes tienen hasta el 6 de Marzo para obtener 1950 Coil en la ladder de Suspect. Toda la info aquí: http://www.smogon.com/forums/threads/suspect-test-5.3530228/';
-				break;
-			default:
-				text +='No se reconoce el comando dentro de ' + config.commandcharacter + 'suspect';
+		if (!arg || arg === '') arg = 'ou';
+		if (toId(arg) === "list") {
+			text += "Lista de suspects: " + Object.keys(this.settings.infocmds.suspect).join(", ");
+		} else {
+			if (this.settings.infocmds.suspect[toId(arg)]) {
+				text += this.settings.infocmds.suspect[toId(arg)];
+			} else {
+				text += 'No hay información acerca del suspect de ' + toId(arg);
+			}
+		}
+		this.say(con, room, text);
+		
+	},
+	
+	info: function(arg, by, room, con) {
+		if (!this.settings.infocmds) this.settings.infocmds = {};
+		if (!this.settings.infocmds.info) this.settings.infocmds.info = {};
+		var text = '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		}
+		if (!arg || arg === '') arg = 'ou';
+		if (toId(arg) === "list") {
+			text += "Lista de tópicos: " + Object.keys(this.settings.infocmds.info).join(", ");
+		} else {
+			if (this.settings.infocmds.info[toId(arg)]) {
+				text += this.settings.infocmds.info[toId(arg)];
+			} else {
+				text += 'No hay información adicional acerca de "' + toId(arg) + '"';
+			}
 		}
 		this.say(con, room, text);
 		
@@ -1015,7 +1078,6 @@ exports.commands = {
 	},
 	
 	castigos: 'sanciones',
-	sanciones: 'sanciones',
 	sanciones: function(arg, by, room, con) {
 		var text = '';
 		if  (!this.canUse('info', room, by)) {
@@ -1092,6 +1154,7 @@ exports.commands = {
 		text += 'No entiendo gg';
 		this.say(con, room, text);
 	},
+	
 	b: 'busca',
 	busca: function(arg, by, room, con) {
 		var text = '';
@@ -1360,7 +1423,7 @@ exports.commands = {
 			}
 		}
 		
-		if (pokemon.length == 0) return this.say(con, room, "errore");
+		if (pokemon.length == 0) return this.say(con, room, "No se han encontrado pokemon de las tiers especificadas");
 		extractedmon = pokemon[Math.floor(Math.random()*pokemon.length)];
 		text += extractedmon;
 		this.say(con, room, text);
