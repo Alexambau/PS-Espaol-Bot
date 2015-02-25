@@ -35,6 +35,7 @@ exports.parse = {
 	tours: {},
 	teams: {},
 	roomRanks: {},
+	staffRanks: {},
 	challenges: {},
 	battleDatas: {},
 	battleTurns: {},
@@ -51,6 +52,7 @@ exports.parse = {
 	busyInBattle: 0,
 	recentPMInfo: {},
 	sicCache: '',
+	users: {},
 
 	data: function(data, connection) {
 		if (data.substr(0, 1) === 'a') {
@@ -71,6 +73,9 @@ exports.parse = {
 			var spl = message.split('\n');
 			for (var i = 0, len = spl.length; i < len; i++) {
 				if (spl[i].split('|')[1] && (spl[i].split('|')[1] === 'init')) {
+					this.message(spl[i], connection, i === len - 1);
+					if (spl[i + 1]) this.message(spl[i + 1], connection, i === len - 1);
+					if (spl[i + 2]) this.message(spl[i + 2], connection, i === len - 1);
 					this.room = '';
 					break;
 				}
@@ -250,8 +255,9 @@ exports.parse = {
 				}
 
 				// Now join the rooms
-				var cmds = ['|/idle'];
-				var cmds = ['|/idle', '|/avatar 120']; 
+				var cmds = []; 
+				//cmds.push('|/idle');
+				cmds.push('|/avatar 120');
 				for (var i in config.rooms) {
 					var room = toId(config.rooms[i]);
 					if (room === 'lobby' && config.serverid === 'showdown') {
@@ -274,6 +280,7 @@ exports.parse = {
 					}
 					cmds.push('|/join ' + room);
 				}
+				cmds.push('espaol|/roomauth'); //get auth
 	
 				var self = this;
 				if (cmds.length > 3) {
@@ -287,7 +294,7 @@ exports.parse = {
 							delete self.nextJoin;
 							clearInterval(self.joinSpacer);
 						}
-					}, 4*1000, connection, cmds);
+					}, 2*1000, connection, cmds);
 				} else {
 					send(connection, cmds);
 				}
@@ -330,6 +337,19 @@ exports.parse = {
 				break;
 			case 'title':
 				ok('joined ' + spl[2]);
+				if (lastMessage) this.room = '';
+				break;
+			case 'users':
+				if (this.room !== 'salastaff') {
+					if (lastMessage) this.room = '';
+					break;
+				}
+				var userArray = message.substr(7).split(",");
+				this.users[this.room] = {};
+				for (var i = 1; i < userArray.length; i++) {
+					this.users[this.room][toId(userArray[i])] = userArray[i].trim().charAt(0);
+				}
+				//console.log("Usuarios [" + this.room + "] => " + JSON.stringify(this.users[this.room]));
 				if (lastMessage) this.room = '';
 				break;
 			case 'rated':
@@ -609,10 +629,14 @@ exports.parse = {
 					for (var i = 0; i < parts.length; i+=2) {
 						usersList = parts[i+1].split(',');
 						if (parts[i].indexOf("(") > -1) rank = parts[i].substr(parts[i].indexOf("(") + 1, 1);
-						for (var f = 0; f < usersList.length;f++) this.roomRanks[toId(usersList[f])] = rank;
+						for (var f = 0; f < usersList.length;f++) {
+							if (!global.staffpopup) this.roomRanks[toId(usersList[f])] = rank;
+							else this.staffRanks[toId(usersList[f])] = rank;
+						}
 					}
-					console.log("DATA: ".cyan + " Lista de auth leida con exito");
-					console.log("AUTH: ".cyan + JSON.stringify(this.roomRanks));
+					//console.log("DATA: ".cyan + " Lista de auth leida con exito");
+					//console.log("AUTH: ".cyan + JSON.stringify(this.roomRanks));
+					global.staffpopup = false;
 				}
 				if (lastMessage) this.room = '';
 				break;
@@ -695,6 +719,10 @@ exports.parse = {
 				break;
 			case 'N':
 				var by = spl[2];
+				if (this.users[this.room] && this.users[this.room][toId(spl[3])]) {
+					delete this.users[this.room][toId(spl[3])];
+					this.users[this.room][toId(by)] = by.charAt(0);
+				}
 				this.updateSeen(spl[3], spl[1], by);
 				if (toId(by) !== toId(config.nick) || ' +%@&#~'.indexOf(by.charAt(0)) === -1) {
 					if (lastMessage) this.room = '';
@@ -706,12 +734,15 @@ exports.parse = {
 			case 'J': case 'j':
 				var by = spl[2];
 				if (this.room && this.isBlacklisted(toId(by), this.room)) this.say(connection, this.room, '/roomban ' + by + ', Usuario baneado permanentemente');
-				/*if (this.room && (toId(by) == 'astara')) this.say (connection, this.room, 'Ha caido algo del espacio.');
-				if (this.room && (toId(by) == 'astyanax')) this.say (connection, this.room, 'Top kek :^)');
-				if (this.room && (toId(by) == 'iyarito')) this.say (connection, this.room, 'Iyarito guapisima ♥');
-				if (this.room && (toId(by) == 'sken')) this.say (connection, this.room, 'Sken, te amo.');
-				if (this.room && (toId(by) == 'xjoelituh')) this.say (connection, this.room, 'Oh no, llego Joel.');*/
-				if (this.room && this.settings.joinphrases && this.settings.joinphrases[this.room] && this.settings.joinphrases[this.room][toId(by)]) {
+				if (!this.settings.blockinvite) {
+					if (toId(this.room) === 'espaol' && this.staffRanks[toId(by)] && (!this.users['salastaff'] || !this.users['salastaff'][toId(by)])) {
+						this.say(connection, this.room, '/invite ' + by + ', salastaff');
+					}
+				}
+				if (this.users[this.room]) {
+					this.users[this.room][toId(by)] = by.charAt(0);
+				}
+				if ((!this.settings.disjoinphrases || !this.settings.disjoinphrases[this.room]) && this.room && this.settings.joinphrases && this.settings.joinphrases[this.room] && this.settings.joinphrases[this.room][toId(by)]) {
 					this.say(connection, this.room, this.settings.joinphrases[this.room][toId(by)]);
 				} else if (this.room && this.settings.joinphrases && this.settings.joinphrases['global'] && this.settings.joinphrases['global'][toId(by)]) {
 					this.say(connection, this.room, this.settings.joinphrases['global'][toId(by)]);
@@ -726,6 +757,9 @@ exports.parse = {
 				break;
 			case 'l': case 'L':
 				var by = spl[2];
+				if (this.users[this.room] && this.users[this.room][toId(by)]) {
+					delete this.users[this.room][toId(by)];
+				}
 				this.updateSeen(by, spl[1], this.room || 'lobby');
 				if (lastMessage) this.room = '';
 				break;

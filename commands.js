@@ -316,6 +316,28 @@ exports.commands = {
 		this.say(con, room, 'Lista de auth de la sala ' + (arg || room) + ' leida con éxito.');
 	},
 	
+	getstaff: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		global.staffpopup = true;
+		this.say(con, 'salastaff', "/roomauth");
+		this.say(con, room, 'Lista de staff leida con éxito.');
+	},
+	
+	autoinvite: 'autoinvitestaff',
+	autoinvitestaff: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		if (toId(arg) === "off") {
+			this.settings.blockinvite = 1;
+			this.say(con, room, 'Modo autoinvite desactivado.');
+		} else {
+			this.settings.blockinvite = 0;
+			global.staffpopup = true;
+			this.say(con, 'salastaff', "/roomauth");
+			this.say(con, room, 'Modo autoinvite activado.');
+		}
+		this.writeSettings();
+	},
+	
 	botdelogs: 'logs',
 	logs: function(arg, by, room, con) {
 		if (this.hasRank(by, '#~') || room.charAt(0) === ',') {
@@ -821,6 +843,20 @@ exports.commands = {
 	joinphrase: function(arg, by, room, con) {
 		if (!this.canUse('joinphrase', room, by)) return false;
 		if (!this.settings.joinphrases) this.settings.joinphrases = {};
+		if (room.charAt(0) !== ',' && toId(arg) in {'on': 1, 'enable': 1}) {
+			if (!this.settings.disjoinphrases) this.settings.disjoinphrases = {};
+			if (this.settings.disjoinphrases[room]) delete this.settings.disjoinphrases[room];
+			else return this.say(con, room, "Las frases de entrada ya estaban activadas en esta sala");
+			this.writeSettings();
+			return this.say(con, room, "Las frases de entrada han sido activadas en esta sala");
+		}
+		if (room.charAt(0) !== ',' &&  toId(arg) in {'off': 1, 'disable': 1}) {
+			if (!this.settings.disjoinphrases) this.settings.disjoinphrases = {};
+			if (!this.settings.disjoinphrases[room]) this.settings.disjoinphrases[room] = 1;
+			else return this.say(con, room, "Las frases de entrada ya estaban desactivadas en esta sala");
+			this.writeSettings();
+			return this.say(con, room, "Las frases de entrada han sido desactivadas en esta sala");
+		}
 		var args = arg.split(",");
 		if (args.length < 2) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "joinphrase [set/delete], [usuario], [frase]");
 		if (toId(args[0]) !== "delete" && args.length === 2) {
