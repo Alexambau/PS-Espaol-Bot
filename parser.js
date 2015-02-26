@@ -744,7 +744,7 @@ exports.parse = {
 				}
 				if ((!this.settings.disjoinphrases || !this.settings.disjoinphrases[this.room]) && this.room && this.settings.joinphrases && this.settings.joinphrases[this.room] && this.settings.joinphrases[this.room][toId(by)]) {
 					this.say(connection, this.room, this.settings.joinphrases[this.room][toId(by)]);
-				} else if (this.room && this.settings.joinphrases && this.settings.joinphrases['global'] && this.settings.joinphrases['global'][toId(by)]) {
+				} else if ((!this.settings.disjoinphrases || !this.settings.disjoinphrases[this.room]) && this.room && this.settings.joinphrases && this.settings.joinphrases['global'] && this.settings.joinphrases['global'][toId(by)]) {
 					this.say(connection, this.room, this.settings.joinphrases['global'][toId(by)]);
 				}
 				this.updateSeen(by, spl[1], this.room || 'lobby');
