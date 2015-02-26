@@ -312,12 +312,14 @@ exports.commands = {
 	
 	getauth: function(arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
+		this.roomRanks = {};
 		this.say(con, arg || room, "/roomauth");
 		this.say(con, room, 'Lista de auth de la sala ' + (arg || room) + ' leida con éxito.');
 	},
 	
 	getstaff: function(arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
+		this.staffRanks = {};
 		global.staffpopup = true;
 		this.say(con, 'salastaff', "/roomauth");
 		this.say(con, room, 'Lista de staff leida con éxito.');
@@ -331,6 +333,7 @@ exports.commands = {
 			this.say(con, room, 'Modo autoinvite desactivado.');
 		} else {
 			this.settings.blockinvite = 0;
+			this.staffRanks = {};
 			global.staffpopup = true;
 			this.say(con, 'salastaff', "/roomauth");
 			this.say(con, room, 'Modo autoinvite activado.');
@@ -1047,7 +1050,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		}
-		if (!arg || arg === '') arg = 'ou';
+		if (!arg || arg === '') arg = 'list';
 		if (toId(arg) === "list") {
 			text += "Lista de tópicos: " + Object.keys(this.settings.infocmds.info).join(", ");
 		} else {
