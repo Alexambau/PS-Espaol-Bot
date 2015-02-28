@@ -179,11 +179,11 @@ var connect = function(retry) {
 
 	ws.on('connectFailed', function(err) {
 		error('Could not connect to server ' + config.server + ': ' + sys.inspect(err));
-		info('retrying in one minute');
+		info('retrying in 10 seconds');
 
 		setTimeout(function() {
 			connect(true);
-		}, 60000);
+		}, 10000);
 	});
 
 	ws.on('connect', function(connection) {
