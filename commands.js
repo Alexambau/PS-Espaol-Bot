@@ -54,7 +54,8 @@ exports.commands = {
 	
 	
 	ic: function(arg, by, room, con) {
-		if (!this.hasRank(by, '~')) return false;
+		if (!this.hasRank(by, '@#&~')) return false;
+		if (!this.hasRank(by, '~') && room !== 'salastaff') return false;
 		if (!this.settings.infocmds) this.settings.infocmds = {};
 		if (!arg || !arg.length) return;
 		var args = arg.split(" ");
