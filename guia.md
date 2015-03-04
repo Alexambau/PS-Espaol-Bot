@@ -9,7 +9,7 @@ Comandos
 
 Comandos Básicos: 
 
- - `info:` Explica lo más general del Bot. Es un comando identificativo.
+ - `about:` Explica lo más general del Bot. Es un comando identificativo.
  - `help:` Devuelve el link a esta guía.
  - `joke:` Devuelve un chiste en ingles.
  - `choose:` Elige entre varias opciones.
@@ -21,6 +21,7 @@ Comandos Básicos:
 
 Comandos Informativos: 
 
+ - `info`
  - `liga`
  - `foro`
  - `faq`
@@ -95,6 +96,13 @@ Comandos Administrativos Especiales:
  - `jf [set/delete], [usuario], [frase]:` Establece una frase que el bot dice cuando cierto usuario entra a una sala.
  - `vjf:` Muestra las frases de entrada adjudicadas en una sala.
 
+Comando **ic** para modificar comandos dinámicos
+
+ - `ic [texto]` Guarda un texto para asignárselo a un comando.
+ - `ic -v` Muestra el texto que hay guardado.
+ - `ic -s [comando] [subcomando]` Crea o modifica un subcomando dinámico (por ejemplo info [subcomando] o suspect [subcomando]).
+ - `ic -d [comando] [subcomando]` Borra un subcomando dinámico.
+
 
 Moderación Automática
 ------------
@@ -109,6 +117,7 @@ El bot detecta infracciones comunes y aplica una sanción automáticamente. Esta
 - **Stretching:** sanciona en caso de que se alarguen las palabras exesivamente. (Warn)
 - **Spam:** Detecta si se está produciendo spam, entendiendose por spam repetir uno o varios mensajes muchas veces, probablemente con intenciones publicitarias. (RoomBan)
 - **Youtube:** sanciona la publicidad de canales de Youtube. (Mute)
+- **PS Servers:** sanciona la publicidad de servidores privados de Pokemon Showdown. (Mute)
 - **Porn:** sanciona los links pornográficos. (RoomBan)
 
 En caso de cometerse una infracción múltiple, la sanción será la suma resultante de las sanciones por cada una de las infracciones. Por lo que no se recomienda que councidan banwords con la lista de inapropiate u otras sanciones.
