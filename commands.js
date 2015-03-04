@@ -416,6 +416,7 @@ exports.commands = {
 			helixesp: 1,
 			buzz: 1,
 			gg: 1,
+			poke: 1,
 			busca: 1,
 			sken: 1,
 			setrp: 1
@@ -1210,7 +1211,7 @@ exports.commands = {
 	poke: function(arg, by, room, con) {
 		var rand = Math.floor(721 * Math.random()) + 1;
 		var text = '';
-		if (!this.canUse('info',room, by)) {
+		if (!this.canUse('poke',room, by)) {
 			var text = '/pm ' + by + ', Haz /dt ' + rand + ' para ver que Pokémon aleatorio ha salido.';
 		}
 			text +='!dt ' + rand;
