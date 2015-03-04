@@ -976,14 +976,6 @@ exports.parse = {
 				}
 			}
 
-			// moderation for spamming "snen" multiple times on a line (a la the snen spammer)
-			var snenMatch = msg.toLowerCase().match(/snen/g);
-			if ((useDefault || modSettings['snen'] !== 0) && snenMatch && snenMatch.length > 6) {
-				if (pointVal < 4) {
-					muteMessage = ', Moderación automática: Detectado spammer tipo "snen"';
-					pointVal = (room === 'lobby') ? 5 : 4;
-				}
-			}
 			// moderation for porn/spam
 			if (useDefault || modSettings['porn'] !== 0 && pointVal < 2) {
 				if (config.bannedLinks) {
@@ -1013,6 +1005,16 @@ exports.parse = {
 					if (pointVal < 2) {
 						pointVal = 2;
 						muteMessage = ', Moderación automática: Publicidad de canales de Youtube. Reglas: http://bit.ly/1abNG5E';
+					}
+				}
+			}
+			// moderation for ps server
+			if (useDefault || modSettings['psservers'] !== 0) {
+				if (msg.toLowerCase().indexOf("psim.us") > -1) {
+					punishment.push("Publicidad");
+					if (pointVal < 2) {
+						pointVal = 2;
+						muteMessage = ', Moderación automática: Publicidad de servidores privados de PS. Reglas: http://bit.ly/1abNG5E';
 					}
 				}
 			}
@@ -1069,7 +1071,7 @@ exports.parse = {
 						muteMessage = ', Moderación automática: Spam de links. Reglas: http://bit.ly/1abNG5E';
 						if (msg.toLowerCase().indexOf("pokemonshowdown.com") === -1) pointVal = 4;
 						else muteMessage = ', Moderación automática: Spam de links a combates. Reglas: http://bit.ly/1abNG5E';
-					} else if ((capsMatch_K && toId(msg).length > MIN_CAPS_LENGTH && (capsMatch_K.length >= Math.floor(toId(msg).length * MIN_CAPS_PROPORTION))) || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
+					} else if (msg.length > 70 || (capsMatch_K && toId(msg).length > MIN_CAPS_LENGTH && (capsMatch_K.length >= Math.floor(toId(msg).length * MIN_CAPS_PROPORTION))) || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
 						muteMessage = ', Moderación automática: Spam de línea simple. Reglas: http://bit.ly/1abNG5E';
 						pointVal = 4;
 					} 

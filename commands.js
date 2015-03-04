@@ -427,6 +427,7 @@ exports.commands = {
 			stretching: 1,
 			bannedwords: 1,
 			youtube: 1,
+			psservers: 1,
 			spoiler: 1,
 			porn: 1,
 			snen: 1,
