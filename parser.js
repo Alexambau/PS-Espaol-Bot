@@ -1001,7 +1001,7 @@ exports.parse = {
 			// moderation for youtube channel
 			if (useDefault || modSettings['youtube'] !== 0) {
 				if (msg.toLowerCase().indexOf("youtube.com/channel/") > -1 || msg.toLowerCase().indexOf("youtube.com/user/") > -1) {
-					punishment.push("Publicidad");
+					punishment.push("Canal de Youtube");
 					if (pointVal < 2) {
 						pointVal = 2;
 						muteMessage = ', Moderación automática: Publicidad de canales de Youtube. Reglas: http://bit.ly/1abNG5E';
