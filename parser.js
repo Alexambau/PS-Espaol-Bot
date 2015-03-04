@@ -1010,11 +1010,17 @@ exports.parse = {
 			}
 			// moderation for ps server
 			if (useDefault || modSettings['psservers'] !== 0) {
-				if (msg.toLowerCase().indexOf("psim.us") > -1) {
-					punishment.push("Publicidad");
-					if (pointVal < 2) {
-						pointVal = 2;
-						muteMessage = ', Moderación automática: Publicidad de servidores privados de PS. Reglas: http://bit.ly/1abNG5E';
+				if (msg.toLowerCase().indexOf(".psim.us") > -1) {
+					var serverAds = getServersAds(msg);
+					for (var z = 0; z < serverAds.length; z++) {
+						if (!(serverAds[z] in {"smogon": 1, "smogtours": 1})) {
+							punishment.push("Publicidad");
+							if (pointVal < 2) {
+								pointVal = 2;
+								muteMessage = ', Moderación automática: Publicidad de servidores privados de PS. Reglas: http://bit.ly/1abNG5E';
+							}
+							break;
+						}
 					}
 				}
 			}
