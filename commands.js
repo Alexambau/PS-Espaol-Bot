@@ -7,6 +7,14 @@
 var http = require('http');
 var sys = require('sys');
 
+var MD5 = require('./md5.js').MD5;
+
+function getHash(name, maxNum) {
+	var hash = parseInt(MD5(name), 16) % maxNum;
+	while (hash >= maxNum) hash /= maxNum;
+	return parseInt(hash);
+}
+
 exports.commands = {
 	/**
 	 * Help commands
@@ -1206,22 +1214,11 @@ exports.commands = {
 		text += '[[' + stripCommands(arg) + ']]';
 		this.say(con, room, text);
 	},
-
-	
-	poke: function(arg, by, room, con) {
-		var rand = Math.floor(721 * Math.random()) + 1;
-		var text = '';
-		if (!this.canUse('poke',room, by)) {
-			var text = '/pm ' + by + ', Haz /dt ' + rand + ' para ver que Pokémon aleatorio ha salido.';
-		}
-			text +='!dt ' + rand;
-		this.say(con, room, text);
-	},
 	
 	eventos: function(arg, by, room, con) {
-                if (!this.canUse('info',room, by)) return this.say(con, "lobby", '/invite ' + by + ', eventos');
-                this.say(con, room, 'Unios a la sala de Eventos haciendo click aquí: http://play.pokemonshowdown.com/eventos');
-        },
+		if (!this.canUse('info',room, by)) return this.say(con, "lobby", '/invite ' + by + ', eventos');
+		this.say(con, room, 'Unios a la sala de Eventos haciendo click aquí: http://play.pokemonshowdown.com/eventos');
+	},
 	
 	
 	sken: function(arg, by, room, con) {
@@ -1239,7 +1236,78 @@ exports.commands = {
 
 	},
 	
+	poke: function(arg, by, room, con) {
+		var rand = Math.floor(721 * Math.random()) + 1;
+		var text = '';
+		if (!this.canUse('poke',room, by)) {
+			var text = '/pm ' + by + ', Haz /dt ' + rand + ' para ver que Pokémon aleatorio ha salido.';
+		}
+			text +='!dt ' + rand;
+		this.say(con, room, text);
+	},
 	
+	rpoke: 'randompoke',
+	randompokemon: 'randompoke',
+	randompoke: function(arg, by, room, con) {
+		if (this.canUse('info', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var formatsdata = require('./formats-data.js').BattleFormatsData;
+		} catch (e) {
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
+		}
+		var pokemon = [];
+		var extractedmon = '';
+		var tiers = ["uber", "ou", "bl", "uu", "bl2", "ru", "bl3", "nu", "pu", "nfe", "lcuber", "lc", "cap", "unreleased"];
+		var selectedTiers = arg.toLowerCase().replace(/[^a-zA-Z0-9,]/g,"").split(",");
+		var tiersSearch = [];
+		for (var j in selectedTiers) {
+			if (tiers.indexOf(selectedTiers[j]) > -1 && tiersSearch.indexOf(selectedTiers[j]) == -1) tiersSearch.push(selectedTiers[j]);
+		}
+		
+		for (var i in formatsdata) {
+			if (formatsdata[i].tier) {
+				if (arg != '') {
+					if (tiersSearch.indexOf(formatsdata[i].tier.toLowerCase()) > -1) {
+						pokemon.push(pokedex[i].species);
+					}
+				}
+				else {
+					if (formatsdata[i].tier != 'Unreleased' && formatsdata[i].tier != '' && formatsdata[i].tier != 'CAP') {
+						pokemon.push(pokedex[i].species);
+					}
+				}
+			}
+		}
+		
+		if (pokemon.length == 0) return this.say(con, room, "No se han encontrado pokemon de las tiers especificadas");
+		extractedmon = pokemon[Math.floor(Math.random()*pokemon.length)];
+		text += extractedmon;
+		this.say(con, room, text);
+	},
+	
+	hpoke: 'hashpoke',
+	hashpokemon: 'hashpoke',
+	hashpoke: function(arg, by, room, con) {
+		if (this.canUse('info', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var formatsdata = require('./formats-data.js').BattleFormatsData;
+		} catch (e) {
+			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
+		}
+		var pokemon = Object.keys(pokedex);
+		var hash = getHash(toId(arg || by), pokemon.length);
+		this.say(con, room, pokedex[pokemon[hash]].species);
+	},
 	
 
 	// Roleplaying Español Commands
@@ -1425,51 +1493,6 @@ exports.commands = {
 	
 	
 	// Stats and Pokemon help
-	
-	
-
-	randompokemon: 'randompoke',
-	randompoke: function(arg, by, room, con) {
-		if (this.canUse('info', room, by) || room.charAt(0) === ',') {
-			var text = '';
-		} else {
-			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
-		}
-		try {
-			var pokedex = require('./pokedex.js').BattlePokedex;
-			var formatsdata = require('./formats-data.js').BattleFormatsData;
-		} catch (e) {
-			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
-		}
-		var pokemon = [];
-		var extractedmon = '';
-		var tiers = ["uber", "ou", "bl", "uu", "bl2", "ru", "bl3", "nu", "pu", "nfe", "lcuber", "lc", "cap", "unreleased"];
-		var selectedTiers = arg.toLowerCase().replace(/[^a-zA-Z0-9,]/g,"").split(",");
-		var tiersSearch = [];
-		for (var j in selectedTiers) {
-			if (tiers.indexOf(selectedTiers[j]) > -1 && tiersSearch.indexOf(selectedTiers[j]) == -1) tiersSearch.push(selectedTiers[j]);
-		}
-		
-		for (var i in formatsdata) {
-			if (formatsdata[i].tier) {
-				if (arg != '') {
-					if (tiersSearch.indexOf(formatsdata[i].tier.toLowerCase()) > -1) {
-						pokemon.push(pokedex[i].species);
-					}
-				}
-				else {
-					if (formatsdata[i].tier != 'Unreleased' && formatsdata[i].tier != '' && formatsdata[i].tier != 'CAP') {
-						pokemon.push(pokedex[i].species);
-					}
-				}
-			}
-		}
-		
-		if (pokemon.length == 0) return this.say(con, room, "No se han encontrado pokemon de las tiers especificadas");
-		extractedmon = pokemon[Math.floor(Math.random()*pokemon.length)];
-		text += extractedmon;
-		this.say(con, room, text);
-	},		
 
 	gen: function(arg, by, room, con) {
 		if (this.canUse('info', room, by) || room.charAt(0) === ',') {
