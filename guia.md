@@ -18,10 +18,13 @@ Comandos Básicos:
  - `b [texto]:` Devuelve el texto con link.
  - `gg:` Dice "No entiendo gg".
  - `poke:` Pone el data de un pokemon aleatorio.
+ - `randompoke:` - Devuelve el nombre de un Pokemon aleatorio.
+ - `hashpoke [nick]:` - Analiza un nick y devuelve un poke según el valor de los caracteres que lo forman.
+ - `info [tópico]:` - Comando dinámico modificable con ic.
+ - `infowall [tópico]:` - Da la información que daría info pero con announce, útil para moderadores y organizadores de eventos.
 
 Comandos Informativos: 
 
- - `info`
  - `liga`
  - `foro`
  - `faq`
@@ -41,7 +44,6 @@ Comandos Informativos:
   
 Comandos de Información sobre Pokemon: 
 
- - `randompoke`
  - `gen`
  - `trad`
  - `heavyslam`
@@ -96,7 +98,7 @@ Comandos Administrativos Especiales:
  - `jf [set/delete], [usuario], [frase]:` Establece una frase que el bot dice cuando cierto usuario entra a una sala.
  - `vjf:` Muestra las frases de entrada adjudicadas en una sala.
 
-Comando **ic** para modificar comandos dinámicos
+Comando **ic** para modificar comandos dinámicos:
 
  - `ic [texto]` Guarda un texto para asignárselo a un comando.
  - `ic -v` Muestra el texto que hay guardado.
