@@ -1054,6 +1054,7 @@ exports.commands = {
 		
 	},
 	
+	inf: 'info',
 	info: function(arg, by, room, con) {
 		if (!this.settings.infocmds) this.settings.infocmds = {};
 		if (!this.settings.infocmds.info) this.settings.infocmds.info = {};
@@ -1066,6 +1067,29 @@ exports.commands = {
 			text += "Lista de tópicos: " + Object.keys(this.settings.infocmds.info).join(", ");
 		} else {
 			if (this.settings.infocmds.info[toId(arg)]) {
+				text += this.settings.infocmds.info[toId(arg)];
+			} else {
+				text += 'No hay información adicional acerca de "' + toId(arg) + '"';
+			}
+		}
+		this.say(con, room, text);
+		
+	},
+	
+	iwall: 'infowall',
+	infowall: function(arg, by, room, con, cmd) {
+		if (!this.settings.infocmds) this.settings.infocmds = {};
+		if (!this.settings.infocmds.info) this.settings.infocmds.info = {};
+		var text = '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		}
+		if (!arg || arg === '') arg = 'list';
+		if (toId(arg) === "list") {
+			text += "Lista de tópicos: " + Object.keys(this.settings.infocmds.info).join(", ");
+		} else {
+			if (this.settings.infocmds.info[toId(arg)]) {
+				text += "/announce ";
 				text += this.settings.infocmds.info[toId(arg)];
 			} else {
 				text += 'No hay información adicional acerca de "' + toId(arg) + '"';
