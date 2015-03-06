@@ -10,6 +10,7 @@ Comandos
 Comandos Básicos: 
 
  - `about:` Explica lo más general del Bot. Es un comando identificativo.
+ - `hora:` Muestra la hora del Bot.
  - `help:` Devuelve el link a esta guía.
  - `joke:` Devuelve un chiste en ingles.
  - `choose:` Elige entre varias opciones.
@@ -104,6 +105,12 @@ Comando **ic** para modificar comandos dinámicos:
  - `ic -v` Muestra el texto que hay guardado.
  - `ic -s [comando] [subcomando]` Crea o modifica un subcomando dinámico (por ejemplo info [subcomando] o suspect [subcomando]).
  - `ic -d [comando] [subcomando]` Borra un subcomando dinámico.
+ 
+Programación de torneos:
+
+- `progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq], [laborales/findes]` Programa un torneo para iniciarse todos los días a una determinada hora.
+- `unprogtour [hora], [minuto], [laborales/findes]` Elimina un torneo programado.
+- `vpt` Muestra la lista de torneos programados en una sala.
 
 
 Moderación Automática
