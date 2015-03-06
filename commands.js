@@ -28,6 +28,7 @@ exports.commands = {
 			var text = '/pm ' + by + ', ';
 		}
 		var f = new Date();
+		if (arg && arg === "-o") text += "Dia Semana: " + f.getDay() + " | ";
 		text += "Hora del Bot: " + toDoubleDigit(f.getHours()) + ":" + toDoubleDigit(f.getMinutes()) + ":" + toDoubleDigit(f.getSeconds());
 		this.say(con, room, text);
 	},
@@ -37,30 +38,33 @@ exports.commands = {
 	setautomatedtour: function(arg, by, room, con) {
 		if (!this.canUse('banword', room, by) || room.charAt(0) === ',') return false;
 		if (!this.settings.autotours) this.settings.autotours = {}
-		if (!arg) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq]");
+		if (!arg) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq], [laborales/findes]");
 		var tarRoom = room;
 		if (!this.settings.autotours[tarRoom]) this.settings.autotours[tarRoom] = {};
 		var args = arg.split(",");
-		if (args.length < 5) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq]");
+		if (args.length < 6) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq], [laborales/findes]");
 		var hour = parseInt(args[0]);
 		var minute = parseInt(args[1]);
 		var tier = toId(args[2]);
 		var begintime = parseInt(args[3]);
 		var autodq = parseFloat(args[4]);
-		if (!minute && minute !== 0) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq]");
-		if (!hour || !tier || !begintime || !autodq) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq]");
+		var finde = toId(args[5]);
+		if (!(finde in {"laborales": 1, "findes": 1})) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq], [laborales/findes]");
+		if (!minute && minute !== 0) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq], [laborales/findes]");
+		if (!hour || !tier || !begintime || !autodq) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq], [laborales/findes]");
 		if (!this.tourFormats || !this.tourFormats[tier]) return this.say(con, room, 'El formato ' + tier + ' no se reconoce como un formato válido para un torneo');
-		var hourId = toDoubleDigit(hour) + toDoubleDigit(minute);
+		var hourId = finde + toDoubleDigit(hour) + toDoubleDigit(minute);
 		if (this.settings.autotours[tarRoom][hourId]) return this.say(con, room, "En la franja horaria especificada ya estaba programado un torneo");
 		this.settings.autotours[tarRoom][hourId] = {
 			hour: hour,
 			minute: minute,
+			typedays: finde,
 			tier: tier,
 			begintime: begintime,
 			autodq: autodq
 		};
 		this.writeSettings();
-		this.say(con, room, "Se ha programado un torneo " + tier + " todos los días a las " + toDoubleDigit(hour) + ":" + toDoubleDigit(minute) + " (Hora del Bot)");
+		this.say(con, room, "Se ha programado un torneo " + tier + ((finde === "findes") ? " los fines de samana" : " los días laborales") + " a las " + toDoubleDigit(hour) + ":" + toDoubleDigit(minute) + " (Hora del Bot)");
 	},
 	
 	unsettour: 'unsetautomatedtour',
@@ -68,20 +72,21 @@ exports.commands = {
 	unsetautomatedtour: function(arg, by, room, con) {
 		if (!this.canUse('banword', room, by) || room.charAt(0) === ',') return false;
 		if (!this.settings.autotours) this.settings.autotours = {}
-		if (!arg) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto]");
+		if (!arg) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto], [laborales/findes]");
 		var tarRoom = room;
 		if (!this.settings.autotours[tarRoom]) this.settings.autotours[tarRoom] = {};
 		var args = arg.split(",");
-		if (args.length < 2) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto]");
+		if (args.length < 3) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto], [laborales/findes]");
 		var hour = parseInt(args[0]);
 		var minute = parseInt(args[1]);
-		if (!minute && minute !== 0) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto]");
-		if (!hour) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto]");
-		var hourId = toDoubleDigit(hour) + toDoubleDigit(minute);
+		var finde = toId(args[2]);
+		if (!minute && minute !== 0) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto], [laborales/findes]");
+		if (!hour) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto], [laborales/findes]");
+		var hourId = finde + toDoubleDigit(hour) + toDoubleDigit(minute);
 		if (!this.settings.autotours[tarRoom][hourId]) return this.say(con, room, "En la franja horaria especificada no hay programado ningún torneo");
 		delete this.settings.autotours[tarRoom][hourId];
 		this.writeSettings();
-		this.say(con, room, "Se borrado el torneo programado a las " + toDoubleDigit(hour) + ":" + toDoubleDigit(minute) + " (Hora del Bot)");
+		this.say(con, room, "Se borrado el torneo programado " + ((finde === "findes") ? "los fines de samana" : "los días laborales") + " a las " + toDoubleDigit(hour) + ":" + toDoubleDigit(minute) + " (Hora del Bot)");
 	},
 	
 	vpt: 'viewprogtours',
@@ -93,7 +98,7 @@ exports.commands = {
 		if (!this.settings.autotours[tarRoom]) this.settings.autotours[tarRoom] = {};
 		var data = '';
 		for (var i in this.settings.autotours[tarRoom]) {
-			data += "[" + toDoubleDigit(this.settings.autotours[tarRoom][i].hour) + ":" + toDoubleDigit(this.settings.autotours[tarRoom][i].minute) + "] - Tier: " + this.settings.autotours[tarRoom][i].tier + " | Tiempo de Incripciones: " + this.settings.autotours[tarRoom][i].begintime + " sec | Autodq: " + this.settings.autotours[tarRoom][i].autodq + "m\n";
+			data += "[" + toDoubleDigit(this.settings.autotours[tarRoom][i].hour) + ":" + toDoubleDigit(this.settings.autotours[tarRoom][i].minute) + "] [" + this.settings.autotours[tarRoom][i].typedays + "] - Tier: " + this.settings.autotours[tarRoom][i].tier + " | Tiempo de Incripciones: " + this.settings.autotours[tarRoom][i].begintime + " sec | Autodq: " + this.settings.autotours[tarRoom][i].autodq + "m\n";
 		}
 		if (data === '') return this.say(con, room, "No ha torneos programados en esta sala");
 		this.uploadToHastebin(con, room, by, "Torneos programdos en " + room + ":\n\n" + data);

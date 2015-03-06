@@ -1179,6 +1179,8 @@ exports.parse = {
 					var f = new Date();
 					for (var room in self.settings.autotours) {
 						for (var i in self.settings.autotours[room]) {
+							if (f.getDay() < 2 && self.settings.autotours[room][i].typedays !== "findes") continue;
+							if (f.getDay() >= 2 && self.settings.autotours[room][i].typedays !== "laborales") continue;
 							if (f.getHours() === self.settings.autotours[room][i].hour && (f.getMinutes() - self.settings.autotours[room][i].minute) >= 0 && (f.getMinutes() - self.settings.autotours[room][i].minute) < 2) {
 								//make tour
 								if (!self.tourData[room]) self.makeTour(connection, room, self.settings.autotours[room][i].tier, self.settings.autotours[room][i].begintime, self.settings.autotours[room][i].autodq);
