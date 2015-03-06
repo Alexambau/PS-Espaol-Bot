@@ -302,6 +302,7 @@ exports.parse = {
 				this.chatDataTimer = setInterval(self.cleanChatData,
 					30*60*1000
 				);
+				this.checkTours(connection);
 				if (lastMessage) this.room = '';
 				break;
 			case 'updatechallenges':
@@ -1159,6 +1160,36 @@ exports.parse = {
 	},
 	processBattle: function(room, connection) {
 		this.say(connection, room, '/timer on');
+	},
+	makeTour: function(connection, room, tier, begintime, autodq) {
+		this.tours[room] = {
+				players: 0,
+				maxPlayers: 0,
+				autodq: autodq,
+				now: Date.now(),
+				timeout: begintime * 1000
+		};
+		this.say(connection, room, '/tour new ' + tier + ', elimination');
+	},
+	checkTours: function(connection) {
+		var loop = function () {
+			setTimeout(function () {
+				var self = this;
+				if (self.settings && self.settings.autotours) {
+					var f = new Date();
+					for (var room in self.settings.autotours) {
+						for (var i in self.settings.autotours[room]) {
+							if (f.getHours() === self.settings.autotours[room][i].hour && (f.getMinutes() - self.settings.autotours[room][i].minute) >= 0 && (f.getMinutes() - self.settings.autotours[room][i].minute) < 2) {
+								//make tour
+								if (!self.tourData[room]) self.makeTour(connection, room, self.settings.autotours[room][i].tier, self.settings.autotours[room][i].begintime, self.settings.autotours[room][i].autodq);
+							}
+						}
+					}
+				}
+				loop();
+			}.bind(this), 30000);
+		}.bind(this);
+		loop();
 	},
 	moveBattle: function(room, connection) {
 		//make battle decisions

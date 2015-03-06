@@ -16,6 +16,90 @@ function getHash(name, maxNum) {
 }
 
 exports.commands = {
+	
+	/**
+	 * Automated Tours
+	 */
+	bottime: 'hora',
+	hora: function(arg, by, room, con) {
+		if (this.hasRank(by, '#~') || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			var text = '/pm ' + by + ', ';
+		}
+		var f = new Date();
+		text += "Hora del Bot: " + toDoubleDigit(f.getHours()) + ":" + toDoubleDigit(f.getMinutes()) + ":" + toDoubleDigit(f.getSeconds());
+		this.say(con, room, text);
+	},
+	
+	settour: 'setautomatedtour',
+	progtour: 'setautomatedtour',
+	setautomatedtour: function(arg, by, room, con) {
+		if (!this.canUse('banword', room, by) || room.charAt(0) === ',') return false;
+		if (!this.settings.autotours) this.settings.autotours = {}
+		if (!arg) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq]");
+		var tarRoom = room;
+		if (!this.settings.autotours[tarRoom]) this.settings.autotours[tarRoom] = {};
+		var args = arg.split(",");
+		if (args.length < 5) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq]");
+		var hour = parseInt(args[0]);
+		var minute = parseInt(args[1]);
+		var tier = toId(args[2]);
+		var begintime = parseInt(args[3]);
+		var autodq = parseFloat(args[4]);
+		if (!minute && minute !== 0) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq]");
+		if (!hour || !tier || !begintime || !autodq) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq]");
+		if (!this.tourFormats || !this.tourFormats[tier]) return this.say(con, room, 'El formato ' + tier + ' no se reconoce como un formato válido para un torneo');
+		var hourId = toDoubleDigit(hour) + toDoubleDigit(minute);
+		if (this.settings.autotours[tarRoom][hourId]) return this.say(con, room, "En la franja horaria especificada ya estaba programado un torneo");
+		this.settings.autotours[tarRoom][hourId] = {
+			hour: hour,
+			minute: minute,
+			tier: tier,
+			begintime: begintime,
+			autodq: autodq
+		};
+		this.writeSettings();
+		this.say(con, room, "Se ha programado un torneo " + tier + " todos los días a las " + toDoubleDigit(hour) + ":" + toDoubleDigit(minute) + " (Hora del Bot)");
+	},
+	
+	unsettour: 'unsetautomatedtour',
+	unprogtour: 'unsetautomatedtour',
+	unsetautomatedtour: function(arg, by, room, con) {
+		if (!this.canUse('banword', room, by) || room.charAt(0) === ',') return false;
+		if (!this.settings.autotours) this.settings.autotours = {}
+		if (!arg) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto]");
+		var tarRoom = room;
+		if (!this.settings.autotours[tarRoom]) this.settings.autotours[tarRoom] = {};
+		var args = arg.split(",");
+		if (args.length < 2) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto]");
+		var hour = parseInt(args[0]);
+		var minute = parseInt(args[1]);
+		if (!minute && minute !== 0) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto]");
+		if (!hour) return this.say(con, room, "Use el comando así: " + config.commandcharacter + "unprogtour [hora], [minuto]");
+		var hourId = toDoubleDigit(hour) + toDoubleDigit(minute);
+		if (!this.settings.autotours[tarRoom][hourId]) return this.say(con, room, "En la franja horaria especificada no hay programado ningún torneo");
+		delete this.settings.autotours[tarRoom][hourId];
+		this.writeSettings();
+		this.say(con, room, "Se borrado el torneo programado a las " + toDoubleDigit(hour) + ":" + toDoubleDigit(minute) + " (Hora del Bot)");
+	},
+	
+	vpt: 'viewprogtours',
+	viewprogtour: 'viewprogtours',
+	viewprogtours: function(arg, by, room, con) {
+		if (!this.canUse('banword', room, by) || room.charAt(0) === ',') return false;
+		if (!this.settings.autotours) this.settings.autotours = {}
+		var tarRoom = room;
+		if (!this.settings.autotours[tarRoom]) this.settings.autotours[tarRoom] = {};
+		var data = '';
+		for (var i in this.settings.autotours[tarRoom]) {
+			data += "[" + toDoubleDigit(this.settings.autotours[tarRoom][i].hour) + ":" + toDoubleDigit(this.settings.autotours[tarRoom][i].minute) + "] - Tier: " + this.settings.autotours[tarRoom][i].tier + " | Tiempo de Incripciones: " + this.settings.autotours[tarRoom][i].begintime + " sec | Autodq: " + this.settings.autotours[tarRoom][i].autodq + "m\n";
+		}
+		if (data === '') return this.say(con, room, "No ha torneos programados en esta sala");
+		this.uploadToHastebin(con, room, by, "Torneos programdos en " + room + ":\n\n" + data);
+	},
+	
+	
 	/**
 	 * Help commands
 	 *
