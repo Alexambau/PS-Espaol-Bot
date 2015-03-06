@@ -33,6 +33,21 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
+	tours: 'autotours',
+	progtours: 'autotours',
+	autotours: function(arg, by, room, con) { 
+		if (!this.hasRank(by, '~')) return false;
+		if (toId(arg) === "off") {
+			if (config.disabletours) return this.say(con, room, 'El modo "torneos programados" ya estaba deshabilitado.');
+			config.disabletours = true;
+			this.say(con, room, 'Modo "torneos programados" deshabilitado.');
+		} else {
+			if (!config.disabletours) return this.say(con, room, 'El modo "torneos programados" ya estaba habilitado.');
+			config.disabletours = false;
+			this.say(con, room, 'Modo "torneos programados" habilitado.');
+		}
+	},
+	
 	settour: 'setautomatedtour',
 	progtour: 'setautomatedtour',
 	setautomatedtour: function(arg, by, room, con) {

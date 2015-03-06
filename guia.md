@@ -106,6 +106,7 @@ Comando **ic** para modificar comandos dinámicos:
  
 Programación de torneos:
 
+- `tours [on/off]` Habilita o deshabilita los torneos programados. Por defecto están habilitados.
 - `progtour [hora], [minuto], [tier], [segundos para auto iniciarse], [minutos autodq], [laborales/findes]` Programa un torneo para iniciarse todos los días a una determinada hora.
 - `unprogtour [hora], [minuto], [laborales/findes]` Elimina un torneo programado.
 - `vpt` Muestra la lista de torneos programados en una sala.

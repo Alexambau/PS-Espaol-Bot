@@ -1175,7 +1175,7 @@ exports.parse = {
 		var loop = function () {
 			setTimeout(function () {
 				var self = this;
-				if (self.settings && self.settings.autotours) {
+				if (!config.disabletours && self.settings && self.settings.autotours) {
 					var f = new Date();
 					for (var room in self.settings.autotours) {
 						for (var i in self.settings.autotours[room]) {
