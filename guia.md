@@ -1,4 +1,4 @@
-﻿Bot para las salas Español y Roleplay Español de PS
+﻿Bot para las salas Español y Eventos de PS
 ====================
 
 En esta guía se explican los comandos y funcionalidades de este Bot.
@@ -12,6 +12,7 @@ Comandos Básicos:
  - `about:` Explica lo más general del Bot. Es un comando identificativo.
  - `hora:` Muestra la hora del Bot.
  - `help:` Devuelve el link a esta guía.
+ - `eventos:` Devuelve el link de la sala 'Eventos'
  - `joke:` Devuelve un chiste en ingles.
  - `choose:` Elige entre varias opciones.
  - `seen:` Da información sobre la ultima vez que se vió a un usuario.
@@ -39,9 +40,6 @@ Comandos Informativos:
  - `sanciones`
  - `reglas`
  - `staff`
- - `modchat`
- - `roleplay`
- - `modchat`
   
 Comandos de Información sobre Pokemon: 
 
