@@ -27,6 +27,8 @@ Comandos Básicos:
 
 Comandos Informativos: 
 
+ - `indice`
+ - `guias`
  - `liga`
  - `foro`
  - `faq`

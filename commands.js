@@ -1098,6 +1098,25 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
+	indice: function(arg, by, room, con) {
+		var text = '';
+		if (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		}
+		text += "¡Bienvenidos a la comunidad de habla hispana! Si eres nuevo o tienes dudas revisa nuestro índice de guías: http://ps-salaespanol.proboards.com/thread/575/ndice-de-gu";
+		this.say(con, room, text);
+	},
+	
+	guias: 'guia',
+	guia: function(arg, by, room, con) {
+		var text = '';
+		if (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		}
+		text += "Desde este índice (http://ps-salaespanol.proboards.com/thread/575/ndice-de-gu) podrás acceder a toda la información importante de la sala. By: Lost Seso";
+		this.say(con, room, text);
+	},
+	
 
 	liga: function(arg, by, room, con) {
 		var text = '';
