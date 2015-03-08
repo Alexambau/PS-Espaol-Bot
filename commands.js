@@ -1384,7 +1384,7 @@ exports.commands = {
 	},
 	
 	poke: function(arg, by, room, con) {
-		if (this.canUse('info', room, by) || room.charAt(0) === ',') {
+		if (this.canUse('poke', room, by) || room.charAt(0) === ',') {
 			var text = '';
 			if (room.charAt(0) !== ',') text += '!dt ';
 		} else {
