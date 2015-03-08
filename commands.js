@@ -1392,7 +1392,6 @@ exports.commands = {
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
-			var formatsdata = require('./formats-data.js').BattleFormatsData;
 		} catch (e) {
 			return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
@@ -1456,7 +1455,6 @@ exports.commands = {
 		}
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
-			var formatsdata = require('./formats-data.js').BattleFormatsData;
 		} catch (e) {
 			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
