@@ -1384,12 +1384,21 @@ exports.commands = {
 	},
 	
 	poke: function(arg, by, room, con) {
-		var rand = Math.floor(721 * Math.random()) + 1;
-		var text = '';
-		if (!this.canUse('poke',room, by)) {
-			var text = '/pm ' + by + ', Haz /dt ' + rand + ' para ver que Pokémon aleatorio ha salido.';
+		if (this.canUse('info', room, by) || room.charAt(0) === ',') {
+			var text = '';
+			if (room.charAt(0) !== ',') text += '!dt ';
+		} else {
+			var text = '/pm ' + by + ', ';
 		}
-			text +='!dt ' + rand;
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var formatsdata = require('./formats-data.js').BattleFormatsData;
+		} catch (e) {
+			return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
+		}
+		var pokemon = Object.keys(pokedex);
+		var rand = Math.floor(Math.random() * pokemon.length);
+		text += pokedex[pokemon[rand]].species;
 		this.say(con, room, text);
 	},
 	
