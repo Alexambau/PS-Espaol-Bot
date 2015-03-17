@@ -419,7 +419,7 @@ exports.commands = {
 	tourjoin: 'jointour',
 	jt: 'jointour',
 	jointour: function(arg, by, room, con) {
-		if (!this.hasRank(by, '~')) return false;
+		if (!this.hasRank(by, '%@#~')) return false;
 		this.say(con, room, "/tour join");
 	},
 	
@@ -1291,7 +1291,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
-			text +='/wall Revisa las reglas del chat aquí: http://bit.ly/1abNG5E';
+			text +='/announce Revisa las reglas del chat aquí: http://bit.ly/1abNG5E';
 		this.say(con, room, text);	
 	
 	},
