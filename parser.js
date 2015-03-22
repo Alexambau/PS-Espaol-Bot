@@ -916,7 +916,8 @@ exports.parse = {
 	},
 	getTourTable: function(minpos, t) {
 		if (!this.settings.tourPoints) return false;
-		var table = '';
+		var table = '|  n  |      Jugador       | Ranking\n';
+		table +=    '|     |                    |\n'
 		var ranks = [];
 		var auxObj = {};
 		var auxrank;
@@ -939,15 +940,20 @@ exports.parse = {
 		}
 		ranks = ranks.sort(); //ordenar
 		var k = 1;
-		var aux, aux2;
+		var aux, aux2, al;
 		for (var i = ranks.length - 1; i >= 0; i--) {
 			if (k > (minpos + t)) break;
 			for (var j in auxObj[ranks[i]]) {
 				if (k > (minpos + t)) break;
-				if (k < 10) aux = "00" + k.toString();
-				else if (k < 100) aux = "0" + k.toString();
+				if (k < 10) aux = k.toString() + "  ";
+				else if (k < 100) aux = k.toString() + " ";
 				else aux = k.toString();
-				if (k >= minpos) table += aux + " | " + j.charAt(0).toUpperCase() + ((j.length > 1) ? j.substr(1) : '') + " | " + parseInt(ranks[i]).toString() + "\n";
+				aux2 = j.charAt(0).toUpperCase() + ((j.length > 1) ? j.substr(1) : '');
+				al = 18 - aux2.length;
+				for (var g = 0; g < al; g++) {
+					aux2 += " ";
+				}
+				if (k >= minpos) table += "| " + aux + " | " + aux2 + " | " + parseInt(ranks[i]).toString() + "\n";
 				k++;
 			}
 		}
