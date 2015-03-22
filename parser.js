@@ -660,7 +660,7 @@ exports.parse = {
 					case 'join':
 						if (this.tours && this.tours[this.room]) {
 							this.tours[this.room].players++;
-							if (this.tours[this.room].maxPlayers && (this.tours[this.room].players >= this.tours[this.room].maxPlayers)) {
+							if (!this.tours[this.room].started && this.tours[this.room].maxPlayers && (this.tours[this.room].players >= this.tours[this.room].maxPlayers)) {
 								this.say(connection, this.room, '/tour start');
 								this.say(connection, this.room, '/tour autodq ' + this.tours[this.room].autodq);
 							}
@@ -701,7 +701,24 @@ exports.parse = {
 						}
 						break;
 					case 'end':
+						try {
+							if (this.tours && this.tours[this.room] && this.tours[this.room].isRated) {
+								var tourData = JSON.parse(spl[3]);
+								var winner = tourData.results[0][0];
+								var results = parseTourTree(tourData.bracketData.rootNode);
+								for (var k in results) {
+									this.addTourPoints(k, results[k] * eTourConfig.onroundwin);
+								}
+								this.addTourPoints(winner, eTourConfig.onwin);
+								this.writeSettings();
+								this.updateTourTable();
+								this.say(connection, this.room, '/wall Felicidades a ' + winner + " por ganar el torneo: " + eTourStatus.actualTour.name + "! Los puntos obtenidos dependen del numero de rondas ganadas.");
+							}
+						} catch (e){error('failed to load tour data: ' + sys.inspect(e));}
 					case 'forceend':
+						if (this.tours && this.tours[this.room] && this.tours[this.room].isRated) {
+							eTourStatus.actualTour = 0;
+						}
 						if (this.tourData[this.room]) delete this.tourData[this.room];
 						if (this.tours && this.tours[this.room]) delete this.tours[this.room];
 						break;
@@ -883,6 +900,73 @@ exports.parse = {
 		var req = require('http').request(reqOpts, function(res) {
 			res.on('data', function(chunk) {
 				self.say(con, room, (room.charAt(0) === ',' ? "" : "/pm " + by + ", ") + "hastebin.com/raw/" + JSON.parse(chunk.toString())['key']);
+			});
+		});
+
+		req.write(toUpload);
+		req.end();
+	},
+	addTourPoints: function(user, points) {
+		user = toId(user);
+		points = parseInt(points);
+		if (!points) return;
+		if (!this.settings.tourPoints) this.settings.tourPoints = {};
+		if (!this.settings.tourPoints[user]) this.settings.tourPoints[user] = 0;
+		this.settings.tourPoints[user] += points;
+	},
+	getTourTable: function(minpos, t) {
+		if (!this.settings.tourPoints) return false;
+		var table = '';
+		var ranks = [];
+		var auxObj = {};
+		var auxrank;
+		var maxrank = 0; auxmax = 0;
+		for (var i in this.settings.tourPoints) {
+			if (this.settings.tourPoints[i] > auxmax) auxmax = this.settings.tourPoints[i];
+		}
+		while (auxmax / Math.pow(10, maxrank) >= 1) {
+			maxrank++;
+		}
+		for (var i in this.settings.tourPoints) {
+			auxrank = tonDigit(this.settings.tourPoints[i], maxrank)
+			if (auxObj[auxrank]) {
+				auxObj[auxrank][i] = 1;
+			} else {
+				auxObj[auxrank] = {};
+				auxObj[auxrank][i] = 1;
+				ranks.push(auxrank);
+			}
+		}
+		ranks = ranks.sort(); //ordenar
+		var k = 1;
+		var aux, aux2;
+		for (var i = ranks.length - 1; i >= 0; i--) {
+			if (k > (minpos + t)) break;
+			for (var j in auxObj[ranks[i]]) {
+				if (k > (minpos + t)) break;
+				if (k < 10) aux = "00" + k.toString();
+				else if (k < 100) aux = "0" + k.toString();
+				else aux = k.toString();
+				if (k >= minpos) table += aux + " | " + j.charAt(0).toUpperCase() + ((j.length > 1) ? j.substr(1) : '') + " | " + parseInt(ranks[i]).toString() + "\n";
+				k++;
+			}
+		}
+		return table;
+	},
+	updateTourTable: function() {
+		var toUpload = this.getTourTable(0, 50);
+		
+		if (!toUpload) return;
+		toUpload = "Primeros 50 clasificados en el ranking de torneos:\n\n" + toUpload;
+		var reqOpts = {
+			hostname: "hastebin.com",
+			method: "POST",
+			path: '/documents'
+		};
+
+		var req = require('http').request(reqOpts, function(res) {
+			res.on('data', function(chunk) {
+				 global.toursTable = "hastebin.com/raw/" + JSON.parse(chunk.toString())['key'];
 			});
 		});
 
@@ -1171,6 +1255,48 @@ exports.parse = {
 		};
 		this.say(connection, room, '/tour new ' + tier + ', elimination');
 	},
+	checkETours: function(connection) {
+		//check tours
+		if (config.disabletours) return;
+		var f = new Date();
+		var kTime = (f.getHours() * 60) + f.getMinutes();
+		var tTime;
+		/*First - search next tour*/
+		var prog = eTourConfig.calendar;
+		var actualTour = 0;
+		if (!eTourStatus.nextTour && eTourStatus.statusData !== f.getDate()) {
+			if (!eTourStatus.waitingTourEnd && prog && prog.length && prog[f.getDate()]) {
+				eTourStatus.nextTour = prog[f.getDate()];
+				eTourStatus.nextWarn = 0;
+				eTourStatus.statusData !== f.getDate()
+			}
+		}
+		/* Check next tour (start a tour or announces)*/
+		if (eTourStatus.nextTour) {
+			actualTour = eTourStatus.nextTour;
+			tTime = (actualTour.hour * 60) + actualTour.minute;
+			if (((kTime - tTime) >= 0 && Math.abs(kTime - tTime) < 2) || eTourStatus.waitingTourEnd) {
+				//start the tour
+				if (this.tourData[eTourConfig.toursRoom]) {
+					//other tour is up
+					if (!eTourStatus.waitingTourEnd) {
+						this.say(connection, eTourConfig.toursRoom, '/mn Torneo [' + actualTour.name + '] no iniciado a causa de otro torneo ya iniciado. Se esperará a que finalice el torneo en cuestión.');
+						eTourStatus.waitingTourEnd = 1;
+					}
+					return;
+				}
+				eTourStatus.actualTour = actualTour;
+				eTourStatus.statusData = {};
+				this.say(connection, eTourConfig.announceRoom, '/wall Torneo [' + actualTour.name + '] iniciado en la sala  de Eventos: http://play.pokemonshowdown.com/' + eTourConfig.toursRoom);
+				this.makeTour(connection, eTourConfig.toursRoom, actualTour.tier, actualTour.signups * 60, actualTour.autodq);
+				this.tours[eTourConfig.toursRoom].isRated = actualTour.isRated;
+				this.say(connection, eTourConfig.toursRoom, '/wall Inscripciones para el Torneo [' + actualTour.name + '] abiertas! En ' + actualTour.signups + ' minuto' + ((actualTour.signups > 1) ? 's' : '') + ' dará comienzo!');
+				eTourStatus.nextTour = 0;
+				eTourStatus.statusData = f.getDate();
+				eTourStatus.waitingTourEnd = 0;
+			}
+		}
+	},
 	checkTours: function(connection) {
 		var loop = function () {
 			setTimeout(function () {
@@ -1188,6 +1314,7 @@ exports.parse = {
 						}
 					}
 				}
+				this.checkETours(connection);
 				loop();
 			}.bind(this), 30000);
 		}.bind(this);

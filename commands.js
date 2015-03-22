@@ -265,6 +265,20 @@ exports.commands = {
 		}
 	},
 	
+	reloadtour: function(arg, by, room, con) {
+		if (!this.hasRank(by, '#~')) return false;
+		try {
+			this.uncacheTree('./etourconfig.js');
+			eTourConfig = require('./etourconfig.js');
+			eTourStatus.statusData = 0;
+			eTourStatus.nextTour = 0;
+			this.checkETours(con);
+			this.say(con, room, 'Calendario de Torneos actualizado.');
+		} catch (e) {
+			error('failed to reload: ' + sys.inspect(e));
+		}
+	},
+	
 	reloadteams: function(arg, by, room, con) {
 		if (!this.hasRank(by, '#~')) return false;
 		try {
@@ -2134,5 +2148,113 @@ exports.commands = {
 		}
 		if (text == '') text = 'El movimiento:  ' + arg[typearg] + ' no ha sido encontrado';
 		this.say(con, room, text);
-	}		
+	},	
+	
+	/**
+	 * Ladderbroad Tour Commands
+	 */
+	
+	updatetourladder: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		var toUpload = this.getTourTable(0, 50);
+		var self = this;
+		
+		if (!toUpload) return;
+		toUpload = "Primeros 50 clasificados en el ranking de torneos:\n\n" + toUpload;
+		var reqOpts = {
+			hostname: "hastebin.com",
+			method: "POST",
+			path: '/documents'
+		};
+
+		var req = require('http').request(reqOpts, function(res) {
+			res.on('data', function(chunk) {
+				global.toursTable = "hastebin.com/raw/" + JSON.parse(chunk.toString())['key'];
+				self.say(con, room, 'Tabla de puntuacines actualizada: ' + global.toursTable);
+			});
+		});
+
+		req.write(toUpload);
+		req.end();
+	},
+	
+	cleartourladder: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		if (arg && arg !== "7m03ad2wfpl") return; //security key
+		var toUpload = this.getTourTable(0, 50);
+		var self = this;
+		
+		if (!toUpload) return;
+		toUpload = "Primeros 50 clasificados en el ranking de torneos:\n\n" + toUpload;
+		var reqOpts = {
+			hostname: "hastebin.com",
+			method: "POST",
+			path: '/documents'
+		};
+
+		var req = require('http').request(reqOpts, function(res) {
+			res.on('data', function(chunk) {
+				global.toursTable = "hastebin.com/raw/" + JSON.parse(chunk.toString())['key'];
+				self.say(con, room, 'Tabla de puntuacines actualizada: ' + global.toursTable);
+				self.settings.tourPoints = {};
+				self.writeSettings();
+				self.say(con, room, 'Datos borrados. Tabla de puntuaciones reseteada con éxito.');
+			});
+		});
+
+		req.write(toUpload);
+		req.end();
+		
+	},
+	
+	ladder: 'tourladder',
+	tourladder: function(arg, by, room, con) {
+		var text = '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		}
+		if (!global.toursTable) text += 'No hay tabla de torneos subida.';
+		else text += 'Tabla de puntuacines en torneos: ' + global.toursTable;
+		this.say(con, room, text);
+	},
+	
+	puntos: 'ranking',
+	rank: 'ranking',
+	ranking: function(arg, by, room, con) {
+		var text = '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		}
+		var target = toId(arg) || by;
+		text += 'Puntuación del usuario ' + target + ": ";
+		if (!this.settings.tourPoints) this.settings.tourPoints = {};
+		if (!this.settings.tourPoints[toId(by)]) text += "0 Puntos.";
+		else text += this.settings.tourPoints[toId(by)] + " Puntos.";
+		this.say(con, room, text);
+	},
+	
+	infotour: function(arg, by, room, con) {
+		var text = '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		}
+		var f = new Date();
+		var prog = eTourConfig.calendar;
+		if (prog && prog.length && prog[f.getDate()]) {
+			text += '**' + prog[f.getDate()].name + '** hoy a las **' + toDoubleDigit(prog[f.getDate()].hour) + ":" + toDoubleDigit(prog[f.getDate()].minute) + "** (Hora del Bot) Formato: **" + prog[f.getDate()].tier + "** en la sala de Eventos.";
+		} else {
+			text += 'Hoy no hay ningún torneo por puntos programado. Revise el calendario de torneos.';
+		}
+		this.say(con, room, text);
+	},
+	
+	calendario: 'tourcalendar',
+	tourcalendar: function(arg, by, room, con) {
+		var text = '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		}
+		text += 'Calendario de torneos: [link]';
+		this.say(con, room, text);
+	}
 };

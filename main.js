@@ -76,6 +76,41 @@ global.toDoubleDigit = function(num) {
 	return "0" + num;
 };
 
+global.tonDigit = function(num, n) {
+	var power = 0;
+	var str = "";
+	while (num / Math.pow(10, power) >= 1) {
+		power++;
+	} 
+	var dif = n - power + 1;
+	for (var i = 0; i < dif; i++) {
+		str += "0"
+	}
+	return str + num.toString();
+};
+
+global.parseTourTree = function(tree) {
+	var auxobj = {};
+	var team = tree.team;
+	if (!team) team = toId(team);
+	var state = tree.state;
+	var children = tree.children;
+	if (!children) children = [];
+	if (state && state === "finished") {
+		if (!auxobj[team]) auxobj[team] = 0;
+		auxobj[team] += 1;
+	}
+	var aux;
+	for (var i = 0; i < children.length; i++) {
+		aux = parseTourTree(children[i]);
+		for (var j in aux) {
+			if (!auxobj[j]) auxobj[j] = 0;
+			auxobj[j] += aux[j];
+		}
+	}
+	return auxobj;
+};
+
 global.stripCommands = function(text) {
 	return ((text.trim().charAt(0) === '/') ? '/' : ((text.trim().charAt(0) === '!') ? ' ':'')) + text.trim();
 };
@@ -141,6 +176,16 @@ console.log('');
 // Config and config.js watching...
 global.fs = require('fs');
 global.ia = require('./pokemon-ia.js');
+
+global.eTourConfig = require('./etourconfig.js');
+global.toursTable = 0;
+global.eTourStatus = {
+	actualTour: false,
+	nextTour: false,
+	statusData: 0,
+	waitingTourEnd: 0
+};
+
 if (!('existsSync' in fs)) {
 	fs.existsSync = require('path').existsSync;
 }
