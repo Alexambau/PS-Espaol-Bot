@@ -2154,6 +2154,73 @@ exports.commands = {
 	 * Ladderbroad Tour Commands
 	 */
 	
+	rankedtour: 'etour',
+	etour: function(arg, by, room, con) { 
+		if (!this.hasRank(by, '@#&~') || room !== eTourConfig.toursRoom) return false;
+		var args = arg.split(",");
+		if (args.length < 4) return this.say(con, room, 'Uso: ' + config.commandcharacter + 'etour [formato], [nombre], [inscripciones(min)], [autodq(min)]');
+		if (toId(args[0]) === "random") args[0] = "randombattle";
+		if (toId(args[0]) === "randomdobles") args[0] = "randomdoublesbattle";
+		if (toId(args[0]) === "randomtriples") args[0] = "randomtriplesbattle";
+		if (toId(args[0]) === "vgc" || toId(args[0]) === "vgc2015") args[0] = "Battle Spot Doubles (VGC 2015)";
+		if (!this.tourFormats || !this.tourFormats[toId(args[0])]) return this.say(con, room, 'El formato ' + toId(args[0]) + ' no se reconoce como un formato valido para un torneo');
+		if (this.tourData[eTourConfig.toursRoom]) return this.say(con, room, 'Ya hay un torneo en marcha, no se puede iniciar otro.');
+		var actualTour = {hour: 0, minute: 0, tier: args[0], name: args[1].trim(), isRated: true, signups: parseFloat(args[2]), autodq: parseFloat(args[3])};
+		eTourStatus.actualTour = actualTour;
+		eTourStatus.statusData = {};
+		this.say(con, eTourConfig.announceRoom, '/wall Torneo [' + actualTour.name + '] iniciado en la sala  de Eventos: http://play.pokemonshowdown.com/' + eTourConfig.toursRoom);
+		this.makeTour(con, eTourConfig.toursRoom, actualTour.tier, actualTour.signups * 60, actualTour.autodq);
+		this.tours[eTourConfig.toursRoom].isRated = actualTour.isRated;
+		this.say(con, eTourConfig.toursRoom, '/wall Inscripciones para el Torneo [' + actualTour.name + '] abiertas! En ' + actualTour.signups + ' minuto' + ((actualTour.signups !== 1) ? 's' : '') + ' dará comienzo!');
+	},
+	
+	etourstdin: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		if (!arg || !arg.length) return this.say(con, room, 'Uso: ' + config.commandcharacter + 'etourstdin user1:rank1, user2:rank2...');
+		if (!this.settings.tourPoints) this.settings.tourPoints = {};
+		var args = arg.split(",");
+		var aux, target, rank;
+		for (var i = 0; i < args.length; i++) {
+			aux = args[i].split(":");
+			if (aux.length < 2) continue;
+			target = toId(aux[0]);
+			rank = parseInt(aux[1]);
+			if (rank) {
+				if (!this.settings.tourPoints[target]) this.settings.tourPoints[target] = rank;
+			} else {
+				if (this.settings.tourPoints[target]) delete this.settings.tourPoints[target];
+			}
+		}
+		this.writeSettings();
+		return this.say(con, room, 'Datos introducidos (sobrescritos al ranking)');
+	},
+	
+	etourstdinplus: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		if (!arg || !arg.length) return this.say(con, room, 'Uso: ' + config.commandcharacter + 'etourstdinplus user1:plusrank1, user2:plusrank2...');
+		if (!this.settings.tourPoints) this.settings.tourPoints = {};
+		var args = arg.split(",");
+		var aux, target, rank;
+		for (var i = 0; i < args.length; i++) {
+			aux = args[i].split(":");
+			if (aux.length < 2) continue;
+			target = toId(aux[0]);
+			rank = parseInt(aux[1]);
+			if (!rank) continue;
+			if (!this.settings.tourPoints[target]) this.settings.tourPoints[target] = 0;
+			this.settings.tourPoints[target] += rank;
+		}
+		this.writeSettings();
+		return this.say(con, room, 'Datos introducidos (sumados al ranking)');
+	},
+	
+	etourstdout: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		if (!this.settings.tourPoints) this.settings.tourPoints = {};
+		var data = JSON.stringify(this.settings.tourPoints);
+		this.uploadToHastebin(con, room, by, 'tourPoints = ' + data);
+	},
+	
 	updatetourladder: function(arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
 		var toUpload = this.getTourTable(0, 50);
@@ -2213,7 +2280,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		}
-		if (!global.toursTable) text += 'No hay tabla de torneos subida.';
+		if (!global.toursTable) text += 'No hay tabla de resultados subida.';
 		else text += 'Tabla de puntuacines en torneos: ' + global.toursTable;
 		this.say(con, room, text);
 	},
@@ -2233,6 +2300,7 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
+	itour: 'infotour',
 	infotour: function(arg, by, room, con) {
 		var text = '';
 		if  (!this.canUse('info', room, by)) {
@@ -2248,6 +2316,7 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
+	calendar: 'tourcalendar',
 	calendario: 'tourcalendar',
 	tourcalendar: function(arg, by, room, con) {
 		var text = '';

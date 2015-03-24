@@ -147,8 +147,29 @@ Para controlar esta funcionalidad destacan los siguienes comandos:
  - `jointour:` Fuerza al bot a unirse a un torneo.
  - `sb [formato]:` Busca una batalla en ladder y devuelve el link a esta.
  - `chall [usuario], [formato]:` Se utiliza para que el bot rete a un usuario.
- 
 
+
+Torneos por puntos y tablas de resultados
+------------
+
+Este bot dispone de un sistema por el cual puede crear torneos de manera automática y, una vez termien, asignar unos puntos a los partiipantes en funcion de las rondas que ganaron con un plus al ganador del torneo.
+Esto puede ser controlado en el archivo etourconfig.js, donde se establece la configuración de esta funcionalidad.
+
+Además, existen una serie de comandos fundamentales a la hora de contrlar este sistema:
+
+ - `etour [tier], [nombre], [minutos-incrpciones], [minutos-autodq]` Crea un torneo en la sala de Eventos (también lo hace automáticamente, pero esto es más manual), lo anuncia en Español. Tras un tiempo o inicia y pone el autodq. Tras finalizar el torneo recuenta puntos y actualiza el ranking.
+ - `etourstdin` Entrada standard para los datos referentes a las puntuaciones.
+ - `etourstdinplus` Entrada standard con suma para los datos referentes a las puntuaciones.
+ - `etourstdout` Salida standard para los datos referentes a las puntuaciones.
+ - `reloadtour` Vuelve a leer el archivo del calendario.
+ - `updatetourladder` Crea una tabla con las 50 mejores puntuaciones y la sube a hastebin.
+ - `cleartourladder` Lo mismo que updatetourladder pero a parte borra los datos (usar con precaución).
+ - `ladder` Muestra el link a la última actualización de la tabla de resultados.
+ - `rank [user]` Muestra la puntuacion de un usuario.
+ - `infotour` Muestra la información del torneo por puntos del día.
+ - `calendar` Link a un tema del foro con el calendario explicado.
+ 
+ 
 Créditos
 ------------
 

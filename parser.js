@@ -1296,7 +1296,7 @@ exports.parse = {
 				this.say(connection, eTourConfig.announceRoom, '/wall Torneo [' + actualTour.name + '] iniciado en la sala  de Eventos: http://play.pokemonshowdown.com/' + eTourConfig.toursRoom);
 				this.makeTour(connection, eTourConfig.toursRoom, actualTour.tier, actualTour.signups * 60, actualTour.autodq);
 				this.tours[eTourConfig.toursRoom].isRated = actualTour.isRated;
-				this.say(connection, eTourConfig.toursRoom, '/wall Inscripciones para el Torneo [' + actualTour.name + '] abiertas! En ' + actualTour.signups + ' minuto' + ((actualTour.signups > 1) ? 's' : '') + ' dará comienzo!');
+				this.say(connection, eTourConfig.toursRoom, '/wall Inscripciones para el Torneo [' + actualTour.name + '] abiertas! En ' + actualTour.signups + ' minuto' + ((actualTour.signups !== 1) ? 's' : '') + ' dará comienzo!');
 				eTourStatus.nextTour = 0;
 				eTourStatus.statusData = f.getDate();
 				eTourStatus.waitingTourEnd = 0;

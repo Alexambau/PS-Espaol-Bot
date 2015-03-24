@@ -177,7 +177,17 @@ console.log('');
 global.fs = require('fs');
 global.ia = require('./pokemon-ia.js');
 
-global.eTourConfig = require('./etourconfig.js');
+try {
+	global.eTourConfig = require('./etourconfig.js');
+} catch (e) {
+	global.eTourConfig = {
+		toursRoom: '',
+		announceRoom:'',
+		onwin: 1,
+		onroundwin: 1,
+		calendar: []
+	};
+}
 global.toursTable = 0;
 global.eTourStatus = {
 	actualTour: false,
