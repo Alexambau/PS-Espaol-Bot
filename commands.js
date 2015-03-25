@@ -1769,9 +1769,10 @@ exports.commands = {
 		} catch (e) {
 			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
-		if (parola == "") return this.say(con, room, "¿Que tengo que traducir?");
-		var parola = arg.toLowerCase().replace(/[^a-z0-9àèéìòù]/,"");
-		if (aliases[parola]) var aliasParola = aliases[parola].toLowerCase().replace(/[^a-z0-9àèéìòù]/,"");
+		
+		var word = toId(arg);
+		if (word === "") return this.say(con, room, "¿Que tengo que traducir?");
+		if (aliases[word]) word = toId(aliases[word]);
 		
 		var results = [];
 		
@@ -1779,9 +1780,8 @@ exports.commands = {
 		
 		for (var i in trad) {
 			for (var j in trad[i]) {
-				if (trad[i][j].en.replace(/[^a-z0-9àèéìòù]/,"") == parola) results.push({"trad": trad[i][j].es, "cat": i});
-				if (aliasParola && trad[i][j].en.replace(/[^a-z0-9àèéìòù]/,"") == aliasParola) results.push({"trad": trad[i][j].es, "cat": i});
-				if (trad[i][j].es.replace(/[^a-z0-9àèéìòù]/,"") == parola) results.push({"trad": trad[i][j].en, "cat": i});
+				if (toId(trad[i][j].es) === word) results.push({"trad": trad[i][j].en, "cat": i});
+				if (toId(trad[i][j].en) === word) results.push({"trad": trad[i][j].es, "cat": i});
 			}
 		}
 		
@@ -1795,7 +1795,7 @@ exports.commands = {
 			return this.say(con, room, resultstext);
 		}
 		return this.say(con, room, "No encontrado");
-	},	
+	},
 
 	heavyslam: function(arg, by, room, con) {
 		if (this.canUse('info', room, by) || room.charAt(0) === ',') {
