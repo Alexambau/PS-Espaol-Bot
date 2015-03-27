@@ -705,14 +705,14 @@ exports.parse = {
 							if (this.tours && this.tours[this.room] && this.tours[this.room].isRated) {
 								var tourData = JSON.parse(spl[3]);
 								var winner = tourData.results[0][0];
-								var results = parseTourTree(tourData.bracketData.rootNode);
+								var results = assignTourPontsSync(tourData.bracketData.rootNode);
 								for (var k in results) {
 									this.addTourPoints(k, results[k] * eTourConfig.onroundwin);
 								}
 								this.addTourPoints(winner, eTourConfig.onwin);
 								this.writeSettings();
 								this.updateTourTable();
-								this.say(connection, this.room, '/wall Felicidades a ' + winner + " por ganar el torneo: " + eTourStatus.actualTour.name + "! Los puntos obtenidos dependen del numero de rondas ganadas.");
+								this.say(connection, this.room, '/wall Felicidades a ' + winner + " por ganar el torneo: " + eTourStatus.actualTour.name + "! Aquellos jugadores que llegaron a cuartos o más también recibirán puntos.");
 							}
 						} catch (e){error('failed to load tour data: ' + sys.inspect(e));}
 					case 'forceend':
@@ -929,7 +929,7 @@ exports.parse = {
 			maxrank++;
 		}
 		for (var i in this.settings.tourPoints) {
-			auxrank = tonDigit(this.settings.tourPoints[i], maxrank)
+			auxrank = tonDigit(this.settings.tourPoints[i], maxrank);
 			if (auxObj[auxrank]) {
 				auxObj[auxrank][i] = 1;
 			} else {

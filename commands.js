@@ -2156,7 +2156,8 @@ exports.commands = {
 	
 	rankedtour: 'etour',
 	etour: function(arg, by, room, con) { 
-		if (!this.hasRank(by, '@#&~') || room !== eTourConfig.toursRoom) return false;
+		if (!this.hasRank(by, '@#&~')) return false;
+		if (room !== eTourConfig.toursRoom) return this.say(con, room, 'Este comando solo puede ser usado en la sala de Eventos.');
 		var args = arg.split(",");
 		if (args.length < 4) return this.say(con, room, 'Uso: ' + config.commandcharacter + 'etour [formato], [nombre], [inscripciones(min)], [autodq(min)]');
 		if (toId(args[0]) === "random") args[0] = "randombattle";
@@ -2313,6 +2314,17 @@ exports.commands = {
 		} else {
 			text += 'Hoy no hay ningún torneo por puntos programado. Revise el calendario de torneos.';
 		}
+		this.say(con, room, text);
+	},
+	
+	syspuntuaciones: 'pointssystem',
+	sistemapuntuaciones: 'pointssystem',
+	pointssystem: function(arg, by, room, con) {
+		var text = '';
+		if  (!this.canUse('info', room, by)) {
+			text += '/pm ' + by + ', ';
+		}
+		text += 'Por ganar: ' + eTourConfig.pointsWinner + ' | Por llegar a la final: ' + eTourConfig.pointsSubWinner + ' | Semifinales: ' + eTourConfig.pointsSemiFinals + ' | Cuartos: ' + eTourConfig.pointsQuarterFinals;
 		this.say(con, room, text);
 	},
 	

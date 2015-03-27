@@ -111,6 +111,43 @@ global.parseTourTree = function(tree) {
 	return auxobj;
 };
 
+global.assignTourPontsSync = function(tree) {
+	var roundsObj = parseTourTree(tree);
+	var auxObj = {};
+	var auxArray = [];
+	var rt = {};
+	var maxrdigit = 4, auxrank = 0;
+	for (var i in roundsObj) {
+		auxrank = tonDigit(roundsObj[i], maxrdigit);
+		if (auxObj[auxrank]) {
+			auxObj[auxrank][i] = 1;
+		} else {
+			auxObj[auxrank] = {};
+			auxObj[auxrank][i] = 1;
+			auxArray.push(auxrank);
+		}
+	}
+	auxArray = auxArray.sort().reverse(); //sort
+	//now, assign the ponts
+	if (auxArray[0]) {
+		for (var i in auxObj[auxArray[0]])
+			rt[i] = eTourConfig.pointsWinner;
+	}
+	if (auxArray[1]) {
+		for (var i in auxObj[auxArray[1]])
+			rt[i] = eTourConfig.pointsSubWinner;
+	}
+	if (auxArray[2]) {
+		for (var i in auxObj[auxArray[2]])
+			rt[i] = eTourConfig.pointsSemiFinals;
+	}
+	if (auxArray[3]) {
+		for (var i in auxObj[auxArray[3]])
+			rt[i] = eTourConfig.pointsQuarterFinals;
+	}
+	return rt;
+};
+
 global.stripCommands = function(text) {
 	return ((text.trim().charAt(0) === '/') ? '/' : ((text.trim().charAt(0) === '!') ? ' ':'')) + text.trim();
 };

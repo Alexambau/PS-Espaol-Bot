@@ -3,8 +3,15 @@
 exports.toursRoom = 'eventos';
 exports.announceRoom = 'espaol';
 
-exports.onwin = 10; 
-exports.onroundwin = 1; //points
+exports.onwin = 0; 
+exports.onroundwin = 1;
+
+/* Regular point system */
+
+exports.pointsWinner = 5;
+exports.pointsSubWinner = 3;
+exports.pointsSemiFinals = 2;
+exports.pointsQuarterFinals = 1;
 
 /* Example
 
