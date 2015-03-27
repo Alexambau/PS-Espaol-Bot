@@ -707,6 +707,7 @@ exports.parse = {
 								var winner = tourData.results[0][0];
 								var results = assignTourPontsSync(tourData.bracketData.rootNode);
 								for (var k in results) {
+									if (results[k] === eTourConfig.pointsWinner && toId(k) !== toId(winner)) results[k]--;
 									this.addTourPoints(k, results[k] * eTourConfig.onroundwin);
 								}
 								this.addTourPoints(winner, eTourConfig.onwin);
