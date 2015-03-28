@@ -1272,11 +1272,11 @@ exports.parse = {
 		/*First - search next tour*/
 		var prog = eTourConfig.calendar;
 		var actualTour = 0;
-		if (!eTourStatus.nextTour && eTourStatus.statusData !== f.getDate()) {
+		if (eTourStatus.statusData !== f.getDate()) {
 			if (!eTourStatus.waitingTourEnd && prog && prog.length && prog[f.getDate()]) {
 				eTourStatus.nextTour = prog[f.getDate()];
 				eTourStatus.nextWarn = 0;
-				eTourStatus.statusData !== f.getDate()
+				eTourStatus.statusData = f.getDate();
 			}
 		}
 		/* Check next tour (start a tour or announces)*/

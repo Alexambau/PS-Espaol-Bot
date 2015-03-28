@@ -2336,7 +2336,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		}
-		text += 'Calendario de torneos: [link]';
+		text += 'Calendario de torneos: http://ps-salaespanol.proboards.com/thread/1209/torneo-leaderboards-calendario-abril-2015';
 		this.say(con, room, text);
 	}
 };
