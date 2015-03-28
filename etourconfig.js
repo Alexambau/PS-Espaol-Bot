@@ -3,7 +3,7 @@
 exports.toursRoom = 'eventos';
 exports.announceRoom = 'espaol';
 
-exports.onwin = 0; 
+exports.onwin = 3; 
 exports.onroundwin = 1;
 
 /* Regular point system */

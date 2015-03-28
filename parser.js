@@ -705,15 +705,15 @@ exports.parse = {
 							if (this.tours && this.tours[this.room] && this.tours[this.room].isRated) {
 								var tourData = JSON.parse(spl[3]);
 								var winner = tourData.results[0][0];
-								var results = assignTourPontsSync(tourData.bracketData.rootNode);
+								var results = parseTourTree(tourData.bracketData.rootNode);
 								for (var k in results) {
-									if (results[k] === eTourConfig.pointsWinner && toId(k) !== toId(winner)) results[k]--;
+									//if (results[k] === eTourConfig.pointsWinner && toId(k) !== toId(winner)) results[k]--;
 									this.addTourPoints(k, results[k] * eTourConfig.onroundwin);
 								}
 								this.addTourPoints(winner, eTourConfig.onwin);
 								this.writeSettings();
-								this.updateTourTable();
-								this.say(connection, this.room, '/wall Felicidades a ' + winner + " por ganar el torneo: " + eTourStatus.actualTour.name + "! Aquellos jugadores que llegaron a cuartos o más también recibirán puntos.");
+								this.say(connection, this.room, '/wall Felicidades a ' + winner + " por ganar el torneo: " + eTourStatus.actualTour.name + "!");
+								this.updateTourTable(connection, this.room);
 							}
 						} catch (e){error('failed to load tour data: ' + sys.inspect(e));}
 					case 'forceend':
@@ -960,9 +960,9 @@ exports.parse = {
 		}
 		return table;
 	},
-	updateTourTable: function() {
+	updateTourTable: function(con, room) {
 		var toUpload = this.getTourTable(0, 50);
-		
+		var self = this;
 		if (!toUpload) return;
 		toUpload = "Primeros 50 clasificados en el ranking de torneos:\n\n" + toUpload;
 		var reqOpts = {
@@ -974,6 +974,7 @@ exports.parse = {
 		var req = require('http').request(reqOpts, function(res) {
 			res.on('data', function(chunk) {
 				 global.toursTable = "hastebin.com/raw/" + JSON.parse(chunk.toString())['key'];
+				 self.say(con, room, "Puntuaciones actualizadas. " + toursTable + " (50 primeros clasificados)");
 			});
 		});
 
