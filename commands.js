@@ -2160,6 +2160,7 @@ exports.commands = {
 		if (room !== eTourConfig.toursRoom) return this.say(con, room, 'Este comando solo puede ser usado en la sala de Eventos.');
 		var args = arg.split(",");
 		if (args.length < 4) return this.say(con, room, 'Uso: ' + config.commandcharacter + 'etour [formato], [nombre], [inscripciones(min)], [autodq(min)]');
+		if (!parseFloat(args[2]) || !parseFloat(args[3])) return this.say(con, room, 'Uso: ' + config.commandcharacter + 'etour [formato], [nombre], [inscripciones(min)], [autodq(min)]');
 		if (toId(args[0]) === "random") args[0] = "randombattle";
 		if (toId(args[0]) === "randomdobles") args[0] = "randomdoublesbattle";
 		if (toId(args[0]) === "randomtriples") args[0] = "randomtriplesbattle";
@@ -2169,7 +2170,7 @@ exports.commands = {
 		var actualTour = {hour: 0, minute: 0, tier: args[0], name: args[1].trim(), isRated: true, signups: parseFloat(args[2]), autodq: parseFloat(args[3])};
 		eTourStatus.actualTour = actualTour;
 		eTourStatus.statusData = {};
-		this.say(con, eTourConfig.announceRoom, '/wall Torneo [' + actualTour.name + '] iniciado en la sala  de Eventos: http://play.pokemonshowdown.com/' + eTourConfig.toursRoom);
+		this.say(con, eTourConfig.announceRoom, '/wall Torneo [' + actualTour.name + '] iniciado en la sala de Eventos: http://play.pokemonshowdown.com/' + eTourConfig.toursRoom);
 		this.makeTour(con, eTourConfig.toursRoom, actualTour.tier, actualTour.signups * 60, actualTour.autodq);
 		this.tours[eTourConfig.toursRoom].isRated = actualTour.isRated;
 		this.say(con, eTourConfig.toursRoom, '/wall Inscripciones para el Torneo [' + actualTour.name + '] abiertas! En ' + actualTour.signups + ' minuto' + ((actualTour.signups !== 1) ? 's' : '') + ' dará comienzo!');
