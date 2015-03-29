@@ -55,7 +55,7 @@ exports.calendar = [
 ];
 
 var BotGMT = -4;
-var selfGMT = +1;
+var selfGMT = +2;
 
 for (var i = 0; i < exports.calendar.length; i++) {
 	if (exports.calendar[i]) {
