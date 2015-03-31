@@ -249,8 +249,8 @@ function gen6_getNotUnviableMoves(dataType, foeInfo, field) {
 		//not inmune
 		if (dataType.active[0].baseAbility === "Scrappy" && dataMove.type in {"Normal": 1, "Fighting": 1}) not_inmune = true;
 		//check
-		if (dataMove.category === "Physical" && field && field.boosts && field.boosts["atk"] && field.boosts["atk"] < -1) continue;
-		if (dataMove.category === "Special" && field && field.boosts && field.boosts["spa"] && field.boosts["spa"] < -1) continue;
+		//if (dataMove.category === "Physical" && field && field.boosts && field.boosts["atk"] && field.boosts["atk"] < -1) continue;
+		//if (dataMove.category === "Special" && field && field.boosts && field.boosts["spa"] && field.boosts["spa"] < -1) continue;
 		if (dataMove.category === "Status" && has_ability(foeInfo["a"], ["Magic Bounce"])) continue;
 		if (dataMove.category === "Status" && foeInfo.substitute && dataMove.target !== "self" && dataMove.target !== "allySide" && dataMove.target !== "foeSide") continue;
 		if (dataMove.name === "Fake Out" && field && field.lastMove) continue;
