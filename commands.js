@@ -488,6 +488,7 @@ exports.commands = {
 	tournament: 'tour',
 	tour: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '@#&~') || room.charAt(0) === ',') return false;
+		if (this.tourData && this.tourData[room]) return this.say(con, room, 'Ya hay un torneo en marcha, no se puede iniciar otro.');
 		arg = arg.replace(" ", "");
 		if (!arg || !arg.length) {
 			//default

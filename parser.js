@@ -1261,7 +1261,7 @@ exports.parse = {
 				now: Date.now(),
 				timeout: begintime * 1000
 		};
-		this.say(connection, room, '/tour new ' + tier + ', elimination');
+		this.say(connection, room, '/tour new ' + toId(tier) + ', elimination');
 	},
 	checkETours: function(connection) {
 		//check tours
