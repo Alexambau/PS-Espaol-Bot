@@ -22,7 +22,7 @@ exports.pointsQuarterFinals = 1;
 exports.calendar = [
 	false,
 	{hour: 20, minute: 0, tier:'OU', name:'Torneo Leaderboards - ORAS OU', isRated: true, signups: 3, autodq: 2}, //Day 1
-	{hour: 19, minute: 0, tier:'OU', name:'Torneo Leaderboards - ORAS OU', isRated: true, signups: 3, autodq: 2}, //Day 2
+	{hour: 19, minute: 0, tier:'[Gen 5] OU', name:'Torneo Leaderboards - BW OU', isRated: true, signups: 3, autodq: 2}, //Day 2
 	{hour: 21, minute: 0, tier:'UU', name:'Torneo Leaderboards - ORAS UU', isRated: true, signups: 3, autodq: 2}, //Day 3
 	{hour: 18, minute: 30, tier:'OU', name:'Torneo Leaderboards - ORAS OU', isRated: true, signups: 3, autodq: 2}, //Day 4
 	{hour: 21, minute: 0, tier:'LC', name:'Torneo Leaderboards - ORAS LC', isRated: true, signups: 3, autodq: 2}, //Day 5
@@ -37,8 +37,8 @@ exports.calendar = [
 	{hour: 18, minute: 30, tier:'Ubers', name:'Torneo Leaderboards - ORAS Ubers', isRated: true, signups: 3, autodq: 2}, //Day 14
 	{hour: 21, minute: 0, tier:'LC', name:'Torneo Leaderboards - ORAS LC', isRated: true, signups: 3, autodq: 2}, //Day 15
 	{hour: 19, minute: 30, tier:'OU', name:'Torneo Leaderboards - ORAS OU', isRated: true, signups: 3, autodq: 2}, //Day 16
-	{hour: 21, minute: 0, tier:'OU', name:'Torneo Leaderboards - ORAS OU', isRated: true, signups: 3, autodq: 2}, //Day 17
-	{hour: 20, minute: 30, tier:'OU', name:'Torneo Leaderboards - ORAS OU', isRated: true, signups: 3, autodq: 2}, //Day 18
+	{hour: 21, minute: 0, tier:'[Gen 4] OU', name:'Torneo Leaderboards - DPP OU', isRated: true, signups: 3, autodq: 2}, //Day 17
+	{hour: 20, minute: 30, tier:'[Gen 5] OU', name:'Torneo Leaderboards - BW OU', isRated: true, signups: 3, autodq: 2}, //Day 18
 	{hour: 22, minute: 0, tier:'Random Battle', name:'Torneo Leaderboards - Random Battle', isRated: true, signups: 3, autodq: 2}, //Day 19
 	{hour: 20, minute: 0, tier:'RU', name:'Torneo Leaderboards - ORAS RU', isRated: true, signups: 3, autodq: 2}, //Day 20
 	{hour: 19, minute: 0, tier:'LC', name:'Torneo Leaderboards - ORAS LC', isRated: true, signups: 3, autodq: 2}, //Day 21

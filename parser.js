@@ -302,6 +302,14 @@ exports.parse = {
 				this.chatDataTimer = setInterval(self.cleanChatData,
 					30*60*1000
 				);
+				if (this.checkToursTimeout) {
+					try {
+						clearTimeout(this.checkToursTimeout);
+						console.log("Borrado Timeout");
+					}catch (e) {
+						error('failed: ' + sys.inspect(e));
+					};
+				}
 				this.checkTours(connection);
 				if (lastMessage) this.room = '';
 				break;
@@ -1307,7 +1315,7 @@ exports.parse = {
 	},
 	checkTours: function(connection) {
 		var loop = function () {
-			setTimeout(function () {
+			this.checkToursTimeout = setTimeout(function () {
 				var self = this;
 				if (!config.disabletours && self.settings && self.settings.autotours) {
 					var f = new Date();
