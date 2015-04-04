@@ -1305,8 +1305,11 @@ exports.commands = {
 		var text = '';
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
+			text +='Revisa las reglas del chat aquí: http://bit.ly/1abNG5E';
+			this.say(con, '', text);
+			return;
 		} 
-			text +='/announce Revisa las reglas del chat aquí: http://bit.ly/1abNG5E';
+		text +='/announce Revisa las reglas del chat aquí: http://bit.ly/1abNG5E';
 		this.say(con, room, text);	
 	
 	},
@@ -1326,7 +1329,7 @@ exports.commands = {
 	helix: 'helixesp',
 	helixesp: function(arg, by, room, con) {
 		var text = '';
-		if (!this.canUse('helixesp', room, by)) {
+		if (!this.canUse('helixesp', room, by) && room.charAt(0) !== ',') {
 			var text = '/pm ' + by + ', ';
 		}
 		var rand = Math.floor(22 * Math.random()) + 1;
@@ -1360,7 +1363,7 @@ exports.commands = {
 
 	gg: function(arg, by, room, con) {
 		var text = '';
-		if (!this.canUse('gg', room, by)) {
+		if (!this.canUse('gg', room, by) && room.charAt(0) !== ',') {
 			var text = '/pm ' + by + ', ';
 		}
 		text += 'No entiendo gg';
@@ -1370,7 +1373,7 @@ exports.commands = {
 	b: 'busca',
 	busca: function(arg, by, room, con) {
 		var text = '';
-		if (!this.canUse('busca', room, by)) {
+		if (!this.canUse('busca', room, by) && room.charAt(0) !== ',') {
                         var text = '/pm ' + by + ', ';
                 } 
 		text += '[[' + stripCommands(arg) + ']]';
@@ -2280,7 +2283,7 @@ exports.commands = {
 	ladder: 'tourladder',
 	tourladder: function(arg, by, room, con) {
 		var text = '';
-		if  (!this.canUse('info', room, by)) {
+		if  (!this.canUse('info', room, by) && room.charAt(0) !== ',') {
 			text += '/pm ' + by + ', ';
 		}
 		if (!global.toursTable) text += 'No hay tabla de resultados subida.';
@@ -2292,7 +2295,7 @@ exports.commands = {
 	rank: 'ranking',
 	ranking: function(arg, by, room, con) {
 		var text = '';
-		if  (!this.canUse('info', room, by)) {
+		if  (!this.canUse('info', room, by) && room.charAt(0) !== ',') {
 			text += '/pm ' + by + ', ';
 		}
 		var target = toId(arg) || by;
@@ -2306,7 +2309,7 @@ exports.commands = {
 	itour: 'infotour',
 	infotour: function(arg, by, room, con) {
 		var text = '';
-		if  (!this.canUse('info', room, by)) {
+		if  (!this.canUse('info', room, by) && room.charAt(0) !== ',') {
 			text += '/pm ' + by + ', ';
 		}
 		var f = new Date();
@@ -2323,7 +2326,7 @@ exports.commands = {
 	sistemapuntuaciones: 'pointssystem',
 	pointssystem: function(arg, by, room, con) {
 		var text = '';
-		if  (!this.canUse('info', room, by)) {
+		if  (!this.canUse('info', room, by) && room.charAt(0) !== ',') {
 			text += '/pm ' + by + ', ';
 		}
 		text += 'Por ganar: ' + eTourConfig.pointsWinner + ' | Por llegar a la final: ' + eTourConfig.pointsSubWinner + ' | Semifinales: ' + eTourConfig.pointsSemiFinals + ' | Cuartos: ' + eTourConfig.pointsQuarterFinals;
@@ -2334,7 +2337,7 @@ exports.commands = {
 	calendario: 'tourcalendar',
 	tourcalendar: function(arg, by, room, con) {
 		var text = '';
-		if  (!this.canUse('info', room, by)) {
+		if  (!this.canUse('info', room, by) && room.charAt(0) !== ',') {
 			text += '/pm ' + by + ', ';
 		}
 		text += 'Calendario de torneos: http://ps-salaespanol.proboards.com/thread/1209/torneo-leaderboards-calendario-abril-2015';
