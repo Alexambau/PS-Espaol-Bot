@@ -448,11 +448,6 @@ exports.commands = {
 		}
 	},
 	
-	startautomatedbattle: function(arg, by, room, con) { 
-		if (!this.hasRank(by, '~')) return false;
-		this.processBattle(room);
-	},
-	
 	move: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '+%@#~')) return false;
 		this.moveBattle(room, con);
