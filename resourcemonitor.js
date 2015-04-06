@@ -14,6 +14,11 @@ exports.monitor = {
 		switch (type) {
 			case 'r':
 				text += '[__Monitor de recursos__] ';
+				info(data);
+				break;
+			case 'e':
+				text += '[__CRASH__] ';
+				error(data);
 				break;
 			case 'c':
 				text += '[__0Tol__] ';
@@ -52,6 +57,10 @@ exports.monitor = {
 			this.cmdusage[user] = 1;
 			this.cmdtimes[user] = now;
 		}
+	},
+	
+	reportcrash: function(by, cmd, details) {
+		this.log("cmd: " + cmd + " | by: " + by + " | " + details, "e");
 	},
 	
 	lock: function(user) {

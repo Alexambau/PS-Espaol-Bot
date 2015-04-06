@@ -840,7 +840,11 @@ exports.parse = {
 			if (typeof Commands[cmd] === "function") {
 				cmdr(cmdrMessage);
 				if (!this.hasRank(by, '~')) ResourceMonitor.countcmd(by);
-				Commands[cmd].call(this, arg, by, room, connection);
+				try {
+					Commands[cmd].call(this, arg, by, room, connection);
+				} catch (e) {
+					ResourceMonitor.reportcrash(by, cmd, sys.inspect(e));
+				};
 			} else {
 				error("invalid command type for " + cmd + ": " + (typeof Commands[cmd]));
 			}
