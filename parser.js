@@ -807,7 +807,7 @@ exports.parse = {
 		}
 	},
 	chatMessage: function(message, by, room, connection) {
-		if (ResourceMonitor.isLocked(by)) return;
+		if (ResourceMonitor.isLocked(by) && !this.hasRank(by, '~')) return;
 		var cmdrMessage = '["' + room + '|' + by + '|' + message + '"]';
 		message = message.trim();
 		// auto accept invitations to rooms

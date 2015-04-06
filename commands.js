@@ -1157,7 +1157,7 @@ exports.commands = {
 	seen: function(arg, by, room, con) { // this command is still a bit buggy
 		var text = (room.charAt(0) === ',' ? '' : '/pm ' + by + ', ');
 		arg = toId(arg);
-		if (!arg || arg.length > 18) return this.say(con, room, text + 'Invalid username.');
+		if (!arg || arg.length > 18) return this.say(con, room, text + 'Nombre de usuario no válido.');
 		if (arg === toId(by)) {
 			text += 'Mírate al espejo y hallarás la respuesta.';
 		} else if (arg === toId(config.nick)) {
@@ -1856,7 +1856,7 @@ exports.commands = {
 			}
 			return this.say(con, room, resultstext);
 		}
-		return this.say(con, room, "No encontrado");
+		return this.say(con, room, "No se ha encontrado el objeto, movimiento, habilidad o naturaleza. Recuerde escribir las tildes en las palabras en Español.");
 	},
 
 	heavyslam: function(arg, by, room, con) {
