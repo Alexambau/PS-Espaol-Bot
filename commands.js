@@ -126,6 +126,64 @@ exports.commands = {
 	 * These commands are here to provideinformation about the bot.
 	 */
 	 
+	 rm: 'resourcemonitor',
+	 resourcemonitor: function (arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		var args = arg.split(",");
+		if (!arg || !args.length) return false;
+		switch (toId(args[0])) {
+			case 'lock':
+			case 'ignore':
+				if (args.length < 2) return this.say(con, room, "Debe especificar un usuario.");
+				if (!ResourceMonitor.isLocked(args[1])) {
+					ResourceMonitor.lock(args[1]);
+					this.say(con, room, "El usuario " + toId(args[1]) + " ha sido ignorado y no podrá usar comandos.");
+				} else {
+					this.say(con, room, "El usuario " + toId(args[1]) + " ya estaba ignorado.");
+				}
+				break;
+			case 'unlock':
+			case 'unignore':
+				if (args.length < 2) return this.say(con, room, "Debe especificar un usuario.");
+				if (ResourceMonitor.isLocked(args[1])) {
+					ResourceMonitor.unlock(args[1]);
+					this.say(con, room, "El usuario " + toId(args[1]) + " ha dejado de ser ignorado.");
+				} else {
+					this.say(con, room, "El usuario " + toId(args[1]) + " no estaba ignorado.");
+				}
+				break;
+			case 'clear':
+				ResourceMonitor.cmdusage = {};
+				ResourceMonitor.cmdtimes = {};
+				ResourceMonitor.lockedlist = {};
+				this.say(con, room, "Datos temporales del monitor de recursos borrados.");
+				break;
+			case 'logs':
+				if (args.length < 2) return this.say(con, room, "Debe especificar un modo [on/off].");
+				if (toId(args[1]) === "off") {
+					config.ignorelogs = true;
+					this.say(con, room, "Logs del monitor de recursos deshabilitados.");
+				} else {
+					config.ignorelogs = false;
+					this.say(con, room, "Logs del monitor de recursos habilitados.");
+				}
+				break;
+			case 'reload':
+				try {
+					this.uncacheTree('./resourcemonitor.js');
+					ResourceMonitor = require('./resourcemonitor.js').monitor;
+					ResourceMonitor.connection = con;
+					this.say(con, room, "Monitor de recursos actualizado.");
+				} catch (e) {
+					error('failed to reload: ' + sys.inspect(e));
+				}
+				break;
+			case 'help':
+			default:
+				this.say(con, room, "Lista de opciones: ignore, unignore, clear, logs, reload");
+		}
+	 },
+	 
 	 updateserver: function (arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
 

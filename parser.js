@@ -299,9 +299,19 @@ exports.parse = {
 					send(connection, cmds);
 				}
 
+				if (this.chatDataTimer) {
+					try {
+						clearInterval(this.chatDataTimer);
+						console.log("Borrado Time-Interval");
+					}catch (e) {
+						error('failed: ' + sys.inspect(e));
+					};
+				}
+				
 				this.chatDataTimer = setInterval(self.cleanChatData,
 					30*60*1000
 				);
+				
 				if (this.checkToursTimeout) {
 					try {
 						clearTimeout(this.checkToursTimeout);
@@ -310,6 +320,7 @@ exports.parse = {
 						error('failed: ' + sys.inspect(e));
 					};
 				}
+				ResourceMonitor.connection = connection;
 				this.checkTours(connection);
 				if (lastMessage) this.room = '';
 				break;
@@ -796,6 +807,7 @@ exports.parse = {
 		}
 	},
 	chatMessage: function(message, by, room, connection) {
+		if (ResourceMonitor.isLocked(by)) return;
 		var cmdrMessage = '["' + room + '|' + by + '|' + message + '"]';
 		message = message.trim();
 		// auto accept invitations to rooms
@@ -827,6 +839,7 @@ exports.parse = {
 			}
 			if (typeof Commands[cmd] === "function") {
 				cmdr(cmdrMessage);
+				if (!this.hasRank(by, '~')) ResourceMonitor.countcmd(by);
 				Commands[cmd].call(this, arg, by, room, connection);
 			} else {
 				error("invalid command type for " + cmd + ": " + (typeof Commands[cmd]));
@@ -1059,8 +1072,13 @@ exports.parse = {
 							muteMessage = ', Moderación automática: Spam de links. Reglas: http://bit.ly/1abNG5E';
 							pointVal = 4;
 						} else {
-							muteMessage = ', Moderación automática: Spam de múltiple línea. Reglas: http://bit.ly/1abNG5E';
-							pointVal = 4;
+							if (msg.length > 70 || (capsMatch_K && toId(msg).length > MIN_CAPS_LENGTH && (capsMatch_K.length >= Math.floor(toId(msg).length * MIN_CAPS_PROPORTION))) || msg.toLowerCase().indexOf("**") > -1 || msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) {
+								muteMessage = ', Moderación automática: Spam de múltiple línea. Reglas: http://bit.ly/1abNG5E';
+								pointVal = 4;
+							} else {
+								pointVal = 2;
+								muteMessage = ', Moderación automática: Flood. Reglas: http://bit.ly/1abNG5E';
+							}
 						}
 					}
 				}

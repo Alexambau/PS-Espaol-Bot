@@ -213,6 +213,7 @@ console.log('');
 // Config and config.js watching...
 global.fs = require('fs');
 global.ia = require('./pokemon-ia.js');
+global.ResourceMonitor = require('./resourcemonitor.js').monitor;
 
 try {
 	global.eTourConfig = require('./etourconfig.js');
