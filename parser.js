@@ -801,6 +801,22 @@ exports.parse = {
 				this.updateSeen(by, spl[1], this.room || 'lobby');
 				if (lastMessage) this.room = '';
 				break;
+			case 'raw':
+				var indexwarn = spl[2].indexOf(" was warned by ");
+				var indexmute = spl[2].indexOf(" was muted by ");
+				if (indexmute !== -1) {
+					var mutemsg = spl[2].split(" was muted by ");
+					if (mutemsg.length > 1 && mutemsg[1].indexOf(config.nick) === -1) {
+						if (this.isZeroTol(toId(mutemsg[0]), this.room)) this.say(connection, this.room, '/rb ' + mutemsg[0] + ', Moderación automática: Tolerancia cero.');
+					}
+				} else if (indexwarn !== -1) {
+					var warnmsg = spl[2].split(" was warned by ");
+					if (warnmsg.length > 1 && warnmsg[1].indexOf(config.nick) === -1) {
+						if (this.isZeroTol(toId(warnmsg[0]), this.room)) this.say(connection, this.room, '/hm ' + warnmsg[0] + ', Moderación automática: Tolerancia cero.');
+					}
+				}
+				if (lastMessage) this.room = '';
+				break;
 			default:
 				//console.log("DATA ( ".blue + this.room.blue + "): ".blue + message);
 				if (lastMessage) this.room = '';
