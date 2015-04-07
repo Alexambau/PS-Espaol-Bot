@@ -801,11 +801,12 @@ exports.commands = {
 		}
 		this.say(con, room, '/pm ' + by + ', ' + text);
 	},
+	'0tol': 'zerotol',
 	zt: 'zerotol',
 	zerotol: function(arg, by, room, con) {
 		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
 		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, 'Para poder banear usuarios, el Bot requiere de rango @ o superior.');
-
+		var tarRoom = room; if (tarRoom === 'salastaff') tarRoom = 'espaol';
 		arg = arg.split(',');
 		var added = [];
 		var illegalNick = [];
@@ -817,7 +818,7 @@ exports.commands = {
 				illegalNick.push(tarUser);
 				continue;
 			}
-			if (!this.zeroTolUser(tarUser, room)) {
+			if (!this.zeroTolUser(tarUser, tarRoom)) {
 				alreadyAdded.push(tarUser);
 				continue;
 			}
@@ -834,11 +835,13 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
+	'un0tol': 'unzerotol',
 	unzt: 'unzerotol',
 	unzerotol: function(arg, by, room, con) {
 		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
 		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, config.nick + 'Para poder banear usuarios, el Bot requiere de rango @ o superior.');
-
+		var tarRoom = room; if (tarRoom === 'salastaff') tarRoom = 'espaol';
+		
 		arg = arg.split(',');
 		var removed = [];
 		var notRemoved = [];
@@ -849,7 +852,7 @@ exports.commands = {
 				notRemoved.push(tarUser);
 				continue;
 			}
-			if (!this.unzeroTolUser(tarUser, room)) {
+			if (!this.unzeroTolUser(tarUser, tarRoom)) {
 				notRemoved.push(tarUser);
 				continue;
 			}
@@ -864,13 +867,16 @@ exports.commands = {
 		if (notRemoved.length) text += (text.length ? 'El resto de ' : 'Los ') + ' usuarios especificados no estaban en la lista de Cero Tolerancia.';
 		this.say(con, room, text);
 	},
+	
+	'v0tol': 'viewzerotol',
 	vzt: 'viewzerotol',
 	viewzerotollist: 'viewzerotol',
 	viewzerotol: function(arg, by, room, con) {
 		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
-
+		var tarRoom = room; if (tarRoom === 'salastaff') tarRoom = 'espaol';
+		
 		var text = '';
-		if (!this.settings.zerotol || !this.settings.zerotol[room]) {
+		if (!this.settings.zerotol || !this.settings.zerotol[tarRoom]) {
 			text = 'La lista de Cero Tolerancia de esta sala esta vacía.';
 		} else {
 			if (arg.length) {
@@ -878,10 +884,10 @@ exports.commands = {
 				if (nick.length < 1 || nick.length > 18) {
 					text = 'Usuario incorrecto: "' + nick + '".';
 				} else {
-					text = 'El usuario "' + nick + '" ' + (nick in this.settings.zerotol[room] ? '' : 'NO ') + 'está en la lista de Cero Tolerancia de la sala ' + room + '.';
+					text = 'El usuario "' + nick + '" ' + (nick in this.settings.zerotol[tarRoom] ? '' : 'NO ') + 'está en la lista de Cero Tolerancia de la sala ' + room + '.';
 				}
 			} else {
-				var nickList = Object.keys(this.settings.zerotol[room]);
+				var nickList = Object.keys(this.settings.zerotol[tarRoom]);
 				if (!nickList.length) return this.say(con, room, '/pm ' + by + ', La lista de Cero Tolerancia de esta sala esta vacía.');
 				this.uploadToHastebin(con, room, by, 'Los siguientes usuarios están en la lista de Cero Tolerancia en ' + room + ':\n\n' + nickList.join('\n'))
 				return;
