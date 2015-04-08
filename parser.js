@@ -213,6 +213,8 @@ exports.parse = {
 
 				ok('logged in as ' + spl[2]);
 				global.loggedin = true;
+				this.tourData = {}; //delete possible residual tour data
+				this.tours = {};
 				
 				var datenow = Date.now();
 				
