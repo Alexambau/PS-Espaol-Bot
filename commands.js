@@ -1343,7 +1343,7 @@ exports.commands = {
 		if  (!this.canUse('info', room, by)) {
 			text += '/pm ' + by + ', ';
 		} 
-			text +='Voiced (+): Usuario ejemplar   Driver (%): Authoridad del chat que puede avisar y silenciar  Moderador (@): Lo mismo que driver pero puede banear  Owner (#): Encargados de la sala';
+			text +='Voiced (+): Usuario ejemplar / Driver (%): Authoridad del chat que puede avisar y silenciar / Moderador (@): Lo mismo que driver pero puede banear / Owner (#): Encargados de la sala';
 	this.say(con, room, text);	
 	
 	},
@@ -1415,7 +1415,7 @@ exports.commands = {
 			case 19: text += "Parece que sí."; break;
 			case 20: text += "No cuentes con ello."; break;
 			case 21: text += "Eres un malo."; break;
-			case 22: text += "Te insultaria pero eres alguien importante en el chat."; break;
+			case 22: text += "Te insultaría pero eres alguien importante en el chat."; break;
 		}
 		this.say(con, room, text);
 	},
@@ -1742,7 +1742,7 @@ exports.commands = {
 			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		var arg = toId(arg);
-		if (arg == "") return this.say(con, room, "Generazione di cosa?");
+		if (arg == "") return this.say(con, room, "La generación de què?");
 		if (aliases[arg]) arg = toId(aliases[arg]);
 		if (arg == 'metronome') {
 			text += 'Move: Gen 1; Item: Gen 4';
@@ -1775,7 +1775,7 @@ exports.commands = {
 		else if (items[arg]) {
 			text += 'Gen ' + items[arg].gen;
 		}
-		else text += 'Nessun Pokemon/mossa/abilità/strumento con questo nome trovato'
+		else text += 'No se ha encontrado Pokemon/movimiento/hablidad/objeto con ese nombre'
 		this.say(con, room, text);
 	},
 
