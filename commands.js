@@ -889,7 +889,7 @@ exports.commands = {
 			} else {
 				var nickList = Object.keys(this.settings.zerotol[tarRoom]);
 				if (!nickList.length) return this.say(con, room, '/pm ' + by + ', La lista de Cero Tolerancia de esta sala esta vacía.');
-				this.uploadToHastebin(con, room, by, 'Los siguientes usuarios están en la lista de Cero Tolerancia en ' + room + ':\n\n' + nickList.join('\n'))
+				this.uploadToHastebin(con, room, by, 'Los siguientes usuarios están en la lista de Cero Tolerancia en ' + tarRoom + ':\n\n' + nickList.join('\n'))
 				return;
 			}
 		}

@@ -1078,6 +1078,7 @@ exports.parse = {
 			var punishment = [];
 			var muteMessage = '';
 			var modSettings = useDefault ? null : this.settings['modding'][room];
+			var capsMatch_K = msg.replace(/[^A-Za-z]/g, '').match(/[A-Z]/g);
 			
 			// moderation for spam
 			if (useDefault || modSettings['spam'] !== 0 && pointVal < 4) {
@@ -1100,17 +1101,6 @@ exports.parse = {
 								muteMessage = ', Moderación automática: Flood. Reglas: http://bit.ly/1abNG5E';
 							}
 						}
-					}
-				}
-			}
-			
-			if (useDefault || modSettings['spam'] !== 0 && pointVal < 4) {
-				if (times.length >= 2 && (time - times[times.length - 2]) < (FLOOD_MESSAGE_TIME / 2)) {
-					var indicA = msg.length - msg.toLowerCase().replace(" ", "a").replace(/[^a-z0-9.*+?^=!:${}()|\[\]\/\\]/g, '').length;
-					var indicB = msg.length - msg.toLowerCase().replace(" ", "a").replace(/[^a-z0-9.*+?^=!:${}()|\[\]\/\\]/g, '').length;
-					if (indicA + indicB > 150) {
-						muteMessage = ', Moderación automática: Spam de caracteres Unicode. Reglas: http://bit.ly/1abNG5E';
-						pointVal = 4;
 					}
 				}
 			}
@@ -1167,10 +1157,9 @@ exports.parse = {
 			if (useDefault || modSettings['inapropiate'] !== 0) {
 				var banphraseSettings = this.settings.inapropiatephrases;
 				var inapropiatePhrases = !!banphraseSettings ? (Object.keys(banphraseSettings[room] || {})).concat(Object.keys(banphraseSettings['global'] || {})) : [];
+				var msgrip = " " + msg.toLowerCase().replace(/[^a-z0-9]/g, ' ') + " ";
 				for (var i = 0; i < inapropiatePhrases.length; i++) {
-					if (msg.toLowerCase().indexOf(inapropiatePhrases[i]) > -1) {
-						var msgrip = " " + msg + " ";
-						if (msgrip.toLowerCase().indexOf(" " + inapropiatePhrases[i] + " ") > -1) {
+						if (msgrip.indexOf(" " + inapropiatePhrases[i] + " ") > -1) {
 							punishment.push("Lenguaje inapropiado");
 							if (pointVal < 2) {
 								pointVal = 2;
@@ -1178,7 +1167,6 @@ exports.parse = {
 							}
 							break;
 						}
-					}
 				}
 			}
 			// moderation for banned words
@@ -1211,7 +1199,6 @@ exports.parse = {
 				if (times.length >= 3 && (time - times[times.length - 3]) < FLOOD_MESSAGE_TIME && msg === chatData.lastMessage && chatData.lastMessage === chatData.lastMessage2) {
 					pointVal = 3;
 					muteMessage = ', Moderación automática: Detectado posible spammer. Reglas: http://bit.ly/1abNG5E';
-					var capsMatch_K = msg.replace(/[^A-Za-z]/g, '').match(/[A-Z]/g);
 					if (msg.toLowerCase().indexOf("http://") > -1 || msg.toLowerCase().indexOf("https://") > -1 || msg.toLowerCase().indexOf("www.") > -1) {
 						muteMessage = ', Moderación automática: Spam de links. Reglas: http://bit.ly/1abNG5E';
 						if (msg.toLowerCase().indexOf("pokemonshowdown.com") === -1) pointVal = 4;
