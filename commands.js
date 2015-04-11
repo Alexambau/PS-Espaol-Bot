@@ -712,7 +712,7 @@ exports.commands = {
 	autoban: function(arg, by, room, con) {
 		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
 		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, 'Para poder banear usuarios, el Bot requiere de rango @ o superior.');
-
+		var tarRoom = room; if (tarRoom === 'salastaff') tarRoom = 'espaol';
 		arg = arg.split(',');
 		var added = [];
 		var illegalNick = [];
@@ -724,12 +724,12 @@ exports.commands = {
 				illegalNick.push(tarUser);
 				continue;
 			}
-			if (!this.blacklistUser(tarUser, room)) {
+			if (!this.blacklistUser(tarUser, tarRoom)) {
 				alreadyAdded.push(tarUser);
 				continue;
 			}
-			this.say(con, room, '/roomban ' + tarUser + ', Usuario baneado permanentemente');
-			this.say(con,room, '/modnote ' + tarUser + ' fue agregado a la lista negra por ' + by + '.');
+			this.say(con, tarRoom, '/roomban ' + tarUser + ', Usuario baneado permanentemente');
+			this.say(con, tarRoom, '/modnote ' + tarUser + ' fue agregado a la lista negra por ' + by + '.');
 			added.push(tarUser);
 		}
 
@@ -748,7 +748,7 @@ exports.commands = {
 	unautoban: function(arg, by, room, con) {
 		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
 		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, config.nick + 'Para poder banear usuarios, el Bot requiere de rango @ o superior.');
-
+		var tarRoom = room; if (tarRoom === 'salastaff') tarRoom = 'espaol';
 		arg = arg.split(',');
 		var removed = [];
 		var notRemoved = [];
@@ -759,11 +759,11 @@ exports.commands = {
 				notRemoved.push(tarUser);
 				continue;
 			}
-			if (!this.unblacklistUser(tarUser, room)) {
+			if (!this.unblacklistUser(tarUser, tarRoom)) {
 				notRemoved.push(tarUser);
 				continue;
 			}
-			this.say(con, room, '/roomunban ' + tarUser);
+			this.say(con, tarRoom, '/roomunban ' + tarUser);
 			removed.push(tarUser);
 		}
 
@@ -780,9 +780,9 @@ exports.commands = {
 	viewautobans: 'viewblacklist',
 	viewblacklist: function(arg, by, room, con) {
 		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
-
+		var tarRoom = room; if (tarRoom === 'salastaff') tarRoom = 'espaol';
 		var text = '';
-		if (!this.settings.blacklist || !this.settings.blacklist[room]) {
+		if (!this.settings.blacklist || !this.settings.blacklist[tarRoom]) {
 			text = 'La lista negra de esta sala esta vacía.';
 		} else {
 			if (arg.length) {
@@ -790,12 +790,12 @@ exports.commands = {
 				if (nick.length < 1 || nick.length > 18) {
 					text = 'Usuario incorrecto: "' + nick + '".';
 				} else {
-					text = 'El usuario "' + nick + '" ' + (nick in this.settings.blacklist[room] ? '' : 'NO ') + 'está en la lista negra de la sala ' + room + '.';
+					text = 'El usuario "' + nick + '" ' + (nick in this.settings.blacklist[tarRoom] ? '' : 'NO ') + 'está en la lista negra de la sala ' + tarRoom + '.';
 				}
 			} else {
-				var nickList = Object.keys(this.settings.blacklist[room]);
+				var nickList = Object.keys(this.settings.blacklist[tarRoom]);
 				if (!nickList.length) return this.say(con, room, '/pm ' + by + ', La lista negra de esta sala esta vacía.');
-				this.uploadToHastebin(con, room, by, 'Los siguientes usuarios están baneados en ' + room + ':\n\n' + nickList.join('\n'))
+				this.uploadToHastebin(con, room, by, 'Los siguientes usuarios están baneados en ' + tarRoom + ':\n\n' + nickList.join('\n'))
 				return;
 			}
 		}
@@ -902,6 +902,7 @@ exports.commands = {
 		arg = arg.trim().toLowerCase();
 		if (!arg) return false;
 		var tarRoom = room;
+		if (tarRoom === 'salastaff') tarRoom = 'espaol';
 
 		if (room.charAt(0) === ',') {
 			if (!this.hasRank(by, '~')) return false;
@@ -920,6 +921,7 @@ exports.commands = {
 		arg = arg.trim().toLowerCase();
 		if (!arg) return false;
 		var tarRoom = room;
+		if (tarRoom === 'salastaff') tarRoom = 'espaol';
 
 		if (room.charAt(0) === ',') {
 			if (!this.hasRank(by, '~')) return false;
@@ -940,6 +942,7 @@ exports.commands = {
 		if (!this.canUse('banword', room, by)) return false;
 		arg = arg.trim().toLowerCase();
 		var tarRoom = room;
+		if (tarRoom === 'salastaff') tarRoom = 'espaol';
 
 		if (room.charAt(0) === ',') {
 			if (!this.hasRank(by, '~')) return false;
@@ -970,6 +973,7 @@ exports.commands = {
 		arg = arg.trim().toLowerCase();
 		if (!arg) return false;
 		var tarRoom = room;
+		if (tarRoom === 'salastaff') tarRoom = 'espaol';
 
 		if (room.charAt(0) === ',') {
 			if (!this.hasRank(by, '~')) return false;
@@ -988,6 +992,7 @@ exports.commands = {
 		arg = arg.trim().toLowerCase();
 		if (!arg) return false;
 		var tarRoom = room;
+		if (tarRoom === 'salastaff') tarRoom = 'espaol';
 
 		if (room.charAt(0) === ',') {
 			if (!this.hasRank(by, '~')) return false;
@@ -1008,6 +1013,7 @@ exports.commands = {
 		if (!this.canUse('banword', room, by)) return false;
 		arg = arg.trim().toLowerCase();
 		var tarRoom = room;
+		if (tarRoom === 'salastaff') tarRoom = 'espaol';
 
 		if (room.charAt(0) === ',') {
 			if (!this.hasRank(by, '~')) return false;
