@@ -123,6 +123,7 @@ exports.parse = {
 		switch (spl[1]) {
 			case 'challstr':
 				info('received challstr, logging in...');
+				global.loggedin = false;
 				
 				setTimeout(function() {
 					if (!global.loggedin) {
