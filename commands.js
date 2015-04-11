@@ -429,10 +429,10 @@ exports.commands = {
 	allowbattle: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '~')) return false;
 		if (toId(arg) === "off") {
-			this.say(con, 'lobby', '/away');
+			this.say(con, 'lobby', '/blockchallenges');
 			this.say(con, room, 'Sistema de batallas automaticas desactivado');
 		} else {
-			this.say(con, 'lobby', '/back');
+			this.say(con, 'lobby', '/unblockchallenges');
 			this.say(con, room, 'Sistema de batallas automaticas activado');
 		}
 	},
