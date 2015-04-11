@@ -809,12 +809,15 @@ exports.parse = {
 				if (indexmute !== -1) {
 					var mutemsg = spl[2].split(" was muted by ");
 					if (mutemsg.length > 1 && mutemsg[1].indexOf(config.nick) === -1) {
-						if (this.isZeroTol(toId(mutemsg[0]), this.room)) this.say(connection, this.room, '/rb ' + mutemsg[0] + ', Moderación automática: Tolerancia cero.');
+						if (this.isZeroTol(toId(mutemsg[0]), this.room)) {
+							if (spl[2].indexOf("for 7 minutes") !== -1) this.say(connection, this.room, '/hm ' + mutemsg[0] + ', Moderación automática: Tolerancia cero');
+							else this.say(connection, this.room, '/rb ' + mutemsg[0] + ', Moderación automática: Tolerancia cero');
+						}
 					}
 				} else if (indexwarn !== -1) {
 					var warnmsg = spl[2].split(" was warned by ");
 					if (warnmsg.length > 1 && warnmsg[1].indexOf(config.nick) === -1) {
-						if (this.isZeroTol(toId(warnmsg[0]), this.room)) this.say(connection, this.room, '/hm ' + warnmsg[0] + ', Moderación automática: Tolerancia cero.');
+						if (this.isZeroTol(toId(warnmsg[0]), this.room)) this.say(connection, this.room, '/m ' + warnmsg[0] + ', Moderación automática: Tolerancia cero');
 					}
 				}
 				if (lastMessage) this.room = '';
