@@ -810,14 +810,14 @@ exports.parse = {
 					var mutemsg = spl[2].split(" was muted by ");
 					if (mutemsg.length > 1 && mutemsg[1].indexOf(config.nick) === -1) {
 						if (this.isZeroTol(toId(mutemsg[0]), this.room)) {
-							if (spl[2].indexOf("for 7 minutes") !== -1) this.say(connection, this.room, '/hm ' + mutemsg[0] + ', Moderación automática: Tolerancia cero');
+							if (spl[2].indexOf("for 7 minutes") !== -1) this.say(connection, this.room, '/rb ' + mutemsg[0] + ', Moderación automática: Tolerancia cero');
 							else this.say(connection, this.room, '/rb ' + mutemsg[0] + ', Moderación automática: Tolerancia cero');
 						}
 					}
 				} else if (indexwarn !== -1) {
 					var warnmsg = spl[2].split(" was warned by ");
 					if (warnmsg.length > 1 && warnmsg[1].indexOf(config.nick) === -1) {
-						if (this.isZeroTol(toId(warnmsg[0]), this.room)) this.say(connection, this.room, '/m ' + warnmsg[0] + ', Moderación automática: Tolerancia cero');
+						if (this.isZeroTol(toId(warnmsg[0]), this.room)) this.say(connection, this.room, '/hm ' + warnmsg[0] + ', Moderación automática: Tolerancia cero');
 					}
 				}
 				if (lastMessage) this.room = '';
@@ -1277,8 +1277,9 @@ exports.parse = {
 				// if the bot has % and not @, it will default to hourmuting as its highest level of punishment instead of roombanning
 				if (chatData.points >= 4 && !this.hasRank(this.ranks[room] || ' ', '@&#~')) cmd = 'hourmute';
 				if (this.isZeroTol(toId(user), room)) { // if zero tolerance users break a rule they get an instant roomban or hourmute
-					muteMessage = ', Tolerancia cero. Reglas: http://bit.ly/1abNG5E';
-					cmd = this.hasRank(this.ranks[room] || ' ', '@&#~') ? 'roomban' : 'hourmute';
+					muteMessage = ', Moderación automática: Tolerancia cero';
+					if (cmd === 'warn') cmd = 'hourmute';
+					else cmd = this.hasRank(this.ranks[room] || ' ', '@&#~') ? 'roomban' : 'hourmute';
 				}
 				if (chatData.points >= 2) this.chatData[user].zeroTol++; // getting muted or higher increases your zero tolerance level (warns do not)
 				chatData.lastAction = time;
