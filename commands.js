@@ -18,6 +18,96 @@ function getHash(name, maxNum) {
 exports.commands = {
 	
 	/**
+	 * Avoid duplicates
+	 */
+	ip: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		var self = this;
+		require('http').request({
+			hostname: 'fugal.net',
+			path: '/ip.cgi',
+			agent: false
+		}, function(res) {
+			if(res.statusCode != 200) {
+				error('non-OK status: ' + res.statusCode);
+				self.say(con, '', '/pm ' + by + ', Error al intentar obtener la ip: ' + 'non-OK status: ' + res.statusCode);
+			}
+			res.setEncoding('utf-8');
+			var ipAddress = '';
+			res.on('data', function(chunk) { ipAddress += chunk; });
+			res.on('end', function() {
+				self.say(con, '', '/pm ' + by + ', Ip del Bot: ' + ipAddress.trim());
+			});
+		}).on('error', function(err) {
+			self.say(con, '', '/pm ' + by + ', Error al intentar obtener la ip');
+		}).end();
+	},
+	
+	ipdisable: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		var self = this;
+		require('http').request({
+			hostname: 'fugal.net',
+			path: '/ip.cgi',
+			agent: false
+		}, function(res) {
+			if(res.statusCode != 200) {
+				error('non-OK status: ' + res.statusCode);
+				self.say(con, '', '/pm ' + by + ', Error al intentar obtener la ip: ' + 'non-OK status: ' + res.statusCode);
+			}
+			res.setEncoding('utf-8');
+			var ipAddress = '';
+			res.on('data', function(chunk) { ipAddress += chunk; });
+			res.on('end', function() {
+				ipAddress = ipAddress.trim()
+				if (ipAddress === arg) {
+					config.disableBot = true;
+					ResourceMonitor.log('Bot con IP ' + ipAddress + ' fue deshabilitado por ' + by, 'r');
+				} else {
+					console.log("IP = " + ipAddress + " | arg = " + arg + " | No deshabilitado.");
+				}
+			});
+		}).on('error', function(err) {
+			self.say(con, '', '/pm ' + by + ', Error al intentar obtener la ip');
+		}).end();
+	},
+	
+	ipenable: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		var self = this;
+		require('http').request({
+			hostname: 'fugal.net',
+			path: '/ip.cgi',
+			agent: false
+		}, function(res) {
+			if(res.statusCode != 200) {
+				error('non-OK status: ' + res.statusCode);
+				self.say(con, '', '/pm ' + by + ', Error al intentar obtener la ip: ' + 'non-OK status: ' + res.statusCode);
+			}
+			res.setEncoding('utf-8');
+			var ipAddress = '';
+			res.on('data', function(chunk) { ipAddress += chunk; });
+			res.on('end', function() {
+				ipAddress = ipAddress.trim()
+				if (ipAddress === arg) {
+					config.disableBot = false;
+					ResourceMonitor.log('Bot con IP ' + ipAddress + ' fue habilitado por ' + by, 'r');
+				} else {
+					console.log("IP = " + ipAddress + " | arg = " + arg + " | No habilitado.");
+				}
+			});
+		}).on('error', function(err) {
+			self.say(con, '', '/pm ' + by + ', Error al intentar obtener la ip');
+		}).end();
+	},
+	
+	ipenableall: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		config.disableBot = false;
+		this.say(con, '', '/pm ' + by + ', Bot habilitado independientemente de la IP.');
+	},
+	
+	/**
 	 * Automated Tours
 	 */
 	bottime: 'hora',

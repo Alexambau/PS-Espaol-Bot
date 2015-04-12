@@ -873,6 +873,7 @@ exports.parse = {
 		}
 	},
 	say: function(connection, room, text) {
+		if (config.disableBot) return;
 		if (room.substr(0, 1) !== ',') {
 			var str = (room !== 'lobby' ? room : '') + '|' + text;
 			send(connection, str);
