@@ -269,12 +269,11 @@ exports.parse = {
 					cmds.push('|/join ' + room);
 				}
 				
+				if (config.rprooms) {
 					for (var i = 0; i < config.rprooms.length; i++) {
 						this.RP[toId(config.rprooms[i])] = {};
 					}
-
-
-
+				}
 
 				for (var i in config.privaterooms) {
 					var room = toId(config.privaterooms[i]);
@@ -1257,8 +1256,8 @@ exports.parse = {
 						muteMessage = ', Triple infraccion: ' + punishment[0] + ', ' + punishment[1] + ' y ' + punishment[2] + '. Reglas: http://bit.ly/1abNG5E';
 					}
 				}  else if (punishment.length > 3) {
-					if (pointVal <= 3) {
-						pointVal = 3;
+					if (pointVal <= 4) {
+						pointVal = 4;
 						muteMessage = ', Múltiple infraccion: ' + punishment.join(", ") + '. Reglas: http://bit.ly/1abNG5E';
 					}
 				}
