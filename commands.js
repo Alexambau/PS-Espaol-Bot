@@ -623,16 +623,6 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
-
-	liga: function(arg, by, room, con) {
-		var text = '';
-		if (!this.canUse('info', room, by) && room.charAt(0) !== ',') {
-			text += '/pm ' + by + ', ';
-		}
-		text += "¿Tienes alguna duda sobre la Liga? ¡Revisa el **índice de la Liga** aquí!: (http://goo.gl/CxH2gi) By: xJoelituh";
-		this.say(con, room, text);
-	},
-	
 	foro: 'forum',
 	forum: function(arg, by, room, con) {
 		var text = '';
