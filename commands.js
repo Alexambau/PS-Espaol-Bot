@@ -1490,28 +1490,28 @@ exports.commands = {
 		var rand = Math.floor(22 * Math.random()) + 1;
 
 		switch (rand) {
-	 		case 1: text += "Todo apunta que sí."; break;
+	 		case 1: text += "Todo apunta a que sí"; break;
 	  		case 2: text += "Las ranitas de Asty hacen croack"; break;
-			case 3: text += "Respuesta borrosa, prueba de nuevo."; break;
+			case 3: text += "Respuesta borrosa, prueba de nuevo"; break;
 			case 4: text += "Sin ninguna duda."; break;
-			case 5: text += "Mis fuentes dicen que no."; break;
-			case 6: text += "Como veo, sí."; break;
+			case 5: text += "Mis fuentes dicen que no"; break;
+			case 6: text += "Tal y como lo veo, sí"; break;
 			case 7: text += "No entiendo gg."; break;
-			case 8: text += "Concentrate y pregunta de nuevo."; break;
-			case 9: text += "No parece tan bueno."; break;
-			case 10: text += "Es cierto."; break;
+			case 8: text += "Concentrate y pregunta de nuevo"; break;
+			case 9: text += "No parece buena idea"; break;
+			case 10: text += "Es cierto"; break;
 			case 11: text += "Mejor no decirtelo ahora."; break;
-			case 12: text += "Muy dudable."; break;
-			case 13: text += "Sí - definitivamente."; break;
-			case 14: text += "Creo que sí."; break;
-			case 15: text += "No puedo predecir eso."; break;
-			case 16: text += "Parece que no."; break;
-			case 17: text += "Pregunta más tarde."; break;
-			case 18: text += "Mis fuentes dicen que sí."; break;
-			case 19: text += "Parece que sí."; break;
-			case 20: text += "No cuentes con ello."; break;
-			case 21: text += "Eres un malo."; break;
-			case 22: text += "Te insultaría pero eres alguien importante en el chat."; break;
+			case 12: text += "Muy dudable"; break;
+			case 13: text += "Sí - definitivamente"; break;
+			case 14: text += "Creo que sí"; break;
+			case 15: text += "No puedo predecir eso"; break;
+			case 16: text += "Parece que no"; break;
+			case 17: text += "Esa pregunta es absurda"; break;
+			case 18: text += "Mis fuentes dicen que sí"; break;
+			case 19: text += "Parece que sí"; break;
+			case 20: text += "No cuentes con ello"; break;
+			case 21: text += "Eres un malo"; break;
+			case 22: text += "Te insultaría pero eres alguien importante en el chat"; break;
 		}
 		this.say(con, room, text);
 	},
