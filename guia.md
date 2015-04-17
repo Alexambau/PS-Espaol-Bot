@@ -57,26 +57,20 @@ Comandos de Información sobre Pokemon:
 Comandos de Moderacion:
 
  - `set` - Comando para cambiar permisos y moderación.
- 
  - `ab` - Añade usuarios a la lista negra.
  - `unab` - Quita usuarios de la lista negra.
  - `vab` - Muestra la lista negra.
- 
  - `zt` - Añade usuarios a cero tolerancia.
  - `unzt` - Quita usuarios de la lista de cero tolerancia.
  - `vzt` - Muestra la lista de cero tolerancia.
- 
  - `banword` - Añade una frase a las banwords.
  - `unbanword` - Quita una frase de las banwords.
  - `vbw:` - Muestra la lista de frases prohibidas.
- 
  - `iw` - Añade una palabra a la lista de lenguaje inapropiado.
  - `uiw` - Quita una palabra de la lista de lenguaje inapropiado.
  - `viw` - Muestra la lista de lenguaje inapropiado.
- 
  - `tourhelp` - Muestra como debe usarse el comando tour.
  - `tour` - Crea un torneo y lo incia automaticamente.
-  
   
 Comandos de Programación:
 
