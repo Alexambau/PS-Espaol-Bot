@@ -759,6 +759,7 @@ exports.parse = {
 				break;
 			case 'N':
 				var by = spl[2];
+				if (this.room && this.isBlacklisted(toId(by), this.room)) this.say(connection, this.room, '/roomban ' + by + ', Usuario baneado permanentemente');
 				if (this.users[this.room] && this.users[this.room][toId(spl[3])]) {
 					delete this.users[this.room][toId(spl[3])];
 					this.users[this.room][toId(by)] = by.charAt(0);
