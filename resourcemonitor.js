@@ -23,6 +23,9 @@ exports.monitor = {
 			case 'c':
 				text += '[__0Tol__] ';
 				break;
+			case 'ab':
+				text += '[__Autoban__] ';
+				break;
 			case 'i':
 				text += '[__Info__] ';
 				break;
