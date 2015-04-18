@@ -1744,7 +1744,7 @@ exports.commands = {
 			} else {
 				var banList = Object.keys(this.settings.bannedphrases[tarRoom]);
 				if (!banList.length) return this.say(con, room, "No hay frases prohibidas en esta sala.");
-				this.uploadToHastebin(con, room, by, "Las siguientes frases están prohibidas " + (room.charAt(0) === ',' ? "globalmente" : "en " + room) + ":\n\n" + banList.join('\n'))
+				this.uploadToHastebin(con, room, by, "Las siguientes frases están prohibidas " + (room.charAt(0) === ',' ? "globalmente" : "en " + tarRoom) + ":\n\n" + banList.join('\n'))
 				return;
 			}
 		}
@@ -1817,7 +1817,7 @@ exports.commands = {
 			} else {
 				var banList = Object.keys(this.settings.inapropiatephrases[tarRoom]);
 				if (!banList.length) return this.say(con, room, "No hay frases inapropiadas en esta sala.");
-				this.uploadToHastebin(con, room, by, "Las siguientes frases son inapropiadas " + (room.charAt(0) === ',' ? "globalmente" : "en " + room) + ":\n\n" + banList.join('\n'))
+				this.uploadToHastebin(con, room, by, "Las siguientes frases son inapropiadas " + (room.charAt(0) === ',' ? "globalmente" : "en " + tarRoom) + ":\n\n" + banList.join('\n'))
 				return;
 			}
 		}
