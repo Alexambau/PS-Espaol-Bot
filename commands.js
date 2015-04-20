@@ -673,16 +673,6 @@ exports.commands = {
 		
 	},
 	
-	torneo: function(arg, by, room, con) {
-		var text = '';
-		if  (!this.canUse('info', room, by) && room.charAt(0) !== ',') {
-			text += '/pm ' + by + ', ';
-		} 
-			text +='Si quieres participar en un torneo tienes que esperar a que un moderador (@) o superior lo cree. Solo en ese momento se puede participar dandole al boton que pone "join". Para una explicación más elaborada, ve a esta pagina para un tutorial: http://ps-salaespanol.proboards.com/thread/405/';
-		this.say(con, room, text);	
-	
-	},
-
 	voiced: function(arg , by, room, con){
 		var text = '';
 		if (!this.canUse('info',room, by) && room.charAt(0) !== ','){
