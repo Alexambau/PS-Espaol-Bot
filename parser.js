@@ -605,10 +605,28 @@ exports.parse = {
 				if (this.busyInBattle < 0) this.busyInBattle = 0;
 				if (spl[2] && toId(spl[2]) === toId(config.nick)) {
 					//win
-					this.say(connection, this.room, ':P noob');
+					var winmsg = [
+						':P noob',
+						'GG',
+						'g_g',
+						'ggado easy',
+						'rekt',
+						'gg easy game'
+					];
+					this.say(connection, this.room, winmsg[Math.floor(Math.random() * winmsg.length)]);
+					//save replay
+					this.say(connection, this.room, '/savereplay');
 				} else {
 					//lose
-					this.say(connection, this.room, 'gg Haxer');
+					var losemsg = [
+						'gg Haxer',
+						'bg',
+						'just hax c:',
+						'wow ok :(',
+						'rip :(',
+						'gg wp'
+					];
+					this.say(connection, this.room, losemsg[Math.floor(Math.random() * losemsg.length)]);
 				}
 				this.say(connection, this.room, '/leave');
 				if (lastMessage) this.room = '';
