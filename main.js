@@ -338,8 +338,9 @@ var connect = function(retry) {
 
 connect();
 
-//Crashguard
+//Crashlog
 process.on('uncaughtException', function (err) {
 	var stack = ("" + err.stack).split("\n").splice(0, 3).join(" ");
 	ResourceMonitor.log(stack, "e");
+	process.exit(-1);
 });
