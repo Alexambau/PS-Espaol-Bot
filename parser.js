@@ -614,8 +614,6 @@ exports.parse = {
 						'gg easy game'
 					];
 					this.say(connection, this.room, winmsg[Math.floor(Math.random() * winmsg.length)]);
-					//save replay
-					this.say(connection, this.room, '/savereplay');
 				} else {
 					//lose
 					var losemsg = [
