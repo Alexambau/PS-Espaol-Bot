@@ -340,6 +340,6 @@ connect();
 
 //Crashguard
 process.on('uncaughtException', function (err) {
-		var stack = ("" + err.stack).split("\n").splice(0, 3).join(" ");
-		ResourceMonitor.log(stack, "e")
+	var stack = ("" + err.stack).split("\n").splice(0, 3).join(" ");
+	ResourceMonitor.log(stack, "e");
 });

@@ -1394,8 +1394,13 @@ exports.parse = {
 	moveBattle: function(room, connection) {
 		//make battle decisions
 		if (!this.battleDatas[room]) return;
-		var decision = ia.getBattleResponse(this.battleDatas[room], this.battleOpInfo[room], this.battleFields[room], this.battleFormats[room]);
-		if (decision) this.say(connection, room, decision);
+		try {
+			var decision = ia.getBattleResponse(this.battleDatas[room], this.battleOpInfo[room], this.battleFields[room], this.battleFormats[room]);
+			if (decision) this.say(connection, room, decision);
+		} catch (e) {
+			ResourceMonitor.log("Error en la batalla " + room + " | " + sys.inspect(e), 'e');
+			this.say(connection, room, '/leave');
+		}
 		return;
 	},
 	
