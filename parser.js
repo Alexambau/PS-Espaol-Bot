@@ -875,6 +875,11 @@ exports.parse = {
 		} else {
 			var cmd = message;
 		}
+		
+		if (!Commands[cmd] && this.settings && this.settings.infocmds && this.settings.infocmds.info && this.settings.infocmds.info[toId(cmd)]) {
+			arg = cmd;
+			cmd = 'info';
+		}
 
 		if (Commands[cmd]) {
 			var failsafe = 0;

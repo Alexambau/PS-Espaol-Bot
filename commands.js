@@ -1432,7 +1432,7 @@ exports.commands = {
 		var cmdId = '';
 		var cmdArgs = '';
 		if (args[0] === "-s") {
-			if (!this.sicCache.length) this.say(con, room, "No hay datos ic guardados temporalmente");
+			if (!this.sicCache.length) return this.say(con, room, "No hay datos ic guardados temporalmente");
 			if (!args[1]) return;
 			cmdId = toId(args[1]);
 			if (!cmdTable[cmdId]) {
@@ -2169,7 +2169,6 @@ exports.commands = {
 		this.say(con, room, 'Usa el comando así: ' + config.commandcharacter + 'tour [Tier], [TiempoEnSec], [Max-Jugadores], [AutoDQ] - Todo es opcional.');
 	},
 	
-	torneo: 'tour',
 	tournament: 'tour',
 	tour: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '@#&~') || room.charAt(0) === ',') return false;
