@@ -165,6 +165,30 @@
 		if (this.data[room]) delete this.data[room];
 	},
 	
+	getPokemonId: function (data) {
+		var nameDT = data.split(":");
+		var pokeId = nameDT[1];
+		var sideId = toId(nameDT[0]);
+		var pokeIndex = 0;
+		switch (sideId.charAt(2)) {
+			case 'a':
+				pokeIndex = 0;
+				break;
+			case 'b':
+				pokeIndex = 1;
+				break;
+			case 'c':
+				pokeIndex = 2;
+				break;
+		}
+		sideId = sideId.substr(0, 2);
+		return {
+			pokeId: pokeId,
+			sideId: sideId,
+			pokeIndex: pokeIndex
+		};
+	}, 
+	
 	receive: function (connection, room, data) {
 		/* IMPORTANT !
 			This funtion gets all battle datas.
@@ -349,21 +373,10 @@
 			case 'replace':
 				if (!this.data[room].statusData) return; //no gametype (bug)
 				if (args.length < 4) return;
-				var nameDT = args[1].split(":");
-				var pokeId = nameDT[1];
-				var sideId = toId(nameDT[0]);
-				var pokeIndex = 0;
-				switch (sideId.charAt(2)) {
-					case 'a':
-						pokeIndex = 0;
-						break;
-					case 'b':
-						pokeIndex = 1;
-						break;
-					case 'c':
-						pokeIndex = 2;
-						break;
-				}
+				var ident = this.getPokemonId(args[1]);
+				var pokeId = ident.pokeId;
+				var sideId = ident.sideId;
+				var pokeIndex = ident.pokeIndex;
 				//get pokemon  basicdata
 				var poke = {};
 				poke.name = pokeId;
@@ -405,21 +418,10 @@
 			case 'detailschange':
 				if (!this.data[room].statusData) return; //no gametype (bug)
 				if (args.length < 3) return;
-				var nameDT = args[1].split(":");
-				var pokeId = nameDT[1];
-				var sideId = toId(nameDT[0]);
-				var pokeIndex = 0;
-				switch (sideId.charAt(2)) {
-					case 'a':
-						pokeIndex = 0;
-						break;
-					case 'b':
-						pokeIndex = 1;
-						break;
-					case 'c':
-						pokeIndex = 2;
-						break;
-				}
+				var ident = this.getPokemonId(args[1]);
+				var pokeId = ident.pokeId;
+				var sideId = ident.sideId;
+				var pokeIndex = ident.pokeIndex;
 				if (this.data[room].opponent.id === sideId) {
 					if (!this.data[room].oppTeamOffSet) this.data[room].oppTeamOffSet = {};
 					if (!this.data[room].oppTeamOffSet[pokeId]) this.data[room].oppTeamOffSet[pokeId] = {};
@@ -432,21 +434,10 @@
 			case 'faint':
 				if (!this.data[room].statusData) return; //no gametype (bug)
 				if (args.length < 2) return;
-				var nameDT = args[1].split(":");
-				var pokeId = nameDT[1];
-				var sideId = toId(nameDT[0]);
-				var pokeIndex = 0;
-				switch (sideId.charAt(2)) {
-					case 'a':
-						pokeIndex = 0;
-						break;
-					case 'b':
-						pokeIndex = 1;
-						break;
-					case 'c':
-						pokeIndex = 2;
-						break;
-				}
+				var ident = this.getPokemonId(args[1]);
+				var pokeId = ident.pokeId;
+				var sideId = ident.sideId;
+				var pokeIndex = ident.pokeIndex;
 				if (this.data[room].opponent.id === sideId) {
 					if (!this.data[room].oppTeamOffSet) this.data[room].oppTeamOffSet = {};
 					if (!this.data[room].oppTeamOffSet[pokeId]) this.data[room].oppTeamOffSet[pokeId] = {};
@@ -459,21 +450,10 @@
 			case 'swap':
 				if (!this.data[room].statusData) return; //no gametype (bug)
 				if (args.length < 3) return;
-				var nameDT = args[1].split(":");
-				var pokeId = nameDT[1];
-				var sideId = toId(nameDT[0]);
-				var pokeIndex = 0;
-				switch (sideId.charAt(2)) {
-					case 'a':
-						pokeIndex = 0;
-						break;
-					case 'b':
-						pokeIndex = 1;
-						break;
-					case 'c':
-						pokeIndex = 2;
-						break;
-				}
+				var ident = this.getPokemonId(args[1]);
+				var pokeId = ident.pokeId;
+				var sideId = ident.sideId;
+				var pokeIndex = ident.pokeIndex;
 				var swapPos = parseInt(args[2]);
 				if (this.data[room].opponent.id === sideId) {
 					var aux = this.data[room].statusData.foe.pokemon[pokeIndex];
@@ -488,21 +468,10 @@
 			case 'move':
 				if (!this.data[room].statusData) return; //no gametype (bug)
 				if (args.length < 3) return;
-				var nameDT = args[1].split(":");
-				var pokeId = nameDT[1];
-				var sideId = toId(nameDT[0]);
-				var pokeIndex = 0;
-				switch (sideId.charAt(2)) {
-					case 'a':
-						pokeIndex = 0;
-						break;
-					case 'b':
-						pokeIndex = 1;
-						break;
-					case 'c':
-						pokeIndex = 2;
-						break;
-				}
+				var ident = this.getPokemonId(args[1]);
+				var pokeId = ident.pokeId;
+				var sideId = ident.sideId;
+				var pokeIndex = ident.pokeIndex;
 				if (this.data[room].opponent.id === sideId) {
 					if (!this.data[room].oppTeamOffSet) this.data[room].oppTeamOffSet = {};
 					if (!this.data[room].oppTeamOffSet[pokeId]) this.data[room].oppTeamOffSet[pokeId] = {};
