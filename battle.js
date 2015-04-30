@@ -320,6 +320,7 @@
 				this.send(connection, room, '/leave');
 				break;
 			case 'clearpoke':
+				this.data[room].oppTeam = [];
 				if (!this.data[room].statusData) return;
 				for (var i = 0; i < this.data[room].statusData.self.pokemon.length; i++) {
 					this.data[room].statusData.self.pokemon[i] = {};
@@ -343,17 +344,171 @@
 					this.data[room].oppTeam.push(poke);
 				}
 				break;
-			case 'detailschange':
-				break;
 			case 'switch':
 			case 'drag':
 			case 'replace':
+				if (!this.data[room].statusData) return; //no gametype (bug)
+				if (args.length < 4) return;
+				var nameDT = args[1].split(":");
+				var pokeId = nameDT[1];
+				var sideId = toId(nameDT[0]);
+				var pokeIndex = 0;
+				switch (sideId.charAt(2)) {
+					case 'a':
+						pokeIndex = 0;
+						break;
+					case 'b':
+						pokeIndex = 1;
+						break;
+					case 'c':
+						pokeIndex = 2;
+						break;
+				}
+				//get pokemon  basicdata
+				var poke = {};
+				poke.name = pokeId;
+				var dataPoke = args[2].split(',');
+				poke.species = dataPoke[0].trim();
+				var argPoke = '';
+				for (var i = 1; i < dataPoke.length; i++) {
+					argPoke = dataPoke[i].trim();
+					if (argPoke.charAt(0) === 'L') poke.level = parseInt(argPoke.substr(1));
+					else poke.gender = argPoke;
+				}
+				//get status and hp
+				dataPoke = args[3].split(' ');
+				var hpAux = dataPoke[0].split('/');
+				if (!hpAux[1]) {
+					poke.hp = 0;
+				} else {
+					poke.hp = (parseFloat(hpAux[0]) * 100) / parseFloat(hpAux[1]);
+				}
+				if (dataPoke[1]) {
+					poke.status = dataPoke[1];
+				} else {
+					poke.status = false;
+				}
+				//set data
+				if (this.data[room].opponent.id === sideId) {
+					//offset
+					if (!this.data[room].oppTeamOffSet) this.data[room].oppTeamOffSet = {};
+					if (!this.data[room].oppTeamOffSet[pokeId]) this.data[room].oppTeamOffSet[pokeId] = {};
+					for (var i in poke)
+						this.data[room].oppTeamOffSet[pokeId][i] = poke[i];
+					//active
+					this.data[room].statusData.foe.pokemon[pokeIndex] = poke;
+				} else {
+					//active
+					this.data[room].statusData.self.pokemon[pokeIndex] = poke;
+				}				
+				break;
+			case 'detailschange':
+				if (!this.data[room].statusData) return; //no gametype (bug)
+				if (args.length < 3) return;
+				var nameDT = args[1].split(":");
+				var pokeId = nameDT[1];
+				var sideId = toId(nameDT[0]);
+				var pokeIndex = 0;
+				switch (sideId.charAt(2)) {
+					case 'a':
+						pokeIndex = 0;
+						break;
+					case 'b':
+						pokeIndex = 1;
+						break;
+					case 'c':
+						pokeIndex = 2;
+						break;
+				}
+				if (this.data[room].opponent.id === sideId) {
+					if (!this.data[room].oppTeamOffSet) this.data[room].oppTeamOffSet = {};
+					if (!this.data[room].oppTeamOffSet[pokeId]) this.data[room].oppTeamOffSet[pokeId] = {};
+					this.data[room].oppTeamOffSet[pokeId].species = args[2];
+					this.data[room].statusData.foe.pokemon[pokeIndex].species = args[2];
+				} else {
+					this.data[room].statusData.self.pokemon[pokeIndex].species = args[2];
+				}
 				break;
 			case 'faint':
+				if (!this.data[room].statusData) return; //no gametype (bug)
+				if (args.length < 2) return;
+				var nameDT = args[1].split(":");
+				var pokeId = nameDT[1];
+				var sideId = toId(nameDT[0]);
+				var pokeIndex = 0;
+				switch (sideId.charAt(2)) {
+					case 'a':
+						pokeIndex = 0;
+						break;
+					case 'b':
+						pokeIndex = 1;
+						break;
+					case 'c':
+						pokeIndex = 2;
+						break;
+				}
+				if (this.data[room].opponent.id === sideId) {
+					if (!this.data[room].oppTeamOffSet) this.data[room].oppTeamOffSet = {};
+					if (!this.data[room].oppTeamOffSet[pokeId]) this.data[room].oppTeamOffSet[pokeId] = {};
+					this.data[room].oppTeamOffSet[pokeId].fainted = true;
+					this.data[room].statusData.foe.pokemon[pokeIndex] = {};
+				} else {
+					this.data[room].statusData.self.pokemon[pokeIndex] = {};
+				}
 				break;
 			case 'swap':
+				if (!this.data[room].statusData) return; //no gametype (bug)
+				if (args.length < 3) return;
+				var nameDT = args[1].split(":");
+				var pokeId = nameDT[1];
+				var sideId = toId(nameDT[0]);
+				var pokeIndex = 0;
+				switch (sideId.charAt(2)) {
+					case 'a':
+						pokeIndex = 0;
+						break;
+					case 'b':
+						pokeIndex = 1;
+						break;
+					case 'c':
+						pokeIndex = 2;
+						break;
+				}
+				var swapPos = parseInt(args[2]);
+				if (this.data[room].opponent.id === sideId) {
+					var aux = this.data[room].statusData.foe.pokemon[pokeIndex];
+					this.data[room].statusData.foe.pokemon[pokeIndex] = this.data[room].statusData.foe.pokemon[swapPos];
+					this.data[room].statusData.foe.pokemon[swapPos] = aux;
+				} else {
+					var aux = this.data[room].statusData.self.pokemon[pokeIndex];
+					this.data[room].statusData.self.pokemon[pokeIndex] = this.data[room].statusData.self.pokemon[swapPos];
+					this.data[room].statusData.self.pokemon[swapPos] = aux;
+				}
 				break;
 			case 'move':
+				if (!this.data[room].statusData) return; //no gametype (bug)
+				if (args.length < 3) return;
+				var nameDT = args[1].split(":");
+				var pokeId = nameDT[1];
+				var sideId = toId(nameDT[0]);
+				var pokeIndex = 0;
+				switch (sideId.charAt(2)) {
+					case 'a':
+						pokeIndex = 0;
+						break;
+					case 'b':
+						pokeIndex = 1;
+						break;
+					case 'c':
+						pokeIndex = 2;
+						break;
+				}
+				if (this.data[room].opponent.id === sideId) {
+					if (!this.data[room].oppTeamOffSet) this.data[room].oppTeamOffSet = {};
+					if (!this.data[room].oppTeamOffSet[pokeId]) this.data[room].oppTeamOffSet[pokeId] = {};
+					if (!this.data[room].oppTeamOffSet[pokeId].moves[args[2]]) this.data[room].oppTeamOffSet[pokeId].moves[args[2]] = 0; 
+					++this.data[room].oppTeamOffSet[pokeId].moves[args[2]]; //register move usage
+				}
 				break;
 			
 				
