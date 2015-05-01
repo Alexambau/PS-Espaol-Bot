@@ -5,10 +5,9 @@
 	
 	/* Config - Edit this */
 	iaModList: {
-		'orasrandom': './oras-random.js'
+		'6gsinglesdefault': './gen6-singles-default.js'
 	},
 	iaConfig: {
-		'ou': 'orasrandom'
 	},
 	
 	/* Functions */
@@ -130,6 +129,17 @@
 				}
 			}
 		}
+		
+		if (this.data[room].gametype === 'singles' && parseInt(this.data[room].gen) === 6 && this.iaModList['6gsinglesdefault'] && this.iaModList['6gsinglesdefault'].getDecision) {
+			try {
+				decision = this.iaModList['6gsinglesdefault'].getDecision(room, this.data[room]);
+				this.sendDecision(connection, room, decision);
+				return;
+			} catch (e) {
+				error(e.stack);
+			}
+		}
+		
 		try {
 			decision = this.getRandomMove(room);
 			this.sendDecision(connection, room, decision);
@@ -720,6 +730,7 @@
 				var identB = this.getPokemonId(args[2]);
 				var sideB = (this.data[room].opponent.id === identB.sideId) ? 'foe' : 'self';
 				this.data[room].statusData[sideA].pokemon[identA.pokeIndex] = this.data[room].statusData[sideB].pokemon[identB.pokeIndex];
+				this.data[room].statusData[sideA].pokemon[identA.pokeIndex].name = identA.pokeId;
 				break;
 			
 			case '-start':

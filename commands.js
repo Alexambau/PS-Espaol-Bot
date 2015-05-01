@@ -39,6 +39,11 @@ exports.commands = {
 		process.exit();
 	},
 	
+	logbattle: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		console.log("BATTLE DATA -> ".red + JSON.stringify(BattleBot.data[room]));
+	},
+	
 	reload: function(arg, by, room, con) {
 		if (!this.hasRank(by, '#~')) return false;
 		try {

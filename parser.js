@@ -119,7 +119,15 @@ exports.parse = {
 				}
 			}
 		}
-		//console.log("DATA ( ".blue + this.room.blue + "): ".blue + message);
+		
+		/* Battle Bot */
+		try {
+			if (this.room && this.room.indexOf("battle-") > -1) BattleBot.receive(connection, this.room, message);
+		} catch (e) {
+			error(e.stack);
+		}
+		
+		/* Rest of Majors */
 		switch (spl[1]) {
 			case 'challstr':
 				info('received challstr, logging in...');
@@ -219,38 +227,41 @@ exports.parse = {
 				
 				var datenow = Date.now();
 				
-				var formats = fs.createWriteStream("formats.js");
-				https.get("https://play.pokemonshowdown.com/data/formats.js?" + datenow, function(res) {
-					res.pipe(formats);
-				});
-				var formatsdata = fs.createWriteStream("formats-data.js");
-				https.get("https://play.pokemonshowdown.com/data/formats-data.js?" + datenow, function(res) {
-					res.pipe(formatsdata);
-				});
-				var pokedex = fs.createWriteStream("pokedex.js");
-				https.get("https://play.pokemonshowdown.com/data/pokedex.js?" + datenow, function(res) {
-					res.pipe(pokedex);
-				});
-				var moves = fs.createWriteStream("moves.js");
-				https.get("https://play.pokemonshowdown.com/data/moves.js?" + datenow, function(res) {
-					res.pipe(moves);
-				});
-				var abilities = fs.createWriteStream("abilities.js");
-				https.get("https://play.pokemonshowdown.com/data/abilities.js?" + datenow, function(res) {
-					res.pipe(abilities);
-				});
-				var items = fs.createWriteStream("items.js");
-				https.get("https://play.pokemonshowdown.com/data/items.js?" + datenow, function(res) {
-					res.pipe(items);
-				});
-				var learnsets = fs.createWriteStream("learnsets-g6.js");
-				https.get("https://play.pokemonshowdown.com/data/learnsets-g6.js?" + datenow, function(res) {
-					res.pipe(learnsets);
-				});
-				var aliases = fs.createWriteStream("aliases.js");
-				https.get("https://play.pokemonshowdown.com/data/aliases.js?" + datenow, function(res) {
-					res.pipe(aliases);
-				});
+				if (!config.disableDownload) {
+					var formats = fs.createWriteStream("formats.js");
+					https.get("https://play.pokemonshowdown.com/data/formats.js?" + datenow, function(res) {
+						res.pipe(formats);
+					});
+					var formatsdata = fs.createWriteStream("formats-data.js");
+					https.get("https://play.pokemonshowdown.com/data/formats-data.js?" + datenow, function(res) {
+						res.pipe(formatsdata);
+					});
+					var pokedex = fs.createWriteStream("pokedex.js");
+					https.get("https://play.pokemonshowdown.com/data/pokedex.js?" + datenow, function(res) {
+						res.pipe(pokedex);
+					});
+					var moves = fs.createWriteStream("moves.js");
+					https.get("https://play.pokemonshowdown.com/data/moves.js?" + datenow, function(res) {
+						res.pipe(moves);
+					});
+					var abilities = fs.createWriteStream("abilities.js");
+					https.get("https://play.pokemonshowdown.com/data/abilities.js?" + datenow, function(res) {
+						res.pipe(abilities);
+					});
+					var items = fs.createWriteStream("items.js");
+					https.get("https://play.pokemonshowdown.com/data/items.js?" + datenow, function(res) {
+						res.pipe(items);
+					});
+					var learnsets = fs.createWriteStream("learnsets-g6.js");
+					https.get("https://play.pokemonshowdown.com/data/learnsets-g6.js?" + datenow, function(res) {
+						res.pipe(learnsets);
+					});
+					var aliases = fs.createWriteStream("aliases.js");
+					https.get("https://play.pokemonshowdown.com/data/aliases.js?" + datenow, function(res) {
+						res.pipe(aliases);
+					});
+				}
+				
 				try {
 					this.teams = require('./teams.js').teams;
 				} catch (e) {
@@ -335,20 +346,13 @@ exports.parse = {
 								this.say(connection, this.room, '/reject ' + i);
 								continue;
 							}
-							try {
-								var pokedex = require('./pokedex.js').BattlePokedex;
-								var movedex = require('./moves.js').BattleMovedex;
-							} catch (e) {
-								error('failed to load pokemon data: ' + sys.inspect(e));
-								return this.say(connection, this.room, '/reject ' + i);
-							}
 							var botTeams = this.teams[toId(this.challenges.challengesFrom[i])];
 							if (botTeams) {
 								this.say(connection, this.room, '/useteam ' + botTeams[Math.floor(Math.random()*botTeams.length)]);
 							}
 							this.say(connection, this.room, '/accept ' + i);
 							this.busyInBattle++;
-							console.log("Battle: ".green + "Se ha iniciado una batalla automatica contra " + i);
+							debug("acepted battle: " + i + " | " + this.challenges.challengesFrom[i]);
 						} else {
 							this.say(connection, this.room, '/reject ' + i);
 							continue;
@@ -376,268 +380,6 @@ exports.parse = {
 				break;
 			case 'rated':
 				if (this.ratedRoom) this.say(connection, this.ratedRoom, 'http://play.pokemonshowdown.com/' + this.room);
-				if (lastMessage) this.room = '';
-				break;
-			case 'gametype':
-				if (!this.battleFormats[this.room]) this.battleFormats[this.room] = {};
-				this.battleFormats[this.room].gametype = spl[2];
-				if (lastMessage) this.room = '';
-				break;
-			case 'gen':
-				if (!this.battleFormats[this.room]) this.battleFormats[this.room] = {};
-				this.battleFormats[this.room].gen = spl[2];
-				if (lastMessage) this.room = '';
-				break;
-			case 'tier':
-				if (!this.battleFormats[this.room]) this.battleFormats[this.room] = {};
-				this.battleFormats[this.room].tier = spl[2];
-				if (lastMessage) this.room = '';
-				break;
-			case 'start':
-				this.processBattle(this.room, connection);
-				if (lastMessage) this.room = '';
-				break;
-			case 'player':
-				if (spl[3] && toId(spl[3]) !== toId(config.nick)) this.battleOpIds[this.room] = spl[2];
-				if (lastMessage) this.room = '';
-				break;
-			case 'callback':
-				if (spl[2] && spl[2] === "trapped") {
-					if (this.battleDatas[this.room] && this.battleDatas[this.room].active && this.battleDatas[this.room].active[0]) this.battleDatas[this.room].active[0].trapped = 1;
-					this.moveBattle(this.room, connection);
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case 'switch':
-				if (this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					if (this.battleOpInfo[this.room]) {
-						if (this.battleOpInfo[this.room].status) delete this.battleOpInfo[this.room].status;
-						if (this.battleOpInfo[this.room].items) delete this.battleOpInfo[this.room].items;
-						if (this.battleOpInfo[this.room].substitute) delete this.battleOpInfo[this.room].substitute;
-						if (this.battleOpInfo[this.room].disable) delete this.battleOpInfo[this.room].disable;
-						if (this.battleOpInfo[this.room].leech) delete this.battleOpInfo[this.room].leech;
-					} else {
-						this.battleOpInfo[this.room] = {};
-					}
-					if (spl[3].indexOf(",") !== -1) this.battleOpInfo[this.room][spl[2].substr(2,1)] = spl[3].substr(0, spl[3].indexOf(","));
-					else this.battleOpInfo[this.room][spl[2].substr(2,1)] = spl[3];
-					if (spl[4] && spl[4].indexOf(" ") !== -1) {
-						var stateInfo = spl[4].substr(spl[4].indexOf(" ") + 1);
-						if (!this.battleOpInfo[this.room].status) this.battleOpInfo[this.room].status = {};
-						this.battleOpInfo[this.room].status[spl[2].substr(2,1)] = stateInfo;
-					}
-				} else if (this.battleOpIds[this.room] && this.battleFields[this.room]) {
-					if (this.battleFields[this.room].items) delete this.battleFields[this.room].items;
-					if (this.battleFields[this.room].substitute) delete this.battleFields[this.room].substitute;
-					if (this.battleFields[this.room].disable) delete this.battleFields[this.room].disable;
-					if (this.battleFields[this.room].boosts) delete this.battleFields[this.room].boosts;
-					if (this.battleFields[this.room].lastMove) delete this.battleFields[this.room].lastMove;
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case 'faint':
-				if (this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					if (this.battleOpInfo[this.room]) {
-						if (this.battleOpInfo[this.room].status) delete this.battleOpInfo[this.room].status;
-						if (this.battleOpInfo[this.room].items) delete this.battleOpInfo[this.room].items;
-						if (this.battleOpInfo[this.room].substitute) delete this.battleOpInfo[this.room].substitute;
-						if (this.battleOpInfo[this.room].disable) delete this.battleOpInfo[this.room].disable;
-						if (this.battleOpInfo[this.room].leech) delete this.battleOpInfo[this.room].leech;
-					} else {
-						this.battleOpInfo[this.room] = {};
-					}
-				} else if (this.battleOpIds[this.room] && this.battleFields[this.room]) {
-					if (this.battleFields[this.room].items) delete this.battleFields[this.room].items;
-					if (this.battleFields[this.room].substitute) delete this.battleFields[this.room].substitute;
-					if (this.battleFields[this.room].disable) delete this.battleFields[this.room].disable;
-					if (this.battleFields[this.room].boosts) delete this.battleFields[this.room].boosts;
-					if (this.battleFields[this.room].lastMove) delete this.battleFields[this.room].lastMove;
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case 'move':
-				if (this.battleOpIds[this.room] && spl[2].substr(0,2) !== this.battleOpIds[this.room]) {
-					if (!this.battleFields[this.room]) this.battleFields[this.room] = {};
-					this.battleFields[this.room].lastMove = spl[3];
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-weather':
-				if (!this.battleFields[this.room]) this.battleFields[this.room] = {};
-				this.battleFields[this.room].weather = spl[2];
-				if (lastMessage) this.room = '';
-				break;
-			case 'detailschange':
-				if (spl.length < 4) return;
-				if (this.battleOpInfo[this.room]  && this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					if (spl[3].indexOf(",") !== -1) this.battleOpInfo[this.room][spl[2].substr(2,1)] = spl[3].substr(0, spl[3].indexOf(","));
-					else this.battleOpInfo[this.room][spl[2].substr(2,1)] = spl[3];
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-status':
-				if (this.battleOpInfo[this.room] && this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					if (!this.battleOpInfo[this.room].status) this.battleOpInfo[this.room].status = {};
-					this.battleOpInfo[this.room].status[spl[2].substr(2,1)] = spl[3];
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-curestatus':
-				if (this.battleOpInfo[this.room] && this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-
-					if (!this.battleOpInfo[this.room].status) this.battleOpInfo[this.room].status = {};
-					if (this.battleOpInfo[this.room].status[spl[2].substr(2,1)]) delete this.battleOpInfo[this.room].status[spl[2].substr(2,1)];
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-sidestart':
-				if (this.battleOpInfo[this.room] && this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					if (spl[3] && spl[3].indexOf("Sticky Web") !== -1) this.battleOpInfo[this.room].sticky = true;
-					if (spl[3] && spl[3].indexOf("Stealth Rock") !== -1) this.battleOpInfo[this.room].sr = true;
-						if (spl[3] && spl[3].indexOf("Toxic Spikes") !== -1) {
-						if (!this.battleOpInfo[this.room].tSpikes) this.battleOpInfo[this.room].tSpikes = 1;
-						else this.battleOpInfo[this.room].tSpikes++;
-					} else if (spl[3] && spl[3].indexOf("Spikes") !== -1) {
-						if (!this.battleOpInfo[this.room].spikes) this.battleOpInfo[this.room].spikes = 1;
-						else this.battleOpInfo[this.room].spikes++;
-					}
-				} else {
-					if (!this.battleFields[this.room]) this.battleFields[this.room] = {};
-					if (spl[3] && spl[3].indexOf("Stealth Rock") !== -1) this.battleFields[this.room].sr = true;
-					if (spl[3] && spl[3].indexOf("Spikes") !== -1) {
-						if (!this.battleFields[this.room].spikes) this.battleFields[this.room].spikes = 1;
-						else this.battleFields[this.room].spikes++;
-					}
-					if (spl[3] && spl[3].indexOf("Light Screen") !== -1) this.battleFields[this.room].lightScreen = true;
-					if (spl[3] && spl[3].indexOf("Reflect") !== -1) this.battleFields[this.room].reflect = true;
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-sideend':
-				if (this.battleOpInfo[this.room] && this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					if (spl[3] && spl[3].indexOf("Sticky Web") !== -1) this.battleOpInfo[this.room].sticky = false;
-					if (spl[3] && spl[3].indexOf("Stealth Rock") !== -1) this.battleOpInfo[this.room].sr = false;
-					if (spl[3] && spl[3].indexOf("Toxic Spikes") !== -1) { 
-						if (this.battleOpInfo[this.room].tSpikes) delete this.battleOpInfo[this.room].tSpikes;
-					} else if (spl[3] && spl[3].indexOf("Spikes") !== -1) {
-						if (this.battleOpInfo[this.room].spikes) delete this.battleOpInfo[this.room].spikes;
-					}
-				} else {
-					if (!this.battleFields[this.room]) this.battleFields[this.room] = {};
-					if (spl[3] && spl[3].indexOf("Stealth Rock") !== -1) this.battleFields[this.room].sr = false;
-					if (spl[3] && spl[3].indexOf("Spikes") !== -1) {
-						if (this.battleFields[this.room].spikes) delete this.battleFields[this.room].spikes;
-					}
-					if (spl[3] && spl[3].indexOf("Light Screen") !== -1) this.battleFields[this.room].lightScreen = false;
-					if (spl[3] && spl[3].indexOf("Reflect") !== -1) this.battleFields[this.room].reflect = false;
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-item':
-				if (this.battleOpInfo[this.room] && this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					if (!this.battleOpInfo[this.room].items) this.battleOpInfo[this.room].items = {};
-					this.battleOpInfo[this.room].items[spl[2].substr(2,1)] = spl[3];
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-enditem':
-				if (this.battleOpInfo[this.room] && this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					if (!this.battleOpInfo[this.room].items) this.battleOpInfo[this.room].items = {};
-					if (this.battleOpInfo[this.room].items[spl[2].substr(2,1)]) delete this.battleOpInfo[this.room].items[spl[2].substr(2,1)];
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-start':
-				if (this.battleOpInfo[this.room] && this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					if (spl[3].indexOf("Substitute") !== -1) this.battleOpInfo[this.room].substitute = true;
-					if (spl[3].indexOf("Diable") !== -1) this.battleOpInfo[this.room].disable = true;
-					if (spl[3].indexOf("Leech Seed") !== -1) this.battleOpInfo[this.room].leech = true;
-					if (spl[3].indexOf("Taunt") !== -1) this.battleOpInfo[this.room].taunt = true;
-				} else if (this.battleOpIds[this.room]) {
-					if (!this.battleFields[this.room]) this.battleFields[this.room] = {};
-					if (spl[3] === "Substitute") this.battleFields[this.room].substitute = true;
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-end':
-				if (this.battleOpInfo[this.room] && this.battleOpIds[this.room] && spl[2].substr(0,2) === this.battleOpIds[this.room]) {
-					if (spl[3].indexOf("Substitute") !== -1) this.battleOpInfo[this.room].substitute = false;
-					if (spl[3].indexOf("Diable") !== -1) this.battleOpInfo[this.room].disable = false;
-					if (spl[3].indexOf("Leech Seed") !== -1) this.battleOpInfo[this.room].leech = false;
-					if (spl[3].indexOf("Taunt") !== -1) this.battleOpInfo[this.room].taunt = false;
-				} else if (this.battleOpIds[this.room]) {
-					if (!this.battleFields[this.room]) this.battleFields[this.room] = {};
-					if (spl[3] === "Substitute") this.battleFields[this.room].substitute = false;
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-boost':
-				if (this.battleOpIds[this.room] && spl[2].substr(0,2) !== this.battleOpIds[this.room]) {
-					if (!this.battleFields[this.room]) this.battleFields[this.room] = {};
-					if (!this.battleFields[this.room].boosts) this.battleFields[this.room].boosts = {};
-					if (!this.battleFields[this.room].boosts[spl[3]]) this.battleFields[this.room].boosts[spl[3]] = 0;
-					this.battleFields[this.room].boosts[spl[3]] += parseInt(spl[4]);
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case '-unboost':
-				if (this.battleOpIds[this.room] && spl[2].substr(0,2) !== this.battleOpIds[this.room]) {
-					if (!this.battleFields[this.room]) this.battleFields[this.room] = {};
-					if (!this.battleFields[this.room].boosts) this.battleFields[this.room].boosts = {};
-					if (!this.battleFields[this.room].boosts[spl[3]]) this.battleFields[this.room].boosts[spl[3]] = 0;
-					this.battleFields[this.room].boosts[spl[3]] -= parseInt(spl[4]);
-				}
-				if (lastMessage) this.room = '';
-				break;
-			case 'teampreview':
-				if (this.battleDatas[this.room]) this.battleDatas[this.room].nTPV = spl[2];
-				this.processBattle(this.room, connection);
-				this.moveBattle(this.room, connection);
-				break;
-			case 'win':
-				if (this.battleDatas[this.room]) delete this.battleDatas[this.room];
-				if (this.battleTurns[this.room]) delete this.battleTurns[this.room];
-				if (this.battleOpInfo[this.room]) delete this.battleOpInfo[this.room];
-				if (this.battleFields[this.room]) delete this.battleOpInfo[this.room];
-				if (this.battleOpIds[this.room]) delete this.battleOpIds[this.room];
-				if (this.battleFormats[this.room]) delete this.battleFormats[this.room];
-				this.busyInBattle--;
-				if (this.busyInBattle < 0) this.busyInBattle = 0;
-				if (spl[2] && toId(spl[2]) === toId(config.nick)) {
-					//win
-					var winmsg = [
-						':P noob',
-						'GG',
-						'g_g',
-						'ggado easy',
-						'rekt',
-						'gg easy game'
-					];
-					this.say(connection, this.room, winmsg[Math.floor(Math.random() * winmsg.length)]);
-				} else {
-					//lose
-					var losemsg = [
-						'gg Haxer',
-						'bg',
-						'just hax c:',
-						'wow ok :(',
-						'rip :(',
-						'gg wp'
-					];
-					this.say(connection, this.room, losemsg[Math.floor(Math.random() * losemsg.length)]);
-				}
-				this.say(connection, this.room, '/leave');
-				if (lastMessage) this.room = '';
-				break;
-			case 'request':
-				try {
-					this.battleDatas[this.room] = JSON.parse(message.substr(9));
-				} catch (e){}
-				if (lastMessage) this.room = '';
-				break;
-			case 'turn':
-			case 'inactive':
-				this.moveBattle(this.room, connection);
 				if (lastMessage) this.room = '';
 				break;
 			case 'c':
@@ -672,8 +414,6 @@ exports.parse = {
 							else this.staffRanks[toId(usersList[f])] = rank;
 						}
 					}
-					//console.log("DATA: ".cyan + " Lista de auth leida con exito");
-					//console.log("AUTH: ".cyan + JSON.stringify(this.roomRanks));
 					global.staffpopup = false;
 				}
 				if (lastMessage) this.room = '';
@@ -1398,6 +1138,7 @@ exports.parse = {
 	},
 	moveBattle: function(room, connection) {
 		//make battle decisions
+		return;
 		if (!this.battleDatas[room]) return;
 		try {
 			var decision = ia.getBattleResponse(this.battleDatas[room], this.battleOpInfo[room], this.battleFields[room], this.battleFormats[room]);
