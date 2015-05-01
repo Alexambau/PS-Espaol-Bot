@@ -206,9 +206,23 @@
 			// default to '.' so it evaluates to boolean true
 			kwargs[argstr.substr(1,bracketPos-1)] = (argstr.substr(bracketPos+1).trim() || '.');
 		}
+		if (!this.data[room]) this.data[room] = {};
+		//send data to IA module
+		if (this.data[room].tier) {
+			var tier = toId(this.data[room].tier);
+			if (this.iaConfig[tier]) {
+				if (iaModList[this.iaConfig[tier]] && iaModList[this.iaConfig[tier]].receive) {
+					try {
+						var dataFromIA = iaModList[this.iaConfig[tier]].receive(room, args, kwargs);
+						if (dataFromIA) this.send(connection, room, dataFromIA);
+					} catch (e) {
+						error(e.stack);
+					}
+				}
+			}
+		}
 		//DATA = args, kwargs
 		//run minors and majors
-		if (!this.data[room]) this.data[room] = {};
 		switch (args[0]) {
 			/*----------------------------------
 				Run majors
@@ -409,9 +423,17 @@
 					for (var i in poke)
 						this.data[room].oppTeamOffSet[pokeId][i] = poke[i];
 					//active
+					if (this.data[room].statusData.foe.pokemon[pokeIndex].batonPassing) {
+						poke['boost'] = this.data[room].statusData.foe.pokemon[pokeIndex]['boost'];
+						poke['volatiles'] = this.data[room].statusData.foe.pokemon[pokeIndex]['volatiles'];
+					}
 					this.data[room].statusData.foe.pokemon[pokeIndex] = poke;
 				} else {
 					//active
+					if (this.data[room].statusData.self.pokemon[pokeIndex].batonPassing) {
+						poke['boost'] = this.data[room].statusData.self.pokemon[pokeIndex]['boost'];
+						poke['volatiles'] = this.data[room].statusData.self.pokemon[pokeIndex]['volatiles'];
+					}
 					this.data[room].statusData.self.pokemon[pokeIndex] = poke;
 				}				
 				break;
@@ -477,13 +499,287 @@
 					if (!this.data[room].oppTeamOffSet[pokeId]) this.data[room].oppTeamOffSet[pokeId] = {};
 					if (!this.data[room].oppTeamOffSet[pokeId].moves[args[2]]) this.data[room].oppTeamOffSet[pokeId].moves[args[2]] = 0; 
 					++this.data[room].oppTeamOffSet[pokeId].moves[args[2]]; //register move usage
+					this.data[room].statusData.foe.pokemon[pokeIndex].lastMove = args[2];
+					if (args[2] === 'Baton Pass') this.data[room].statusData.foe.pokemon[pokeIndex].batonPassing = true;
+				} else {
+					this.data[room].statusData.self.pokemon[pokeIndex].lastMove = args[2];
+					if (args[2] === 'Baton Pass') this.data[room].statusData.self.pokemon[pokeIndex].batonPassing = true;
 				}
+				
 				break;
 			
 				
 			/*----------------------------------
 				Run minors
 			--------------------------------------*/
+			
+			case '-damage':
+			case '-heal':
+			case '-sethp':
+				var ident = this.getPokemonId(args[1]);
+				var poke = {};
+				dataPoke = args[2].split(' ');
+				var hpAux = dataPoke[0].split('/');
+				if (!hpAux[1]) {
+					poke.hp = 0;
+				} else {
+					poke.hp = (parseFloat(hpAux[0]) * 100) / parseFloat(hpAux[1]);
+				}
+				if (dataPoke[1]) {
+					poke.status = dataPoke[1];
+				} else {
+					poke.status = false;
+				}
+				//save data
+				if (this.data[room].opponent.id === ident.sideId) {
+					for (var i in poke) {
+						this.data[room].oppTeamOffSet[ident.pokeId][i] = poke[i];
+						this.data[room].statusData.foe.pokemon[ident.pokeIndex][i] = poke[i];
+					}
+					if (kwargs.from) {
+						//get item or ability
+						var offData = kwargs.from.split(": ");
+						if (offData[1]) {
+							var targetData = offData[1];
+							var typeData = toId(offData[0]);
+							switch (typeData) {
+								case 'item':
+									this.data[room].oppTeamOffSet[ident.pokeId]['item'] = targetData;
+									break;
+								case 'ability':
+									this.data[room].oppTeamOffSet[ident.pokeId]['ability'] = targetData;
+									break;
+							}
+						}
+					}
+				} else {
+					for (var i in poke)
+						this.data[room].statusData.self.pokemon[ident.pokeIndex][i] = poke[i];
+				}
+				break;
+			
+			case '-boost':
+			case '-setboost':
+				var ident = this.getPokemonId(args[1]);
+				if (this.data[room].opponent.id === ident.sideId) {
+					if (this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost']) this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'] = {};
+					if (!this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'][args[2]]) this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'][args[2]] = 0;
+					this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'][args[2]] += parseInt(args[3]);
+				} else {
+					if (this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost']) this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'] = {};
+					if (!this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'][args[2]]) this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'][args[2]] = 0;
+					this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'][args[2]] += parseInt(args[3]);
+				}
+				break;
+			case '-unboost':
+				var ident = this.getPokemonId(args[1]);
+				if (this.data[room].opponent.id === ident.sideId) {
+					if (this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost']) this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'] = {};
+					if (!this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'][args[2]]) this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'][args[2]] = 0;
+					this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'][args[2]] -= parseInt(args[3]);
+				} else {
+					if (this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost']) this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'] = {};
+					if (!this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'][args[2]]) this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'][args[2]] = 0;
+					this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'][args[2]] -= parseInt(args[3]);
+				}
+				break;
+			case '-swapboost':
+				var identA = this.getPokemonId(args[1]);
+				var sideA = (this.data[room].opponent.id === identA.sideId) ? 'foe' : 'self';
+				var identB = this.getPokemonId(args[2]);
+				var sideB = (this.data[room].opponent.id === identB.sideId) ? 'foe' : 'self';
+				var stats = args[3];
+				if (!stats) {
+					var aux = this.data[room].statusData[sideB].pokemon[identB.pokeIndex]['boost'];
+					this.data[room].statusData[sideB].pokemon[identB.pokeIndex]['boost'] = this.data[room].statusData[sideA].pokemon[identA.pokeIndex]['boost'];
+					this.data[room].statusData[sideA].pokemon[identA.pokeIndex]['boost'] = aux;
+				} else {
+					if (!this.data[room].statusData[sideB].pokemon[identB.pokeIndex]['boost']) this.data[room].statusData[sideB].pokemon[identB.pokeIndex]['boost'] = {};
+					if (!this.data[room].statusData[sideA].pokemon[identA.pokeIndex]['boost']) this.data[room].statusData[sideA].pokemon[identA.pokeIndex]['boost'] = {};
+					stats = stats.split(",");
+					var aux;
+					for (var i = 0; i < stats.length; i++) {
+						actStat = stats[i].trim();
+						aux = this.data[room].statusData[sideA].pokemon[identA.pokeIndex]['boost'][actStat];
+						this.data[room].statusData[sideA].pokemon[identA.pokeIndex]['boost'][actStat] = this.data[room].statusData[sideB].pokemon[identB.pokeIndex]['boost'][actStat];
+						this.data[room].statusData[sideB].pokemon[identB.pokeIndex]['boost'][actStat] = aux;
+					}
+				}
+				break;
+			case '-restoreboost':
+				var ident = this.getPokemonId(args[1]);
+				var side = (this.data[room].opponent.id === ident.sideId) ? 'foe' : 'self';
+				if (!this.data[room].statusData[side].pokemon[ident.pokeIndex]['boost']) return;
+				for (var i in this.data[room].statusData[side].pokemon[ident.pokeIndex]['boost']) {
+					if (this.data[room].statusData[side].pokemon[ident.pokeIndex]['boost'] < 0) this.data[room].statusData[side].pokemon[ident.pokeIndex]['boost'] = 0;
+				}
+				break;
+			case '-copyboost':
+				var identA = this.getPokemonId(args[1]);
+				var sideA = (this.data[room].opponent.id === identA.sideId) ? 'foe' : 'self';
+				var identB = this.getPokemonId(args[2]);
+				var sideB = (this.data[room].opponent.id === identB.sideId) ? 'foe' : 'self';
+				this.data[room].statusData[sideA].pokemon[identA.pokeIndex]['boost'] = this.data[room].statusData[sideB].pokemon[identB.pokeIndex]['boost'];
+				break;
+			case '-clearboost':
+				var ident = this.getPokemonId(args[1]);
+				var side = (this.data[room].opponent.id === ident.sideId) ? 'foe' : 'self';
+				if (!this.data[room].statusData[side].pokemon[ident.pokeIndex]['boost']) return;
+				for (var i in this.data[room].statusData[side].pokemon[ident.pokeIndex]['boost']) {
+					this.data[room].statusData[side].pokemon[ident.pokeIndex]['boost'] = 0;
+				}
+				break;
+			case '-invertboost':
+				var ident = this.getPokemonId(args[1]);
+				var side = (this.data[room].opponent.id === ident.sideId) ? 'foe' : 'self';
+				if (!this.data[room].statusData[side].pokemon[ident.pokeIndex]['boost']) return;
+				for (var i in this.data[room].statusData[side].pokemon[ident.pokeIndex]['boost']) {
+					this.data[room].statusData[side].pokemon[ident.pokeIndex]['boost'] *= (-1);
+				}
+				break;
+			case '-clearallboost':
+				for (var i = 0; i < this.data[room].statusData.foe.pokemon.length; i++) 
+					this.data[room].statusData.foe.pokemon[i]['boost'] = {};
+				for (var i = 0; i < this.data[room].statusData.self.pokemon.length; i++) 
+					this.data[room].statusData.self.pokemon[i]['boost'] = {};
+				break;
+			
+			case '-status':
+				var ident = this.getPokemonId(args[1]);
+				if (this.data[room].opponent.id === ident.sideId) {
+					this.data[room].oppTeamOffSet[ident.pokeId]['status'] = args[2];
+					this.data[room].statusData.foe.pokemon[ident.pokeIndex]['status'] = args[2];
+				} else {
+					this.data[room].statusData.self.pokemon[ident.pokeIndex]['status'] = args[2];
+				}
+				break;
+			case '-curestatus':
+				var ident = this.getPokemonId(args[1]);
+				if (this.data[room].opponent.id === ident.sideId) {
+					this.data[room].oppTeamOffSet[ident.pokeId]['status'] = false;
+					this.data[room].statusData.foe.pokemon[ident.pokeIndex]['status'] = false;
+				} else {
+					this.data[room].statusData.self.pokemon[ident.pokeIndex]['status'] = false;
+				}
+				break;
+			case '-cureteam':
+				var ident = this.getPokemonId(args[1]);
+				if (this.data[room].opponent.id === ident.sideId) {
+					for (var i in this.data[room].oppTeamOffSet) 
+						this.data[room].oppTeamOffSet[i]['status'] = false;
+					for (var i = 0; i < this.data[room].statusData.foe.pokemon.length; i++)
+						this.data[room].statusData.foe.pokemon[i]['status'] = false;
+				} else {
+					for (var i = 0; i < this.data[room].statusData.self.pokemon.length; i++)
+						this.data[room].statusData.self.pokemon[i]['status'] = false;
+				}
+				break;
+			
+			case '-item':
+				var ident = this.getPokemonId(args[1]);
+				if (this.data[room].opponent.id === ident.sideId) {
+					this.data[room].oppTeamOffSet[ident.pokeId]['item'] = args[2];
+					this.data[room].statusData.foe.pokemon[ident.pokeIndex]['item'] = args[2];
+				} else {
+					this.data[room].statusData.self.pokemon[ident.pokeIndex]['item'] = args[2];
+				}
+				break;
+			case '-enditem':
+				var ident = this.getPokemonId(args[1]);
+				if (this.data[room].opponent.id === ident.sideId) {
+					this.data[room].oppTeamOffSet[ident.pokeId]['item'] = false;
+					this.data[room].statusData.foe.pokemon[ident.pokeIndex]['item'] = false;
+				} else {
+					this.data[room].statusData.self.pokemon[ident.pokeIndex]['item'] = false;
+				}
+				break;
+		
+			case '-ability':
+				var ident = this.getPokemonId(args[1]);
+				if (this.data[room].opponent.id === ident.sideId) {
+					this.data[room].oppTeamOffSet[ident.pokeId]['ability'] = args[2];
+					this.data[room].statusData.foe.pokemon[ident.pokeIndex]['ability'] = args[2];
+				} else {
+					this.data[room].statusData.self.pokemon[ident.pokeIndex]['ability'] = args[2];
+				}
+				break;
+			case '-endability':
+				var ident = this.getPokemonId(args[1]);
+				if (this.data[room].opponent.id === ident.sideId) {
+					this.data[room].oppTeamOffSet[ident.pokeId]['ability'] = false;
+					this.data[room].statusData.foe.pokemon[ident.pokeIndex]['ability'] = false;
+				} else {
+					this.data[room].statusData.self.pokemon[ident.pokeIndex]['ability'] = false;
+				}
+				break;
+			
+			case '-transform':
+				var identA = this.getPokemonId(args[1]);
+				var sideA = (this.data[room].opponent.id === identA.sideId) ? 'foe' : 'self';
+				var identB = this.getPokemonId(args[2]);
+				var sideB = (this.data[room].opponent.id === identB.sideId) ? 'foe' : 'self';
+				this.data[room].statusData[sideA].pokemon[identA.pokeIndex] = this.data[room].statusData[sideB].pokemon[identB.pokeIndex];
+				break;
+			
+			case '-start':
+				var ident = this.getPokemonId(args[1]);
+				var side = (this.data[room].opponent.id === ident.sideId) ? 'foe' : 'self';
+				var volTarget = args[1].split(":");
+				if (volTarget[1]) volTarget = volTarget[1].trim();
+				else volTarget = args[1];
+				if (!this.data[room].statusData[side].pokemon[ident.pokeIndex]['volatiles']) this.data[room].statusData[side].pokemon[ident.pokeIndex]['volatiles'] = {};
+				this.data[room].statusData[side].pokemon[ident.pokeIndex]['volatiles'][volTarget] = true;
+				break;
+			case '-end':
+				var ident = this.getPokemonId(args[1]);
+				var side = (this.data[room].opponent.id === ident.sideId) ? 'foe' : 'self';
+				var volTarget = args[1].split(":");
+				if (volTarget[1]) volTarget = volTarget[1].trim();
+				else volTarget = args[1];
+				if (!this.data[room].statusData[side].pokemon[ident.pokeIndex]['volatiles']) this.data[room].statusData[side].pokemon[ident.pokeIndex]['volatiles'] = {};
+				this.data[room].statusData[side].pokemon[ident.pokeIndex]['volatiles'][volTarget] = false;
+				break;
+			
+			case '-sidestart':
+				var sideId = args[1].split(":")[0];
+				var hazardId = args[2].split(": ");
+				if (hazardId[1]) hazardId = hazardId[1];
+				else hazardId = hazardId[0];
+				if (this.data[room].opponent.id === sideId) {
+					if (!this.data[room].statusData.foe.side[hazardId]) this.data[room].statusData.foe.side[hazardId] = 0;
+					++this.data[room].statusData.foe.side[hazardId];
+				} else {
+					if (!this.data[room].statusData.self.side[hazardId]) this.data[room].statusData.self.side[hazardId] = 0;
+					++this.data[room].statusData.self.side[hazardId];
+				}
+				break;
+			case '-sideend':
+				var sideId = args[1].split(":")[0];
+				var hazardId = args[2];
+				if (this.data[room].opponent.id === sideId) {
+					this.data[room].statusData.foe.side[hazardId] = false;
+				} else {
+					this.data[room].statusData.self.side[hazardId] = false;
+				}
+				break;
+				
+			case '-weather':
+				this.data[room].weather = args[2];
+				break;
+			case '-fieldstart':
+				if (!this.data[room].fields) this.data[room].fields = {};
+				var fieldId = args[2].split(": ");
+				if (fieldId[1]) fieldId = fieldId[1];
+				else fieldId = fieldId[0];
+				this.data[room].fields[fieldId] = true;
+				break;
+			case '-fieldend':
+				if (!this.data[room].fields) this.data[room].fields = {};
+				var fieldId = args[2].split(": ");
+				if (fieldId[1]) fieldId = fieldId[1];
+				else fieldId = fieldId[0];
+				this.data[room].fields[fieldId] = false;
+				break;			
 			
 			/*-----------------------------------------------*/
 			case 'done':
