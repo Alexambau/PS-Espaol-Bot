@@ -27,6 +27,7 @@
 	},
 	
 	sendDecision: function (connection, room, decision) {
+		console.log("Send Decision: ".cyan + JSON.stringify(decision));
 		var str = '/choose ';
 		if (!decision || !decision.length) return;
 		for (var i = 0; i < decision.length; i++) {
@@ -40,16 +41,16 @@
 				str += 'move ' + decision[i].move;
 				if (decision[i].mega) str += ' mega';
 			}
-			if (i !== (decision[i].length -1)) str += ', ';
+			if (i !== (decision.length -1)) str += ', ';
 		}
-		this.send(connection, room, str + "|" + (this.data[room].turn || "1"));
+		this.send(connection, room, str);
 	},
 	
 	getRandomMove: function (room) {
 		/*	Random decison: This function always returns a valid decision.
 				Decision: Random Lead, Random Move, No Switch             */
-		if (this.data[room]) return []; // no data
-		var req = this.data[room].reqtest;
+		if (!this.data[room]) return []; // no data
+		var req = this.data[room].request;
 		if (!req) return []; //no request
 		if (req.forceSwitch) {
 			var desSwitch = [];
@@ -94,7 +95,7 @@
 					];
 				}
 			}
-			switch (req.gametype) {
+			switch (this.data[room].gametype) {
 				case 'triples':
 					return [
 						{type: 'team', team: teamPreData.substr(0, 3)}
@@ -118,9 +119,9 @@
 		if (this.data[room].tier) {
 			var tier = toId(this.data[room].tier);
 			if (this.iaConfig[tier]) {
-				if (iaModList[this.iaConfig[tier]] && iaModList[this.iaConfig[tier]].getDecision) {
+				if (this.iaModList[this.iaConfig[tier]] && this.iaModList[this.iaConfig[tier]].getDecision) {
 					try {
-						decision = iaModList[this.iaConfig[tier]].getDecision(room, this.data[room]);
+						decision = this.iaModList[this.iaConfig[tier]].getDecision(room, this.data[room]);
 						this.sendDecision(connection, room, decision);
 						return;
 					} catch (e) {
@@ -211,9 +212,9 @@
 		if (this.data[room].tier) {
 			var tier = toId(this.data[room].tier);
 			if (this.iaConfig[tier]) {
-				if (iaModList[this.iaConfig[tier]] && iaModList[this.iaConfig[tier]].receive) {
+				if (this.iaModList[this.iaConfig[tier]] && this.iaModList[this.iaConfig[tier]].receive) {
 					try {
-						var dataFromIA = iaModList[this.iaConfig[tier]].receive(room, args, kwargs);
+						var dataFromIA = this.iaModList[this.iaConfig[tier]].receive(room, args, kwargs);
 						if (dataFromIA) this.send(connection, room, dataFromIA);
 					} catch (e) {
 						error(e.stack);
@@ -319,9 +320,9 @@
 				this.data[room].variations.push(args[1]);
 				break;
 			case 'request':
-				var reqtest = data.substr(8);
+				var request = data.substr(8);
 				try {
-					this.data[room].request = JSON.parse(reqtest);
+					this.data[room].request = JSON.parse(request);
 				} catch (e) {
 					error("(REQUEST ISSUE)\n".red + e.stack);
 				}
