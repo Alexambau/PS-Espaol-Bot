@@ -99,7 +99,7 @@ module.exports = {
 			if (dataMove.status === "slp" && data.rules && data.rules['Sleep Clause Mod']) {
 				if (data.oppTeamOffSet) {
 					var sleeped = false;
-					for (var j in oppTeamOffSet) {
+					for (var j in data.oppTeamOffSet) {
 						if (data.oppTeamOffSet[j] && data.oppTeamOffSet[j]['status'] && data.oppTeamOffSet[j]['status'] === 'slp') {
 							sleeped = true;
 							break;
@@ -207,7 +207,7 @@ module.exports = {
 			}
 			
 			if (dataMove.name === "Fake Out" && data.statusData.self.pokemon[0]['lastMove']) continue;
-			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Ballon") continue;
+			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Balloon") continue;
 			if (this.inmune(dataMove, pokemonB) && req.active[0].baseAbility !== "Mold Breaker") continue;
 			//push
 			if (this.gen6_get_mux(dataMove.type, data2.types, not_inmune) > 1 || (this.gen6_get_mux(dataMove.type, data2.types, not_inmune) === 1 && (dataMove.type === data1.types[0] || req.active[0].baseAbility === "Protean" || (data1.types[1] && dataMove.type === data1.types[1])))) {
@@ -253,7 +253,7 @@ module.exports = {
 			if (!(dataMove.category in {"Physical": 1, "Special": 1})) continue;
 			if (dataMove.name === "Fake Out" && data.statusData.self.pokemon[0]['lastMove']) continue;
 			if (this.gen6_get_mux(dataMove.type, data2.types) === 0 && !not_inmune) continue;
-			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Ballon") continue;
+			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Balloon") continue;
 			if (this.inmune(dataMove, pokemonB) && req.active[0].baseAbility !== "Mold Breaker") continue;
 			//push
 			moves.push(req.active[0].moves[i].move);

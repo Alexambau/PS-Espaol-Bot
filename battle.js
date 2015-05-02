@@ -21,6 +21,11 @@
 		return;
 	},
 	
+	clearData: function () {
+		for (var i in this.data)
+			delete this.data[i];
+	},
+	
 	send: function (connection, room, text) {
 		send(connection, room + "|" + text);
 	},
@@ -124,7 +129,7 @@
 		return [];
 	},
 	
-	makeDecision: function (connection, room, forceRandom) {
+	makeDecision: function (connection, room, forceRandom, callback) {
 		var decision = {};
 		if (!this.data[room]) return;
 		if (!forceRandom) {
@@ -134,7 +139,7 @@
 					if (this.iaModules[this.iaConfig[tier]] && this.iaModules[this.iaConfig[tier]].getDecision) {
 						try {
 							debug("Make Decision: Using module " + this.iaConfig[tier]);
-							decision = this.iaModules[this.iaConfig[tier]].getDecision(room, this.data[room]);
+							decision = this.iaModules[this.iaConfig[tier]].getDecision(room, this.data[room], callback);
 							this.sendDecision(connection, room, decision);
 							return;
 						} catch (e) {
@@ -146,7 +151,7 @@
 			
 			if (this.data[room].gametype === 'singles' && parseInt(this.data[room].gen) === 6 && this.iaModules['6gsinglesdefault'] && this.iaModules['6gsinglesdefault'].getDecision) {
 				try {
-					decision = this.iaModules['6gsinglesdefault'].getDecision(room, this.data[room]);
+					decision = this.iaModules['6gsinglesdefault'].getDecision(room, this.data[room], callback);
 					debug("Make Decision: Using 6g default module");
 					this.sendDecision(connection, room, decision);
 					return;
@@ -362,18 +367,18 @@
 			case 'teampreview':
 				this.data[room].teampreview = args[1];
 				this.send(connection, room, '/timer on');
-				this.makeDecision(connection, room);
+				this.makeDecision(connection, room, false);
 				break;
 			case 'turn':
 				this.data[room].turn = args[1];
 			case 'inactive':
-				this.makeDecision(connection, room);
+				this.makeDecision(connection, room, false);
 				break;
 			case 'forcemoverandom':
 				this.makeDecision(connection, room, true);
 				break;
 			case 'callback':
-				this.makeDecision(connection, room, args[1]);
+				this.makeDecision(connection, room, false, args[1]);
 				break;
 			case 'win':
 				this.finishBattle(connection, room, (args[1] && toId(args[1]) === toId(config.nick)));
@@ -813,7 +818,7 @@
 				break;
 				
 			case '-weather':
-				this.data[room].weather = args[2];
+				this.data[room].weather = args[1];
 				break;
 			case '-fieldstart':
 				if (!this.data[room].fields) this.data[room].fields = {};

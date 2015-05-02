@@ -1983,8 +1983,8 @@ exports.commands = {
 		if (args.length < 2) return this.say(con, room, 'Usa el comando así: ' + config.commandcharacter + "challenge [usuario], [formato]");
 		if (!this.tourFormats || !this.tourFormats[toId(args[1])]) return this.say(con, room, 'El formato ' + toId(args[1]) + ' no se reconoce como un formato válido');
 		if (!this.formats || (!this.formats[toId(args[1])] && (!this.teams || !this.teams[toId(args[1])]))) return this.say(con, room, 'No poseo equipos para jugar en el formato ' + toId(args[1]) + '. Por favor edite teams.js');
-		if (this.teams[toId(args[1])]) this.say(con, room, '/useteam ' + this.teams[toId(args[1])][Math.floor(Math.random()*this.teams[toId(args[1])].length)]);
-		this.say(con, 'lobby', '/challenge ' + toId(args[0]) + ", " + toId(args[1]));
+		if (this.teams[toId(args[1])]) this.say(con, '', '/useteam ' + this.teams[toId(args[1])][Math.floor(Math.random()*this.teams[toId(args[1])].length)]);
+		this.say(con, '', '/challenge ' + toId(args[0]) + ", " + toId(args[1]));
 	},
 	
 	tourjoin: 'jointour',

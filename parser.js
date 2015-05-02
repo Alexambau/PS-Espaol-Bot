@@ -219,6 +219,8 @@ exports.parse = {
 				this.tourData = {}; //delete possible residual tour data
 				this.tours = {};
 				
+				BattleBot.clearData(); //delete possible residual battle data
+				
 				var datenow = Date.now();
 				
 				if (!config.disableDownload) {
@@ -374,6 +376,11 @@ exports.parse = {
 				break;
 			case 'rated':
 				if (this.ratedRoom) this.say(connection, this.ratedRoom, 'http://play.pokemonshowdown.com/' + this.room);
+				if (lastMessage) this.room = '';
+				break;
+			case 'deinit':
+				if (this.room && this.room.indexOf("battle-") > -1) this.busyInBattle--;
+				if (this.busyInBattle < 0) this.busyInBattle = 0;
 				if (lastMessage) this.room = '';
 				break;
 			case 'c':
