@@ -144,7 +144,6 @@
 		
 		if (this.data[room].gametype === 'singles' && parseInt(this.data[room].gen) === 6 && this.iaModules['6gsinglesdefault'] && this.iaModules['6gsinglesdefault'].getDecision) {
 			try {
-				console.log("OK YEAH");
 				decision = this.iaModules['6gsinglesdefault'].getDecision(room, this.data[room]);
 				this.sendDecision(connection, room, decision);
 				return;
@@ -335,8 +334,9 @@
 				this.data[room].tier = args[1];
 				break;
 			case 'rule':
-				if (!this.data[room].rules) this.data[room].rules = [];
-				this.data[room].rules.push(args[1]);
+				if (!this.data[room].rules) this.data[room].rules = {};
+				var ruleArgs = args[1].split(': ');
+				this.data[room].rules[ruleArgs[0]] = ruleArgs[1] || true;
 				break;
 			case 'variation':
 				if (!this.data[room].variations) this.data[room].variations = [];
@@ -366,8 +366,7 @@
 				this.makeDecision(connection, room);
 				break;
 			case 'callback':
-				this.data[room].callback = args[1];
-				this.makeDecision(connection, room);
+				this.makeDecision(connection, room, args[1]);
 				break;
 			case 'win':
 				this.finishBattle(connection, room, (args[1] && toId(args[1]) === toId(config.nick)));

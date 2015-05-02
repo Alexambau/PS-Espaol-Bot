@@ -35,7 +35,6 @@ module.exports = {
 		return false;
 	},
 	gen6_getDisadvantage: function (pokemonA, pokemonB) {
-		//console.log(pokemonA + ", " + pokemonB);
 		var pokedex = require('./pokedex.js').BattlePokedex;
 		var data1 = pokedex[toId(pokemonA)];
 		var data2 = pokedex[toId(pokemonB)];
@@ -97,6 +96,19 @@ module.exports = {
 			if ((dataMove.status === "brn") && (data2.types[0] === "Fire" || (data2.types[1] && (data2.types[1] === "Fire")))) continue;
 			if ((dataMove.status === "tox" || dataMove.status === "psn") && (data2.types[0] === "Poison" || data2.types[0] === "Steel" || (data2.types[1] && (data2.types[1] === "Poison" || data2.types[1] === "Steel")))) continue;
 			
+			if (dataMove.status === "slp" && data.rules && data.rules['Sleep Clause Mod']) {
+				if (data.oppTeamOffSet) {
+					var sleeped = false;
+					for (var j in oppTeamOffSet) {
+						if (data.oppTeamOffSet[j] && data.oppTeamOffSet[j]['status'] && data.oppTeamOffSet[j]['status'] === 'slp') {
+							sleeped = true;
+							break;
+						}
+					}
+					if (sleeped) continue;
+				}
+			}
+			
 			/* Substitute */
 			if (dataMove.name === "Substitute" && data.statusData.self.pokemon[0]['volatiles'] && data.statusData.self.pokemon[0]['volatiles']['Substitute']) continue;
 			if (dataMove.name === "Substitute" && data.statusData.self.pokemon[0]['hp'] < 26) continue;
@@ -130,14 +142,14 @@ module.exports = {
 			
 			/* Weather */
 			if (dataMove.weather) {
-				if (data.weather && (data.weather in {'desolateland': 1, 'primordialsea': 1, 'deltastream': 1} || data.weather === dataMove.weather)) continue;
+				if (data.weather && ((data.weather in {'desolateland': 1, 'primordialsea': 1, 'deltastream': 1}) || data.weather === toId(dataMove.weather))) continue;
 			}
 			if (dataMove.target === 'all') {
 				if (data.fields && data.fields[dataMove.name]) continue;
 			}
 			
 			/* Exceptions */
-			if (dataMove.name === "Baton pass") {
+			if (dataMove.name === "Baton Pass") {
 				if (!data.statusData.self.pokemon[0]['boost']) continue;
 				var bosts = 0;
 				for (var j in data.statusData.self.pokemon[0]['boost']) 
@@ -211,7 +223,6 @@ module.exports = {
 		var movedex = require('./moves.js').BattleMovedex;
 		var data1 = pokedex[toId(pokemonA)];
 		var data2 = pokedex[toId(pokemonB)];
-		console.log(pokemonA + "/" + pokemonB);
 		for (var i = 0; i < req.active[0].moves.length; i++) {
 			if (req.active[0].moves[i].disabled) continue;
 			dataMove = movedex[toId(req.active[0].moves[i].move)];
@@ -295,15 +306,14 @@ module.exports = {
 		return res;
 	},
 	
-	getDecision: function (room, data) {
+	getDecision: function (room, data, callback) {
 		if (!data) return []; // no data
 		var req = data.request;
 		if (!req) return []; //no request
 		
 		var trapped = false;
-		if (data.callback) {
-			if (data.callback === "trapped") trapped = true;
-			data.callback = false;
+		if (callback) {
+			if (callback === "trapped") trapped = true;
 		}
 		
 		if (req.forceSwitch) {
