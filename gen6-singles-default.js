@@ -113,6 +113,9 @@ module.exports = {
 			if (dataMove.name === "Substitute" && data.statusData.self.pokemon[0]['volatiles'] && data.statusData.self.pokemon[0]['volatiles']['Substitute']) continue;
 			if (dataMove.name === "Substitute" && data.statusData.self.pokemon[0]['hp'] < 26) continue;
 			
+			/* Leech seed */
+			if (dataMove.name === "Leech Seed" && (data2.types[0] === "Grass" || (data2.types[1] && (data2.types[1] === "Grass")))) continue;
+			
 			/* Other volatiles */
 			if (dataMove.target === "self") {
 				if (data.statusData.self.pokemon[0]['volatiles'] && data.statusData.self.pokemon[0]['volatiles'][dataMove.name]) continue;

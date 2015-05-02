@@ -45,20 +45,30 @@ exports.commands = {
 	},
 	
 	reload: function(arg, by, room, con) {
-		if (!this.hasRank(by, '#~')) return false;
+		if (!this.hasRank(by, '~')) return false;
 		try {
 			this.uncacheTree('./commands.js');
 			Commands = require('./commands.js').commands;
-			this.uncacheTree('./pokemon-ia.js');
-			ia = require('./pokemon-ia.js');
 			this.say(con, room, 'Comandos actualizados.');
 		} catch (e) {
 			error('failed to reload: ' + sys.inspect(e));
 		}
 	},
 	
+	reloadbattle: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		try {
+			this.uncacheTree('./battle.js');
+			global.BattleBot = require('./battle.js');
+			BattleBot.init();
+			this.say(con, room, 'Módulos de batallas actualizados.');
+		} catch (e) {
+			error('failed to reload: ' + sys.inspect(e));
+		}
+	},
+	
 	reloadtour: function(arg, by, room, con) {
-		if (!this.hasRank(by, '#~')) return false;
+		if (!this.hasRank(by, '~')) return false;
 		try {
 			this.uncacheTree('./etourconfig.js');
 			eTourConfig = require('./etourconfig.js');
@@ -72,7 +82,7 @@ exports.commands = {
 	},
 	
 	reloadteams: function(arg, by, room, con) {
-		if (!this.hasRank(by, '#~')) return false;
+		if (!this.hasRank(by, '~')) return false;
 		try {
 			this.uncacheTree('./teams.js');
 			this.teams = require('./teams.js').teams;
@@ -1933,7 +1943,16 @@ exports.commands = {
 	
 	move: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '+%@#~')) return false;
-		this.moveBattle(room, con);
+		if (arg && !this.hasRank(by, '~')) return false;
+		
+		if (room.indexOf("battle-") === -1) return this.say(con, room, 'Esto solo puede ser usado en una sala de batalla');
+		try {
+			if (!arg) BattleBot.receive(con, room, "|inactive|");
+			else if (arg === "random") BattleBot.receive(con, room, "|forcemoverandom|");
+		} catch (e) {
+			this.say(con, room, 'Error en el modulo de batalla. No se pudo escoger movimiento');
+		}
+		
 	},
 	
 	jointours: function(arg, by, room, con) { 

@@ -16,7 +16,7 @@
 		for (var i in this.iaModList) {
 			try {
 				this.iaModules[i] = require(this.iaModList[i]);
-			} catch (e) {}
+			} catch (e) {error(e.stack);}
 		}
 		return;
 	},
@@ -124,35 +124,39 @@
 		return [];
 	},
 	
-	makeDecision: function (connection, room) {
+	makeDecision: function (connection, room, forceRandom) {
 		var decision = {};
 		if (!this.data[room]) return;
-		if (this.data[room].tier) {
-			var tier = toId(this.data[room].tier);
-			if (this.iaConfig[tier]) {
-				if (this.iaModules[this.iaConfig[tier]] && this.iaModules[this.iaConfig[tier]].getDecision) {
-					try {
-						decision = this.iaModules[this.iaConfig[tier]].getDecision(room, this.data[room]);
-						this.sendDecision(connection, room, decision);
-						return;
-					} catch (e) {
-						error(e.stack);
+		if (!forceRandom) {
+			if (this.data[room].tier) {
+				var tier = toId(this.data[room].tier);
+				if (this.iaConfig[tier]) {
+					if (this.iaModules[this.iaConfig[tier]] && this.iaModules[this.iaConfig[tier]].getDecision) {
+						try {
+							debug("Make Decision: Using module " + this.iaConfig[tier]);
+							decision = this.iaModules[this.iaConfig[tier]].getDecision(room, this.data[room]);
+							this.sendDecision(connection, room, decision);
+							return;
+						} catch (e) {
+							error(e.stack);
+						}
 					}
 				}
 			}
-		}
-		
-		if (this.data[room].gametype === 'singles' && parseInt(this.data[room].gen) === 6 && this.iaModules['6gsinglesdefault'] && this.iaModules['6gsinglesdefault'].getDecision) {
-			try {
-				decision = this.iaModules['6gsinglesdefault'].getDecision(room, this.data[room]);
-				this.sendDecision(connection, room, decision);
-				return;
-			} catch (e) {
-				error(e.stack);
+			
+			if (this.data[room].gametype === 'singles' && parseInt(this.data[room].gen) === 6 && this.iaModules['6gsinglesdefault'] && this.iaModules['6gsinglesdefault'].getDecision) {
+				try {
+					decision = this.iaModules['6gsinglesdefault'].getDecision(room, this.data[room]);
+					debug("Make Decision: Using 6g default module");
+					this.sendDecision(connection, room, decision);
+					return;
+				} catch (e) {
+					error(e.stack);
+				}
 			}
 		}
-		
 		try {
+			debug("Make Decision: Using genecic funcion");
 			decision = this.getRandomMove(room);
 			this.sendDecision(connection, room, decision);
 		} catch (e) {
@@ -364,6 +368,9 @@
 				this.data[room].turn = args[1];
 			case 'inactive':
 				this.makeDecision(connection, room);
+				break;
+			case 'forcemoverandom':
+				this.makeDecision(connection, room, true);
 				break;
 			case 'callback':
 				this.makeDecision(connection, room, args[1]);

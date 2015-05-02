@@ -37,12 +37,6 @@ exports.parse = {
 	roomRanks: {},
 	staffRanks: {},
 	challenges: {},
-	battleDatas: {},
-	battleTurns: {},
-	battleOpIds: {},
-	battleOpInfo: {},
-	battleFields: {},
-	battleFormats: {},
 	RP: {},
 	roomLogs: {},
 	tourData: {},
@@ -1058,9 +1052,6 @@ exports.parse = {
 		chatData.lastMessage2 = chatData.lastMessage;
 		chatData.lastMessage = msg;
 	},
-	processBattle: function(room, connection) {
-		this.say(connection, room, '/timer on');
-	},
 	makeTour: function(connection, room, tier, begintime, autodq) {
 		this.tours[room] = {
 				players: 0,
@@ -1135,19 +1126,6 @@ exports.parse = {
 			}.bind(this), 30000);
 		}.bind(this);
 		loop();
-	},
-	moveBattle: function(room, connection) {
-		//make battle decisions
-		return;
-		if (!this.battleDatas[room]) return;
-		try {
-			var decision = ia.getBattleResponse(this.battleDatas[room], this.battleOpInfo[room], this.battleFields[room], this.battleFormats[room]);
-			if (decision) this.say(connection, room, decision);
-		} catch (e) {
-			ResourceMonitor.log("Error en la batalla " + room + " | " + sys.inspect(e), 'e');
-			this.say(connection, room, '/leave');
-		}
-		return;
 	},
 	
 	cleanChatData: function () {
