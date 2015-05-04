@@ -31,7 +31,6 @@ module.exports = {
 		if (moveData.type === "Water" && this.has_ability(pokemonA, ["Water Absorb", "Dry Skin", "Storm Drain"])) return true;
 		if (moveData.type === "Fire" && this.has_ability(pokemonA, ["Flash Fire"])) return true;
 		if (moveData.type === "Electric" && this.has_ability(pokemonA, ["Volt Absorb", "Lightning Rod"])) return true;
-		if (moveData.isPowder && (data1.types[0] === "Grass" || (data1.types[1] && data1.types[1] === "Grass"))) return true;
 		return false;
 	},
 	gen6_getDisadvantage: function (pokemonA, pokemonB) {
@@ -79,6 +78,8 @@ module.exports = {
 			if (dataMove.target !== "self" && dataMove.target !== "allySide" && dataMove.target !== "foeSide") {
 				if (this.gen6_get_mux(dataMove.type, data2.types) === 0) continue;
 				if (data.statusData.foe.pokemon[0]['volatiles'] && data.statusData.foe.pokemon[0]['volatiles'][dataMove.name]) continue;
+				if (dataMove.isPowder && (data2.types[0] === "Grass" || (data2.types[1] && data2.types[1] === "Grass"))) continue;
+				if (this.inmune(dataMove, pokemonB)) continue;
 			}
 			
 			/* Bounceable */
@@ -165,7 +166,7 @@ module.exports = {
 			if (dataMove.name in {"Lunar Dance": 1, "Healing Wish": 1}) continue;
 			
 			//push
-			moves.push(req.active[0].moves[i].move);
+			moves.push(i + 1);
 		}
 		return moves;
 	},
@@ -211,7 +212,7 @@ module.exports = {
 			if (this.inmune(dataMove, pokemonB) && req.active[0].baseAbility !== "Mold Breaker") continue;
 			//push
 			if (this.gen6_get_mux(dataMove.type, data2.types, not_inmune) > 1 || (this.gen6_get_mux(dataMove.type, data2.types, not_inmune) === 1 && (dataMove.type === data1.types[0] || req.active[0].baseAbility === "Protean" || (data1.types[1] && dataMove.type === data1.types[1])))) {
-				moves.push(req.active[0].moves[i].move);
+				moves.push(i + 1);
 			}
 		}
 		return moves;
@@ -256,7 +257,7 @@ module.exports = {
 			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Balloon") continue;
 			if (this.inmune(dataMove, pokemonB) && req.active[0].baseAbility !== "Mold Breaker") continue;
 			//push
-			moves.push(req.active[0].moves[i].move);
+			moves.push(i + 1);
 		}
 		return moves;
 	},

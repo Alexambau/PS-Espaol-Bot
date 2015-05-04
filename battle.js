@@ -3,11 +3,19 @@
 	data: {},
 	iaModules: {},
 	
-	/* Config - Edit this */
+	
 	iaModList: {
 		'6gsinglesdefault': './gen6-singles-default.js'
 	},
+	
+	/* Config - Edit this */
 	iaConfig: {
+		/* Exceptions */
+	},
+	
+	iaDefaultConfig: {
+		/* Default */
+		'singles-6': '6gsinglesdefault'
 	},
 	
 	/* Functions */
@@ -30,7 +38,7 @@
 		send(connection, room + "|" + text);
 	},
 	
-	sendDecision: function (connection, room, decision) {
+	sendDecision: function (connection, room, decision, rqid) {
 		debug("Send Decision: ".cyan + JSON.stringify(decision));
 		var str = '/choose ';
 		if (!decision || !decision.length) return;
@@ -49,6 +57,7 @@
 			}
 			if (i !== (decision.length -1)) str += ', ';
 		}
+		if (rqid)  str += '|' + rqid; 
 		this.send(connection, room, str);
 	},
 	
@@ -83,7 +92,7 @@
 				actualDes.type = 'move';
 				if (req.side.pokemon[i].canMegaEvo) actualDes.mega = true;
 				for (var j = 0; j < req.active[i].moves.length; j++) {
-					if (!req.active[i].moves[j].disabled) moves.push(req.active[i].moves[j].move);
+					if (!req.active[i].moves[j].disabled) moves.push(j + 1);
 				}
 				actualDes.move = moves[Math.floor(Math.random() * moves.length)];
 				if (req.active.length === 2) {
@@ -132,6 +141,14 @@
 	makeDecision: function (connection, room, forceRandom, callback) {
 		var decision = {};
 		if (!this.data[room]) return;
+		var rqid = 0;
+		if (this.data[room] && this.data[room].request) rqid = parseInt(this.data[room].request.rqid);
+		
+		//avoid duplicated decisions
+		if (this.data[room].lastMake && this.data[room].lastReq === rqid && (Date.now() - this.data[room].lastMake) < 5000) return;
+		
+		this.data[room].lastMake = Date.now();
+		this.data[room].lastReq = rqid;
 		if (!forceRandom) {
 			if (this.data[room].tier) {
 				var tier = toId(this.data[room].tier);
@@ -140,7 +157,7 @@
 						try {
 							debug("Make Decision: Using module " + this.iaConfig[tier]);
 							decision = this.iaModules[this.iaConfig[tier]].getDecision(room, this.data[room], callback);
-							this.sendDecision(connection, room, decision);
+							this.sendDecision(connection, room, decision, rqid);
 							return;
 						} catch (e) {
 							error(e.stack);
@@ -149,11 +166,12 @@
 				}
 			}
 			
-			if (this.data[room].gametype === 'singles' && parseInt(this.data[room].gen) === 6 && this.iaModules['6gsinglesdefault'] && this.iaModules['6gsinglesdefault'].getDecision) {
+			var defaultId = this.data[room].gametype + "-" + this.data[room].gen;
+			if (this.iaDefaultConfig[defaultId] && this.iaModules[this.iaDefaultConfig[defaultId]] && this.iaModules[this.iaDefaultConfig[defaultId]].getDecision) {
 				try {
-					decision = this.iaModules['6gsinglesdefault'].getDecision(room, this.data[room], callback);
-					debug("Make Decision: Using 6g default module");
-					this.sendDecision(connection, room, decision);
+					decision = this.iaModules[this.iaDefaultConfig[defaultId]].getDecision(room, this.data[room], callback);
+					debug("Make Decision: Using default module: " + this.iaDefaultConfig[defaultId]);
+					this.sendDecision(connection, room, decision, rqid);
 					return;
 				} catch (e) {
 					error(e.stack);
@@ -163,7 +181,7 @@
 		try {
 			debug("Make Decision: Using genecic funcion");
 			decision = this.getRandomMove(room);
-			this.sendDecision(connection, room, decision);
+			this.sendDecision(connection, room, decision, rqid);
 		} catch (e) {
 			error(e.stack);
 			this.send(connection, room, "Fatal Error parsing room [" + room + "] - " + sys.inspect(e));
