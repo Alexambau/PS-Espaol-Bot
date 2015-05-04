@@ -53,6 +53,10 @@ module.exports = {
 		var movedex = require('./moves.js').BattleMovedex;
 		var data1 = pokedex[toId(pokemonA)];
 		var data2 = pokedex[toId(pokemonB)];
+		if (!data1 || !data2) {
+			debug("Error - NO DATA -> " + pokemonA + " / " + pokemonB);
+			return [];
+		}
 		for (var i = 0; i < req.active[0].moves.length; i++) {
 			if (req.active[0].moves[i].disabled) continue;
 			dataMove = movedex[toId(req.active[0].moves[i].move)];
@@ -78,12 +82,12 @@ module.exports = {
 			if (dataMove.target !== "self" && dataMove.target !== "allySide" && dataMove.target !== "foeSide") {
 				if (this.gen6_get_mux(dataMove.type, data2.types) === 0) continue;
 				if (data.statusData.foe.pokemon[0]['volatiles'] && data.statusData.foe.pokemon[0]['volatiles'][dataMove.name]) continue;
-				if (dataMove.isPowder && (data2.types[0] === "Grass" || (data2.types[1] && data2.types[1] === "Grass"))) continue;
+				if (dataMove.flags && dataMove.flags['powder'] && (data2.types[0] === "Grass" || (data2.types[1] && data2.types[1] === "Grass"))) continue;
 				if (this.inmune(dataMove, pokemonB)) continue;
 			}
 			
 			/* Bounceable */
-			if (dataMove.isBounceable && this.has_ability(pokemonB, ["Magic Bounce"])) continue;
+			if (dataMove.flags && dataMove.flags['reflectable'] && (this.has_ability(pokemonB, ["Magic Bounce"]) || (data.statusData.foe.pokemon[0].ability && data.statusData.foe.pokemon[0].ability === "Magic Bounce"))) continue;
 			
 			/* Hazards Removal*/
 			if (dataMove.name === "Rapid Spin" || dataMove.name === "Defog") {
@@ -180,6 +184,10 @@ module.exports = {
 		var movedex = require('./moves.js').BattleMovedex;
 		var data1 = pokedex[toId(pokemonA)];
 		var data2 = pokedex[toId(pokemonB)];
+		if (!data1 || !data2) {
+			debug("Error - NO DATA -> " + pokemonA + " / " + pokemonB);
+			return [];
+		}
 		for (var i = 0; i < req.active[0].moves.length; i++) {
 			if (req.active[0].moves[i].disabled) continue;
 			dataMove = movedex[toId(req.active[0].moves[i].move)];
@@ -227,6 +235,10 @@ module.exports = {
 		var movedex = require('./moves.js').BattleMovedex;
 		var data1 = pokedex[toId(pokemonA)];
 		var data2 = pokedex[toId(pokemonB)];
+		if (!data1 || !data2) {
+			debug("Error - NO DATA -> " + pokemonA + " / " + pokemonB);
+			return [];
+		}
 		for (var i = 0; i < req.active[0].moves.length; i++) {
 			if (req.active[0].moves[i].disabled) continue;
 			dataMove = movedex[toId(req.active[0].moves[i].move)];
@@ -282,6 +294,7 @@ module.exports = {
 				else disaux = this.gen6_getDisadvantage(req.side.pokemon[i].details.substr(0, req.side.pokemon[i].details.indexOf(",")), data.statusData.foe.pokemon[0].species);
 				posibbles[i + 1] = disaux;
 				if (disAdvantage === -1 || disAdvantage > disaux) {
+					if (disAdvantage !== -1 && !this.getSideViableMoves(data, i).length) continue;
 					chosen = i + 1;
 					disAdvantage = disaux;
 				}	
@@ -333,6 +346,13 @@ module.exports = {
 			var offMaxMoves = this.getEffectiveOffMoves(data);
 			var switchInfo = this.getBestSwitch(data);
 			
+			if (config.debuglevel <= 2) {
+				debug("DATA - OFFMOVES -> " + JSON.stringify(offMoves));
+				debug("DATA - MAXEOFFMOVES -> " + JSON.stringify(offMaxMoves));
+				debug("DATA - SUPPORTMOVES -> " + JSON.stringify(supportMoves));
+				debug("DATA - SWITCH -> " + JSON.stringify(switchInfo));
+			}
+			
 			if (!trapped && !req.active[0].trapped) {
 				if (switchInfo.must && !offMaxMoves.length) return [{type: 'switch', switchIn: switchInfo.poke}];
 				if (switchInfo.can && !offMoves.length && !supportMoves.length) return [{type: 'switch', switchIn: switchInfo.poke}];
@@ -364,6 +384,57 @@ module.exports = {
 	},
 	receive: function (room, args, kwargs) {
 		return; //do nothing, data is suffient
+	},
+	getSideViableMoves: function (data, idSide) {
+		/* This function gets Viable offensive moves from a Pokemon in self side
+			This avoids infinite switches
+		*/
+		var moves = [];
+		var req = data.request;
+		var pokemonA = req.side.pokemon[idSide].details;
+		if (pokemonA.indexOf(",") !== -1) pokemonA = req.side.pokemon[idSide].details.substr(0, req.side.pokemon[idSide].details.indexOf(","));
+		var pokemonB = data.statusData.foe.pokemon[0].species;
+		var dataMove;
+		var pokedex = require('./pokedex.js').BattlePokedex;
+		var movedex = require('./moves.js').BattleMovedex;
+		var data1 = pokedex[toId(pokemonA)];
+		var data2 = pokedex[toId(pokemonB)];
+		if (!data1 || !data2) {
+			debug("Error - NO DATA -> " + pokemonA + " / " + pokemonB);
+			return [];
+		}
+		for (var i = 0; i < req.side.pokemon[idSide].moves.length; i++) {
+			dataMove = movedex[toId(req.side.pokemon[idSide].moves[i])];
+			if (!dataMove) {
+				//by default, unknown moves are pushed here
+				moves.push(i + 1);
+				continue;
+			}
+			//modify move
+			switch (req.side.pokemon[idSide].baseAbility) {
+				case 'Aerilate':
+					if (dataMove.type === "Normal") dataMove.type === "Flying";
+					break;
+				case 'Pixilate':
+					if (dataMove.type === "Normal") dataMove.type === "Fairy";
+					break;
+				case 'Refrigerate':
+					if (dataMove.type === "Normal") dataMove.type === "Ice";
+					break;
+			}
+			if (dataMove.name === "Judgment") dataMove.type = data1.types[0];
+			var not_inmune = false;
+			if (req.side.pokemon[idSide].baseAbility === "Scrappy" && dataMove.type in {"Normal": 1, "Fighting": 1}) not_inmune = true;
+			//discard moves
+			if (!(dataMove.category in {"Physical": 1, "Special": 1})) continue;
+			if (this.gen6_get_mux(dataMove.type, data2.types) === 0 && !not_inmune) continue;
+			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Balloon") continue;
+			if (this.inmune(dataMove, pokemonB) && req.side.pokemon[idSide].baseAbility !== "Mold Breaker") continue;
+			
+			//push
+			moves.push(i + 1);
+		}
+		return moves;
 	},
 	TypeChartGen6: {
 		"Bug": {
