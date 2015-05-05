@@ -81,7 +81,10 @@ module.exports = {
 			/* Inmune */
 			if (dataMove.target !== "self" && dataMove.target !== "allySide" && dataMove.target !== "foeSide") {
 				if (this.gen6_get_mux(dataMove.type, data2.types) === 0) continue;
-				if (data.statusData.foe.pokemon[0]['volatiles'] && data.statusData.foe.pokemon[0]['volatiles'][dataMove.name]) continue;
+				if (data.statusData.foe.pokemon[0]['volatiles']) {
+					if (data.statusData.foe.pokemon[0]['volatiles'][dataMove.name]) continue;
+					if (dataMove.name === "Forest's Curse" && data.statusData.foe.pokemon[0]['volatiles']['typeadd']) continue;
+				}
 				if (dataMove.flags && dataMove.flags['powder'] && (data2.types[0] === "Grass" || (data2.types[1] && data2.types[1] === "Grass"))) continue;
 				if (this.inmune(dataMove, pokemonB)) continue;
 			}
@@ -122,8 +125,9 @@ module.exports = {
 			if (dataMove.name === "Leech Seed" && (data2.types[0] === "Grass" || (data2.types[1] && (data2.types[1] === "Grass")))) continue;
 			
 			/* Other volatiles */
-			if (dataMove.target === "self") {
-				if (data.statusData.self.pokemon[0]['volatiles'] && data.statusData.self.pokemon[0]['volatiles'][dataMove.name]) continue;
+			if (dataMove.target === "self" && data.statusData.self.pokemon[0]['volatiles']) {
+				if (data.statusData.self.pokemon[0]['volatiles'][dataMove.name]) continue;
+				if (dataMove.name === "Reflect Type" && data.statusData.self.pokemon[0]['volatiles']['typechange']) continue;
 			}
 			
 			/* Sleep talk */
@@ -150,7 +154,8 @@ module.exports = {
 			
 			/* Weather */
 			if (dataMove.weather) {
-				if (data.weather && ((data.weather in {'desolateland': 1, 'primordialsea': 1, 'deltastream': 1}) || data.weather === toId(dataMove.weather))) continue;
+				var weather = toId(data.weather);
+				if (weather && ((weather in {'desolateland': 1, 'primordialsea': 1, 'deltastream': 1}) || weather === toId(dataMove.weather))) continue;
 			}
 			if (dataMove.target === 'all') {
 				if (data.fields && data.fields[dataMove.name]) continue;
@@ -339,7 +344,11 @@ module.exports = {
 		} else if (req.active) {
 			var actualDes = {};
 			var moves = [];
-			if (req.side.pokemon[0].canMegaEvo) actualDes.mega = true;
+			if (req.side.pokemon[0].canMegaEvo) {
+				actualDes.mega = true;
+				data.statusData.self.pokemon[0].species = data.statusData.self.pokemon[0].species + "-Mega";
+				data.request.active[0].baseAbility = require('./pokedex.js').BattlePokedex[toId(data.statusData.self.pokemon[0].species)].abilities[0];
+			}
 			
 			var supportMoves = this.getViableSupportMoves(data);
 			var offMoves = this.getOffMoves(data);
@@ -356,6 +365,7 @@ module.exports = {
 			if (!trapped && !req.active[0].trapped) {
 				if (switchInfo.must && !offMaxMoves.length) return [{type: 'switch', switchIn: switchInfo.poke}];
 				if (switchInfo.can && !offMoves.length && !supportMoves.length) return [{type: 'switch', switchIn: switchInfo.poke}];
+				if (switchInfo.can && data.statusData.self.pokemon[0]['volatiles'] && data.statusData.self.pokemon[0]['volatiles']['perish1']) return [{type: 'switch', switchIn: switchInfo.poke}];
 				if (switchInfo.should && !offMaxMoves.length && Math.floor(Math.random() * 10) <= 5) return [{type: 'switch', switchIn: switchInfo.poke}];
 			}
 			
@@ -370,8 +380,16 @@ module.exports = {
 			for (var i = 0; i < supportMoves.length; i++)
 					moves.push(supportMoves[i]);
 			
-			actualDes.move = moves[Math.floor(Math.random() * moves.length)];
+			if (moves.length) {
+				actualDes.move = moves[Math.floor(Math.random() * moves.length)];
+			} else {
+				for (var j = 0; j < req.active[0].moves.length; j++) {
+					if (!req.active[0].moves[j].disabled) moves.push(j + 1);
+				}
+				actualDes.move = moves[Math.floor(Math.random() * moves.length)];
+			}
 			return [{type: 'move', mega: actualDes.mega, move: actualDes.move}];
+			
 		} else if (req.teamPreview) {
 			var teamPreData = [];
 			for (var i = 0; i < req.side.pokemon.length; i++) teamPreData.push(i + 1);

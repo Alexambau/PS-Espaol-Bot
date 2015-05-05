@@ -39,7 +39,7 @@
 	},
 	
 	sendDecision: function (connection, room, decision, rqid) {
-		debug("Send Decision: ".cyan + JSON.stringify(decision));
+		if (config.debuglevel <= 2) debug("Send Decision: ".cyan + JSON.stringify(decision));
 		var str = '/choose ';
 		if (!decision || !decision.length) return;
 		for (var i = 0; i < decision.length; i++) {
@@ -145,7 +145,7 @@
 		if (this.data[room] && this.data[room].request) rqid = parseInt(this.data[room].request.rqid);
 		
 		//avoid duplicated decisions
-		if (this.data[room].lastMake && this.data[room].lastReq === rqid && (Date.now() - this.data[room].lastMake) < 5000) return;
+		if (!callback && this.data[room].lastMake && this.data[room].lastReq === rqid && (Date.now() - this.data[room].lastMake) < 5000) return;
 		
 		this.data[room].lastMake = Date.now();
 		this.data[room].lastReq = rqid;
@@ -840,14 +840,14 @@
 				break;
 			case '-fieldstart':
 				if (!this.data[room].fields) this.data[room].fields = {};
-				var fieldId = args[2].split(": ");
+				var fieldId = args[1].split(": ");
 				if (fieldId[1]) fieldId = fieldId[1];
 				else fieldId = fieldId[0];
 				this.data[room].fields[fieldId] = true;
 				break;
 			case '-fieldend':
 				if (!this.data[room].fields) this.data[room].fields = {};
-				var fieldId = args[2].split(": ");
+				var fieldId = args[1].split(": ");
 				if (fieldId[1]) fieldId = fieldId[1];
 				else fieldId = fieldId[0];
 				this.data[room].fields[fieldId] = false;
