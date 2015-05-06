@@ -258,11 +258,7 @@ exports.parse = {
 					});
 				}
 				
-				try {
-					this.teams = require('./teams.js').teams;
-				} catch (e) {
-					error('failed to load teams: ' + sys.inspect(e));
-				}
+				BattleBot.teamBuilder.loadTeamList();
 
 				// Now join the rooms
 				var cmds = []; 
@@ -338,13 +334,13 @@ exports.parse = {
 				if (this.challenges.challengesFrom) {
 					for (var i in this.challenges.challengesFrom) {
 						if (!this.busyInBattle || config.acceptAll || this.roomRanks[i] || config.excepts.indexOf(i) !== -1) {
-							if (!(this.challenges.challengesFrom[i] in this.formats) && !this.teams[toId(this.challenges.challengesFrom[i])]) {
+							if (!(this.challenges.challengesFrom[i] in this.formats) && !BattleBot.teamBuilder.hasTeam(this.challenges.challengesFrom[i])) {
 								this.say(connection, this.room, '/reject ' + i);
 								continue;
 							}
-							var botTeams = this.teams[toId(this.challenges.challengesFrom[i])];
-							if (botTeams) {
-								this.say(connection, this.room, '/useteam ' + botTeams[Math.floor(Math.random()*botTeams.length)]);
+							var team = BattleBot.teamBuilder.getTeam(this.challenges.challengesFrom[i]);
+							if (team) {
+								this.say(connection, this.room, '/useteam ' + team);
 							}
 							this.say(connection, this.room, '/accept ' + i);
 							this.busyInBattle++;
@@ -358,7 +354,8 @@ exports.parse = {
 				if (lastMessage) this.room = '';
 				break;
 			case 'title':
-				ok('joined ' + spl[2]);
+				if (this.room && this.room.indexOf("battle-") > -1) debug('joined battle: ' + spl[2]);
+				else ok('joined ' + spl[2]);
 				if (lastMessage) this.room = '';
 				break;
 			case 'users':
@@ -455,26 +452,20 @@ exports.parse = {
 						} catch (e){}
 						break;
 					case 'updateEnd':
-						if (config.joinTours && this.tourData[this.room].format && toId(this.tourData[this.room].format) in this.formats && !this.tourData[this.room].isJoined && !this.tourData[this.room].isStarted) {
-							this.say(connection, this.room, '/tour join');
+						if (this.settings && this.settings.jointours && this.settings.jointours[this.room] && this.tourData[this.room].format && !this.tourData[this.room].isJoined && !this.tourData[this.room].isStarted) {
+							if (toId(this.tourData[this.room].format) in this.formats) {
+								this.say(connection, this.room, '/tour join');
+							} else {
+								if (BattleBot.teamBuilder.hasTeam(this.tourData[this.room].format)) this.say(connection, this.room, '/tour join');
+							}
 						}
 						if (this.tourData[this.room].challenges && this.tourData[this.room].challenges.length) {
-							try {
-								var pokedex = require('./pokedex.js').BattlePokedex;
-								var movedex = require('./moves.js').BattleMovedex;
-							} catch (e) {
-								return;
-							}
-							if (this.teams[toId(this.tourData[this.room].format)]) this.say(connection, this.room, '/useteam ' + this.teams[toId(this.tourData[this.room].format)][Math.floor(Math.random()*this.teams[toId(this.tourData[this.room].format)].length)]);
+							var team = BattleBot.teamBuilder.getTeam(this.tourData[this.room].format);
+							if (team) this.say(connection, this.room, '/useteam ' + team);
 							for (var i = 0; i < this.tourData[this.room].challenges.length; i++) this.say(connection, this.room, '/tour challenge ' + this.tourData[this.room].challenges[i]);
 						} else if (this.tourData[this.room].challenged) {
-							try {
-								var pokedex = require('./pokedex.js').BattlePokedex;
-								var movedex = require('./moves.js').BattleMovedex;
-							} catch (e) {
-								return;
-							}
-							if (this.teams[toId(this.tourData[this.room].format)]) this.say(connection, this.room, '/useteam ' + this.teams[toId(this.tourData[this.room].format)][Math.floor(Math.random()*this.teams[toId(this.tourData[this.room].format)].length)]);
+							var team = BattleBot.teamBuilder.getTeam(this.tourData[this.room].format);
+							if (team) this.say(connection, this.room, '/useteam ' + team);
 							this.say(connection, this.room, '/tour acceptchallenge');
 						}
 						break;

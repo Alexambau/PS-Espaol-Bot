@@ -85,8 +85,10 @@ exports.commands = {
 		if (!this.hasRank(by, '~')) return false;
 		try {
 			this.uncacheTree('./teams.js');
-			this.teams = require('./teams.js').teams;
-			this.say(con, room, 'Teams actualizados.');
+			if (BattleBot.teamBuilder.loadTeamList())
+				this.say(con, room, 'Teams actualizados.');
+			else 
+				this.say(con, room, 'Error en la lectura de teams.js.');
 		} catch (e) {
 			error('failed to reload: ' + sys.inspect(e));
 		}
@@ -1922,10 +1924,10 @@ exports.commands = {
 	allowbattle: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '~')) return false;
 		if (toId(arg) === "off") {
-			this.say(con, 'lobby', '/blockchallenges');
+			this.say(con, '', '/blockchallenges');
 			this.say(con, room, 'Sistema de batallas automaticas desactivado');
 		} else {
-			this.say(con, 'lobby', '/unblockchallenges');
+			this.say(con, '', '/unblockchallenges');
 			this.say(con, room, 'Sistema de batallas automaticas activado');
 		}
 	},
@@ -1958,23 +1960,31 @@ exports.commands = {
 	
 	jointours: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '~')) return false;
+		if (!this.settings.jointours) this.settings.jointours = {};
 		if (toId(arg) === "off") {
-			config.joinTours = false;
-				this.say(con, room, 'Modo de union a torneos desactivado.');
+			if (!this.settings.jointours[room]) return this.say(con, room, 'El modo "union a torneos" ya estaba desactivado en la sala ' + room);
+			delete this.settings.jointours[room];
+			this.writeSettings();
+			this.say(con, room, 'Modo "union a torneos" desactivado en la sala ' + room);
 		} else {
-			config.joinTours = true;
-			this.say(con, room, 'Modo de union a torneos activado.');
+			if (this.settings.jointours[room]) return this.say(con, room, 'El modo "union a torneos" ya estaba activado en la sala ' + room);
+			this.settings.jointours[room] = 1;
+			this.writeSettings();
+			this.say(con, room, 'Modo "union a torneos" activado en la sala ' + room);
 		}
 	},
 	
 	sb: 'searchbattle',
 	searchbattle: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '%@#~')) return false;
+		
 		if (!this.tourFormats || !this.tourFormats[toId(arg)]) return this.say(con, room, 'El formato ' + toId(arg) + ' no se reconoce como un formato válido');
-		if (!this.formats || (!this.formats[toId(arg)] && (!this.teams || !this.teams[toId(arg)]))) return this.say(con, room, 'No poseo equipos para jugar en el formato ' + toId(arg) + '. Por favor edite teams.js');
+		if (!this.formats || (!this.formats[toId(arg)] && !BattleBot.teamBuilder.hasTeam(arg))) return this.say(con, room, 'No poseo equipos para jugar en el formato ' + toId(arg) + '. Por favor edite teams.js');
 		this.ratedRoom = room;
-		if (this.teams[toId(arg)]) this.say(con, room, '/useteam ' + this.teams[toId(arg)][Math.floor(Math.random()*this.teams[toId(arg)].length)]);
-		this.say(con, 'lobby', '/search ' + arg);
+		
+		var team = BattleBot.teamBuilder.getTeam(arg);
+		if (team) this.say(con, '', '/useteam ' + team);
+		this.say(con, '', '/search ' + arg);
 	},
 	
 	chall: 'challenge',
@@ -1982,9 +1992,12 @@ exports.commands = {
 		if (!this.hasRank(by, '%@#~')) return false;
 		var args = arg.split(",");
 		if (args.length < 2) return this.say(con, room, 'Usa el comando así: ' + config.commandcharacter + "challenge [usuario], [formato]");
+		
 		if (!this.tourFormats || !this.tourFormats[toId(args[1])]) return this.say(con, room, 'El formato ' + toId(args[1]) + ' no se reconoce como un formato válido');
-		if (!this.formats || (!this.formats[toId(args[1])] && (!this.teams || !this.teams[toId(args[1])]))) return this.say(con, room, 'No poseo equipos para jugar en el formato ' + toId(args[1]) + '. Por favor edite teams.js');
-		if (this.teams[toId(args[1])]) this.say(con, '', '/useteam ' + this.teams[toId(args[1])][Math.floor(Math.random()*this.teams[toId(args[1])].length)]);
+		if (!this.formats || (!this.formats[toId(args[1])] && !BattleBot.teamBuilder.hasTeam(args[1]))) return this.say(con, room, 'No poseo equipos para jugar en el formato ' + toId(args[1]) + '. Por favor edite teams.js');
+		
+		var team = BattleBot.teamBuilder.getTeam(args[1]);
+		if (team) this.say(con, '', '/useteam ' + team);
 		this.say(con, '', '/challenge ' + toId(args[0]) + ", " + toId(args[1]));
 	},
 	
@@ -1992,7 +2005,19 @@ exports.commands = {
 	jt: 'jointour',
 	jointour: function(arg, by, room, con) {
 		if (!this.hasRank(by, '%@#~')) return false;
+		if (!this.tourData[room] || !this.tourData[room].format) return this.say(con, room, 'No había ningún torneo en esta sala al que unirse');
+		if (this.tourData[room].isJoined) return this.say(con, room, 'Error al intentar unirse: Ya estoy participando en este torneo');
+		if (this.tourData[room].isStarted) return this.say(con, room, 'Error al intentar unirse: El torneo ya había empezado');
+		var format = this.tourData[room].format;
+		if (!this.formats || (!this.formats[toId(format)] && !BattleBot.teamBuilder.hasTeam(format))) return this.say(con, room, 'No poseo equipos para jugar un torneo en el formato ' + format + '. Por favor edite teams.js');
 		this.say(con, room, "/tour join");
+	},
+	
+	leavetour: function(arg, by, room, con) {
+		if (!this.hasRank(by, '#~')) return false;
+		if (!this.tourData[room] || !this.tourData[room].format) return this.say(con, room, 'No había ningún torneo en esta sala.');
+		if (!this.tourData[room].isJoined) return this.say(con, room, 'Error al intentar salir: No estoy participando en este torneo');
+		this.say(con, room, "/tour leave");
 	},
 	
 	/*********************************************************
