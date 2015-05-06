@@ -704,16 +704,6 @@ exports.commands = {
 	
 	},
 	
-	rango: 'rangos',
-	groups: 'rangos',
-	rangos: function(arg, by, room, con) {
-		var text = '';
-		if  (!this.canUse('info', room, by) && room.charAt(0) !== ',') {
-			text += '/pm ' + by + ', ';
-		} 
-		text +='Voiced (+): Usuario ejemplar / Driver (%): Authoridad del chat que puede avisar y silenciar / Moderador (@): Lo mismo que driver pero puede banear / Owner (#): Encargados de la sala';
-		this.say(con, room, text);
-	},
 	
 	castigos: 'sanciones',
 	sanciones: function(arg, by, room, con) {
