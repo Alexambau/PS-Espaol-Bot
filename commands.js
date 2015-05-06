@@ -1947,8 +1947,9 @@ exports.commands = {
 		
 		if (room.indexOf("battle-") === -1) return this.say(con, room, 'Esto solo puede ser usado en una sala de batalla');
 		try {
-			if (!arg) BattleBot.receive(con, room, "|inactive|");
+			if (!arg) BattleBot.receive(con, room, "|forcemove|");
 			else if (arg === "random") BattleBot.receive(con, room, "|forcemoverandom|");
+			else this.say(con, room, '/choose ' + arg);
 		} catch (e) {
 			this.say(con, room, 'Error en el modulo de batalla. No se pudo escoger movimiento');
 		}

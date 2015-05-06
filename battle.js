@@ -392,8 +392,11 @@
 			case 'inactive':
 				this.makeDecision(connection, room, false);
 				break;
+			case 'forcemove':
+				this.makeDecision(connection, room, false, 'forced');
+				break;
 			case 'forcemoverandom':
-				this.makeDecision(connection, room, true);
+				this.makeDecision(connection, room, true, 'forced');
 				break;
 			case 'callback':
 				this.makeDecision(connection, room, false, args[1]);
