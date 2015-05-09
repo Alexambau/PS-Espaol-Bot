@@ -1,4 +1,26 @@
-/* Bot Teams */
+/* Bot Teams 
+
+------------------ Format example --------------------
+	
+	exports.teams = {
+		"tier1": [
+				  'packed team',
+				  [unpacked team],
+				  {random team}
+				  ],
+		"tier2": [
+				  ]
+	};
+
+	->String (packed team) -> 'text'
+	->Array (unpacked team) -> [{poke1}, {poke2}]
+	->Object (random team) -> {maxPokemon: 6, pokemon: [{poke1}, {poke2}]}
+	
+	->Unpacked Pokemon example: 
+		
+		{name: "", species: "", item: "", ability: "", moves: ['', '', '', ''], nature: '', evs: {'hp': 0, 'atk': 0, 'def': 0, 'spa': 0, 'spd': 0, 'spe': 0}, gender: '', ivs: {}, shiny: false, level: 100, happiness: 255}
+		
+*/
 
 exports.teams = {
 	"ou": [		
@@ -31,5 +53,26 @@ exports.teams = {
 	],
 	"customgame": [
 		'Zapdos||leftovers|wonderguard|thunder,raindance,hurricane,recover,leechseed,calmmind,willowisp,toxic,refresh|Modest|252,252,252,252,252,252||||9999|]Altaria-Mega||leftovers|magicbounce|rapidspin,quiverdance,lightofruin,spacialrend,recover,minimize,gigadrain,originpulse|Timid|252,252,252,252,252,252|F|||9999|]Gengar-Mega||brightpowder|noguard|fissure,sheercold,entrainment,darkvoid,recover,hyperspacefury,thousandarrows,shadowball|Timid|252,252,252,252,252,252|F|||9999|]Seismitoad||toxicorb|poisonheal|stealthrock,spikes,toxicspikes,stickyweb,recover,sludgebomb,earthpower,healbell,steameruption|Sassy|252,252,252,252,252,252|M|||9999|]Typhlosion||powerherb|moldbreaker|geomancy,recover,blueflare,earthpower,aurasphere,seedflare,searingshot,steameruption|Timid|252,252,252,252,252,252|M|||9999|]Garchomp||yacheberry|moldbreaker|earthquake,honeclaws,dragonrush,stoneedge,recover,substitute,extremespeed,dragondance,highjumpkick|Jolly|252,252,252,252,252,252||||9999|'
+	],
+	"1v1": [
+		//Random generated team
+		{
+			maxPokemon: 3,
+			pokemon: [
+				{"name":"Dragonite","species":"Dragonite","item":"Choice Band","nature":"Adamant","evs":{"atk":252,"hp":248,"spe":0,"spd":8},"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"moves":["Outrage","Earthquake","Extreme Speed","Fire Punch"],"ability":"Multiscale","level":100},
+				{"name":"Niggazard","species":"Charizard-Mega-X","item":"Charizardite X","nature":"Adamant","evs":{"spe":252,"atk":252,"spd":4},"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"moves":["Dragon Dance","Flare Blitz","Outrage","Earthquake"],"ability":"Tough Claws","level":100},
+				{"name":"Incineration","species":"Charizard-Mega-Y","item":"Charizardite Y","nature":"Timid","evs":{"spe":252,"spa":252,"spd":4},"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"moves":["Fire Blast","Solar Beam","Focus Blast","Air Slash"],"ability":"Drought","level":100},
+				{"name":"Kyurem-Black","species":"Kyurem-Black","item":"Choice Scarf","nature":"Naive","evs":{"spe":252,"atk":140,"spa":116},"ivs":{"atk":30,"spa":30,"spe":30,"hp":31,"def":31,"spd":31},"moves":["Outrage","Ice Beam","Fusion Bolt","Hidden Power Fire"],"ability":"Teravolt","level":100},
+				{"name":"Greninja","species":"Greninja","item":"Life Orb","nature":"Hasty","evs":{"spe":252,"spa":252,"atk":4},"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"moves":["Hydro Cannon","Ice Beam","Dark Pulse","Gunk Shot"],"ability":"Protean","level":100},
+				{"name":"Victini","species":"Victini","item":"Choice Scarf","nature":"Jolly","evs":{"spe":252,"atk":252,"spd":4},"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"moves":["V-create","Bolt Strike","Zen Headbutt","Brick Break"],"ability":"Victory Star","level":100},
+				{"name":"Garchomp","species":"Garchomp","gender":"","item":"Choice Scarf","ability":"Rough Skin","evs":{"hp":0,"atk":252,"def":0,"spa":4,"spd":0,"spe":252},"nature":"Naive","moves":["Earthquake","Outrage","Fire Blast","Stone Edge"],"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"level":100},
+				{"name":"Outrage I win lol","species":"Kyurem-Black","gender":"","item":"Choice Band","ability":"Teravolt","shiny":true,"evs":{"hp":248,"atk":252,"def":0,"spa":8,"spd":0,"spe":0},"nature":"Naughty","moves":["Outrage","Fusion Bolt","Ice Beam","Iron Head"],"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"level":100},
+				{"name":"V-Create I Win lol","species":"Victini","gender":"","item":"Choice Band","ability":"Victory Star","evs":{"hp":0,"atk":252,"def":0,"spa":0,"spd":4,"spe":252},"nature":"Jolly","moves":["V-create","Brick Break","Bolt Strike","Zen Headbutt"],"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"level":100},
+				{"name":"Jirachi","species":"Jirachi","gender":"","item":"Choice Scarf","ability":"Serene Grace","evs":{"hp":0,"atk":252,"def":0,"spa":0,"spd":4,"spe":252},"nature":"Jolly","moves":["Iron Head","Zen Headbutt","Fire Punch","Ice Punch"],"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"level":100},
+				{"name":"Genesect","species":"Genesect","gender":"","item":"Choice Scarf","ability":"Download","evs":{"hp":0,"atk":0,"def":0,"spa":252,"spd":4,"spe":252},"nature":"Timid","moves":["Bug Buzz","Flamethrower","Ice Beam","Thunderbolt"],"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"level":100},
+				{"name":"Techno Blast","species":"Genesect","item":"Choice Band","nature":"Hasty","evs":{"spe":252,"atk":252,"spd":4},"ivs":{"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31},"moves":["ExtremeSpeed","U-turn","Iron Head","Gunk Shot"],"ability":"Download","level":100,"shiny":true}
+				
+			]
+		}
 	]
 };

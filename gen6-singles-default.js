@@ -153,7 +153,7 @@ module.exports = {
 			}
 			
 			/* Weather */
-			if (dataMove.weather) {
+			if (dataMove.weather && data.weather) {
 				var weather = toId(data.weather);
 				if (weather && ((weather in {'desolateland': 1, 'primordialsea': 1, 'deltastream': 1}) || weather === toId(dataMove.weather))) continue;
 			}
@@ -246,6 +246,7 @@ module.exports = {
 		}
 		for (var i = 0; i < req.active[0].moves.length; i++) {
 			if (req.active[0].moves[i].disabled) continue;
+			if (req.active[0].moves[i].move === "Struggle") continue;
 			dataMove = movedex[toId(req.active[0].moves[i].move)];
 			if (!dataMove) {
 				//by default, unknown moves are pushed here
@@ -346,8 +347,11 @@ module.exports = {
 			var moves = [];
 			if (req.side.pokemon[0].canMegaEvo) {
 				actualDes.mega = true;
-				data.statusData.self.pokemon[0].species = data.statusData.self.pokemon[0].species + "-Mega";
-				data.request.active[0].baseAbility = require('./pokedex.js').BattlePokedex[toId(data.statusData.self.pokemon[0].species)].abilities[0];
+				var dataNewMega = require('./pokedex.js').BattlePokedex[toId(data.statusData.self.pokemon[0].species + "-Mega")];
+				if (dataNewMega) {
+					data.statusData.self.pokemon[0].species = data.statusData.self.pokemon[0].species + "-Mega";
+					data.request.active[0].baseAbility = dataNewMega.abilities[0];
+				}
 			}
 			
 			var supportMoves = this.getViableSupportMoves(data);

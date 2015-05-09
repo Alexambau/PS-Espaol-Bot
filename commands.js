@@ -61,6 +61,7 @@ exports.commands = {
 			this.uncacheTree('./battle.js');
 			global.BattleBot = require('./battle.js');
 			BattleBot.init();
+			BattleBot.teamBuilder.loadTeamList();
 			this.say(con, room, 'Módulos de batallas actualizados.');
 		} catch (e) {
 			error('failed to reload: ' + sys.inspect(e));

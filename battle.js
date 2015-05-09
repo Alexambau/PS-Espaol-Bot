@@ -885,32 +885,37 @@
 			if (!teamStuff || !teamStuff.length) return false;
 			var teamChosen = teamStuff[Math.floor(Math.random() * teamStuff.length)]; //choose team
 			var teamStr = '';
-			if (typeof(teamChosen) === 'string') {
-				//already parsed
-				teamStr = teamChosen;
-			} else if (typeof(teamChosen) === 'object') {
-				if (teamChosen.maxPokemon && teamChosen.pokemon) {
-					//generate random team
-					var team = [];
-					var pokes = teamChosen.pokemon.randomize();
-					var k = 0;
-					for (var i = 0; i < pokes.length; i++) {
-						if (k++ >= teamChosen.maxPokemon) break;
-						team.push(pokes[i]);
+			try {
+				if (typeof(teamChosen) === 'string') {
+					//already parsed
+					teamStr = teamChosen;
+				} else if (typeof(teamChosen) === 'object') {
+					if (teamChosen.maxPokemon && teamChosen.pokemon) {
+						//generate random team
+						var team = [];
+						var pokes = teamChosen.pokemon.randomize();
+						var k = 0;
+						for (var i = 0; i < pokes.length; i++) {
+							if (k++ >= teamChosen.maxPokemon) break;
+							team.push(pokes[i]);
+						}
+						info(JSON.stringify(team));
+						teamStr = this.packTeam(team);
+					} else if (teamChosen.length){
+						//parse team
+						teamStr = this.packTeam(teamChosen);
+					} else {
+						error("invalid team data type: " + JSON.stringify(teamChosen));
+						return false;
 					}
-					teamStr = this.packTeam(team);
-				} else if (teamChosen.length){
-					//parse team
-					teamStr = this.packTeam(teamChosen);
 				} else {
 					error("invalid team data type: " + JSON.stringify(teamChosen));
 					return false;
 				}
-			} else {
-				error("invalid team data type: " + JSON.stringify(teamChosen));
-				return false;
+				return teamStr;
+			} catch (e) {
+				error(e.stack);
 			}
-			return teamStr;
 		},
 		
 		hasTeam: function (format) {
@@ -940,15 +945,17 @@
 				buf += '|' + toId(set.item);
 
 				// ability
-				var template = Tools.getTemplate(set.species || set.name);
+				var template = set.species || set.name;
+				template = require('./pokedex.js').BattlePokedex[toId(template)];
+				if (!template) return '';
 				var abilities = template.abilities;
 				id = toId(set.ability);
 				if (abilities) {
-					if (id == toId(abilities['0'])) {
+					if (abilities['0'] && id == toId(abilities['0'])) {
 						buf += '|';
-					} else if (id === toId(abilities['1'])) {
+					} else if (abilities['1'] && id === toId(abilities['1'])) {
 						buf += '|1';
-					} else if (id === toId(abilities['H'])) {
+					} else if (abilities['H'] && id === toId(abilities['H'])) {
 						buf += '|H';
 					} else {
 						buf += '|' + id;
