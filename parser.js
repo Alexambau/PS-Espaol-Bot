@@ -263,7 +263,7 @@ exports.parse = {
 				// Now join the rooms
 				var cmds = []; 
 				//cmds.push('|/idle');
-				cmds.push('|/avatar 120');
+
 				for (var i in config.rooms) {
 					var room = toId(config.rooms[i]);
 					if (room === 'lobby' && config.serverid === 'showdown') {
@@ -285,7 +285,11 @@ exports.parse = {
 					}
 					cmds.push('|/join ' + room);
 				}
-				cmds.push('espaol|/roomauth'); //get auth
+				
+				global.staffpopup = true;
+				this.staffRanks = {};
+				cmds.push('salastaff|/roomauth'); //get staff
+				cmds.push('|/avatar 120'); //set avatar
 	
 				var self = this;
 				if (cmds.length > 3) {
@@ -560,6 +564,10 @@ exports.parse = {
 				if (lastMessage) this.room = '';
 				break;
 			case 'raw':
+				if (this.room === 'salastaff') {
+					if (spl[2].indexOf(" was promoted ") > -1 || spl[2].indexOf(" was demoted ") > -1) global.STAFF_CHANGES_FLAG = true;
+					break;
+				}
 				var indexwarn = spl[2].indexOf(" was warned by ");
 				var indexmute = spl[2].indexOf(" was muted by ");
 				if (indexmute !== -1) {
@@ -1121,10 +1129,20 @@ exports.parse = {
 					}
 				}
 				this.checkETours(connection);
+				this.updateStaff(connection);
 				loop();
 			}.bind(this), 30000);
 		}.bind(this);
 		loop();
+	},
+	
+	updateStaff: function (connection) {
+		if (!global.STAFF_CHANGES_FLAG) return;
+		this.staffRanks = {};
+		global.staffpopup = true;
+		send(connection, 'salastaff|/roomauth');
+		ResourceMonitor.log('Lista de staff para el modo "autoinvite" actualizada con los cambios más recientes', 'i');
+		global.STAFF_CHANGES_FLAG = false;
 	},
 	
 	cleanChatData: function () {

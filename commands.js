@@ -1326,6 +1326,7 @@ exports.commands = {
 	
 	getstaff: function(arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
+		global.STAFF_CHANGES_FLAG = false;
 		this.staffRanks = {};
 		global.staffpopup = true;
 		this.say(con, 'salastaff', "/roomauth");
