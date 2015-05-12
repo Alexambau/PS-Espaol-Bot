@@ -342,12 +342,19 @@ exports.commands = {
 		} else {
 			var text = '/pm ' + by + ', ';
 		}
-		if (config.botguide) {
-			//text += 'Guia acerca del Bot y su funcionamiento: ' + config.botguide;
-			text += 'Guia acerca del Bot y su funcionamiento: https://github.com/Ecuacion/PS-Espaol-Bot/blob/master/guia.md';
+		text += 'Guia acerca del Bot y su funcionamiento: https://github.com/Ecuacion/PS-Espaol-Bot/blob/master/guia.md';
+		this.say(con, room, text);
+	},
+	
+	error: 'bug',
+	issue: 'bug',
+	bug: function(arg, by, room, con) {
+		if (this.hasRank(by, '#~') || room.charAt(0) === ',') {
+			var text = '';
 		} else {
-			text += 'Guia acerca del Bot y su funcionamiento: https://github.com/Ecuacion/PS-Espaol-Bot/blob/master/guia.md';
+			var text = '/pm ' + by + ', ';
 		}
+		text += 'Si el bot tiene un error o quieres hacer una sugerencia reporta aquí: https://github.com/Ecuacion/PS-Espaol-Bot/issues';
 		this.say(con, room, text);
 	},
 	
@@ -363,6 +370,45 @@ exports.commands = {
 		text += "Hora del Bot: " + toDoubleDigit(f.getHours()) + ":" + toDoubleDigit(f.getMinutes()) + ":" + toDoubleDigit(f.getSeconds());
 		this.say(con, room, text);
 	},
+	
+	uptime: function (arg, by, room, con) {
+		if (this.hasRank(by, '#~') || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			var text = '/pm ' + by + ', ';
+		}
+		text += '**Uptime:** ';
+		var divisors = [52, 7, 24, 60, 60];
+		var units = ['semana', 'día', 'hora', 'minuto', 'segundo'];
+		var buffer = [];
+		var uptime = ~~(process.uptime());
+		do {
+			divisor = divisors.pop();
+			unit = uptime % divisor;
+			buffer.push(unit > 1 ? unit + ' ' + units.pop() + 's' : unit + ' ' + units.pop());
+			uptime = ~~(uptime / divisor);
+		} while (uptime);
+
+		switch (buffer.length) {
+		case 5:
+			text += buffer[4] + ', ';
+			/* falls through */
+		case 4:
+			text += buffer[3] + ', ';
+			/* falls through */
+		case 3:
+			text += buffer[2] + ', ' + buffer[1] + ', y ' + buffer[0];
+			break;
+		case 2:
+			text += buffer[1] + ' y ' + buffer[0];
+			break;
+		case 1:
+			text += buffer[0];
+			break;
+		}
+
+		this.say(con, room, text);
+	}, 
 	
 	joke: function(arg, by, room, con) {
 		if (!this.canUse('joke', room, by) || room.charAt(0) === ',') return false;
@@ -441,6 +487,7 @@ exports.commands = {
 		
 	},
 	
+	wall: 'infowall',
 	iwall: 'infowall',
 	infowall: function(arg, by, room, con, cmd) {
 		if (!this.settings.infocmds) this.settings.infocmds = {};

@@ -11,7 +11,9 @@ Comandos Básicos:
 
  - `about` - Explica lo más general del Bot. Es un comando identificativo.
  - `hora` - Muestra la hora del Bot.
+ - `uptime` - Muestra el tiempo que el bot lleva sin reiniciarse.
  - `help` - Devuelve el link a esta guía.
+ - `issue` - Devuelve el link a la seccion de errores y sugerencias del Bot.
  - `eventos` - Devuelve el link de la sala 'Eventos'
  - `joke` - Devuelve un chiste en ingles.
  - `choose` - Elige entre varias opciones.
