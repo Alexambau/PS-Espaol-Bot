@@ -33,14 +33,14 @@ Comandos Informativos:
  - `faq` - Preguntas frecuentes del chat
  - `plug` - Link al plug.dj oficial de la sala
  - `suspect [tier]` - Informacion sobre los suspect test
- - `torneo` - Explica como participar en un torneo
  - `voiced` - Explica como se puede llegar a ser ascendido a voiced
  - `vod` - Explica el concepto VoD (Voiced of Day)
  - `modchat` - Explica como funciona el modchat autoconfirmed
- - `rangos` - Explica las funciones que cumple cada rango
  - `sanciones` - Explica las sanciones existentes
  - `reglas` - Link a las reglas de la sala (con wall si se usa en la sala)
  - `staff` - Lista de staff de la sala
+
+**Nota:** para ver los comandos informativos dinamicos hacer uso de `info list`
   
 Comandos de Información sobre Pokemon: 
 
@@ -77,6 +77,7 @@ Comandos de Programación:
  - `updateserver` - Actualiza el bot de manera remota. Devuelve un log de estado.
  - `kill` - Apaga el bot. Se usa para reiniciar.
  - `reload` - Actualiza los comandos.
+ - `reloadbattle` - Actualiza los modulos de batalla automática.
  - `reloadteams` - Actualiza los equipos del Bot.
  - `reloaddata` - Actualiza los datos sobre pokemon, movimientos, etc.
  - `js` - Introduce un script de manera temporal en el bot.
@@ -92,7 +93,7 @@ Comandos Administrativos Especiales:
  - `allowbattle [on/off]` - Activa o desactiva las batallas automáticas.
  - `allowbattleall [on/off]` - Si se activa, el bot acepta todos los retos.
  - `move` - Fuerza al bot a tomar una decision en una batalla si este no la toma.
- - `jointours [on/off]` - Activa o desactiva la participación del bot en torneos random.
+ - `jointours [on/off]` - Activa o desactiva la participación del bot en torneos.
  - `jointour` - Fuerza al bot a unirse a un torneo.
  - `sb [formato]` - Busca una batalla en ladder y devuelve el link a esta.
  - `chall [usuario], [formato]` - Se utiliza para que el bot rete a un usuario.
@@ -129,6 +130,20 @@ Torneo LeaderBoards:
  - `calendar` - Link a un tema del foro con el calendario explicado.
 
 
+Comandos Dinámicos
+------------
+
+Los comandos dinámicos, a diferencia de los comandos estáticos, pueden ser creados, modificados y eliminados sin tener que modificar el codigo fuente, mediante la inclusión dentro de otros comandos. El comando que permite trabajar con comandos dinámicos es ic:
+ 
+ - `ic [texto]` - Guarda un texto para asignárselo a un comando.
+ - `ic -v` - Muestra el texto que hay guardado.
+ - `ic -s [comando] [subcomando]` - Crea o modifica un subcomando dinámico (por ejemplo info [subcomando] o suspect [subcomando]).
+ - `ic -d [comando] [subcomando]` - Borra un subcomando dinámico.
+
+Para ejecutar un comando dinámico debe usarse **,comando subcomando**
+Los comandos dinámicos existentes son **suspect** e **info / infowall**. En el caso de **info**, los comandos pueden ser usados directamente como **,subcomando** si no existe ningún comando estático con dicho nombre.
+
+
 Moderación Automática
 ------------
 
@@ -151,17 +166,28 @@ En caso de cometerse una infracción múltiple, la sanción será la suma result
 Batallas, torneos y ladder
 ------------
 
-El bot cuenta con un sistema mediante el cual puede aceptar retos de otros usuarios, participar en torneos o buscar batallas en ladder. Además, posee varios algoritmos para mejorar su comportamiento en los combates y para agilizar la toma de decisiones. A pesar de esto, el estilo de combate del bot es aleatorio con una cierta mejora en las tiers individuales de la sexta generación.
+El bot cuenta con un sistema mediante el cual puede aceptar retos de otros usuarios, participar en torneos o buscar batallas en ladder. Además, posee varios algoritmos para mejorar su comportamiento en los combates y para agilizar la toma de decisiones.
 
-Para controlar esta funcionalidad destacan los siguienes comandos:
+El módulo battle.js almacena la informacion de las batallas y llama a otros modulos que determinan el comportamiento del bot en los combates. Actualmente solo posee gen6-singles-default que consiste en un juego pseudo-random (ya que descarta los movimientos inútiles).
+A la hora de aceptar retos, el bot aceptará todos los retos si está a `true` la opcion `acceptAll` de la configuración o si no está en ninguna otra batalla. También aceptará siempre los retos de aquellos que estén en la lista de excepciones.
+
+Comandos para configurar las batllas automáticas:
 
  - `allowbattle [on/off]` - Activa o desactiva las batallas automáticas.
  - `allowbattleall [on/off]` - Si se activa, el bot acepta todos los retos.
- - `move` - Fuerza al bot a tomar una decision en una batalla si este no la toma.
- - `jointours [on/off]` - Activa o desactiva la participación del bot en torneos random.
- - `jointour` - Fuerza al bot a unirse a un torneo.
- - `sb [formato]` - Busca una batalla en ladder y devuelve el link a esta.
  - `chall [usuario], [formato]` - Se utiliza para que el bot rete a un usuario.
+ - `move` - Fuerza al bot a tomar una decision en una batalla si este no la toma.
+ 
+El bot puede participar en torneos, para que participe, se debe hacer uno de los sigientes comandos:
+
+ - `jointours [on/off]` - Activa o desactiva la participación del bot en torneos para una sala.
+ - `jointour` - Fuerza al bot a unirse a un torneo.
+
+Además, puede buscar batallas en el Ladder, usando el comando searchbattle:
+
+ - `sb [formato]` - Busca una batalla en ladder y devuelve el link a esta.
+
+En cuanto a el tema de los equipos, el bot puede jugar cualquier formato si bien es random o si posee algun equipo dentro de teams.js, donde se almacenan los equipos del bot. Hay tres formas de guardar un equipo en el array: Empaquetado (texto), JSON o con un generador de equipos aleatorios (mirar la ayuda en teams.js)
 
 
 Torneos por puntos y tablas de resultados
@@ -188,7 +214,7 @@ Además, existen una serie de comandos fundamentales a la hora de contrlar este 
 Créditos
 ------------
 
- - Quinella (Desarrollo del bot original)
- - Ecuacion (Desarrollo)
- - TalkTakesTime (Desarrollo del bot original)
- - xJoelituh (Desarrollo)
+- Ecuacion (Desarrollo) 
+- Quinella (Desarrollo del bot original)
+- TalkTakesTime (Desarrollo del bot original)
+- xJoelituh (Desarrollo)
