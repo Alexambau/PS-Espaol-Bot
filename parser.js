@@ -333,7 +333,7 @@ exports.parse = {
 				this.challenges = JSON.parse(message.substr(18));
 				if (this.challenges.challengesFrom) {
 					for (var i in this.challenges.challengesFrom) {
-						if (!this.busyInBattle || config.acceptAll || this.roomRanks[i] || config.excepts.indexOf(i) !== -1) {
+						if (BattleBot.canAccept(i, this.roomRanks)) {
 							if (!(this.challenges.challengesFrom[i] in this.formats) && !BattleBot.teamBuilder.hasTeam(this.challenges.challengesFrom[i])) {
 								this.say(connection, this.room, '/reject ' + i);
 								continue;
@@ -347,6 +347,7 @@ exports.parse = {
 							debug("acepted battle: " + i + " | " + this.challenges.challengesFrom[i]);
 						} else {
 							this.say(connection, this.room, '/reject ' + i);
+							debug("rejected battle: " + i + " | " + this.challenges.challengesFrom[i]);
 							continue;
 						}
 					}

@@ -1,5 +1,6 @@
 ﻿module.exports = {
 	/* Data and modules */
+	battlesCount: 0,
 	data: {},
 	iaModules: {},
 	
@@ -32,6 +33,13 @@
 	clearData: function () {
 		for (var i in this.data)
 			delete this.data[i];
+	},
+	
+	canAccept: function (user, whiteList) {
+		if (!this.battlesCount || config.acceptAll) return true;
+		user = toId(user);
+		if (whiteList[user] || config.excepts.indexOf(user) !== -1) return true;
+		return false;
 	},
 	
 	send: function (connection, room, text) {
@@ -169,8 +177,8 @@
 			var defaultId = this.data[room].gametype + "-" + this.data[room].gen;
 			if (this.iaDefaultConfig[defaultId] && this.iaModules[this.iaDefaultConfig[defaultId]] && this.iaModules[this.iaDefaultConfig[defaultId]].getDecision) {
 				try {
-					decision = this.iaModules[this.iaDefaultConfig[defaultId]].getDecision(room, this.data[room], callback);
 					debug("Make Decision: Using default module: " + this.iaDefaultConfig[defaultId]);
+					decision = this.iaModules[this.iaDefaultConfig[defaultId]].getDecision(room, this.data[room], callback);
 					this.sendDecision(connection, room, decision, rqid);
 					return;
 				} catch (e) {
@@ -277,6 +285,9 @@
 			/*----------------------------------
 				Run majors
 			--------------------------------------*/
+			case 'init':
+				this.battlesCount++;
+				break;
 			case 'title':
 				if (!this.data[room]) this.data[room] = {};
 				this.data[room].title = args[1];
@@ -285,6 +296,8 @@
 			case 'deinit':
 				//deallocate
 				if (this.data[room]) delete this.data[room];
+				this.battlesCount--;
+				if (this.battlesCount < 0) this.battlesCount = 0;
 				break;
 			case 'player':
 				if (!args[1] || !args[2]) return;
@@ -899,7 +912,7 @@
 							if (k++ >= teamChosen.maxPokemon) break;
 							team.push(pokes[i]);
 						}
-						info(JSON.stringify(team));
+						if (config.debuglevel <= 2) debug(JSON.stringify(team));
 						teamStr = this.packTeam(team);
 					} else if (teamChosen.length){
 						//parse team
