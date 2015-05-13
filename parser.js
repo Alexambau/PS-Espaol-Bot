@@ -1052,7 +1052,7 @@ exports.parse = {
 				// if the bot has % and not @, it will default to hourmuting as its highest level of punishment instead of roombanning
 				if (chatData.points >= 4 && !this.hasRank(this.ranks[room] || ' ', '@&#~')) cmd = 'hourmute';
 				if (this.isZeroTol(toId(user), room)) { // if zero tolerance users break a rule they get an instant roomban or hourmute
-					muteMessage = ', Moderación automática: Tolerancia cero';
+					muteMessage += ' (Tolerancia 0)';
 					if (cmd === 'warn') cmd = 'hourmute';
 					else cmd = this.hasRank(this.ranks[room] || ' ', '@&#~') ? 'roomban' : 'hourmute';
 				}
