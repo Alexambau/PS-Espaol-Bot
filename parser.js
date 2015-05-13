@@ -395,8 +395,9 @@ exports.parse = {
 				break;
 			case 'c:':
 				var by = spl[3];
+				var timeOffSet = parseInt(spl[2]) * 1000;
 				spl.splice(0, 4);
-				this.processChatData(by, this.room || 'lobby', connection, spl.join('|'));
+				this.processChatData(by, this.room || 'lobby', connection, spl.join('|'), timeOffSet);
 				if (this.room && this.isBlacklisted(toId(by), this.room)) this.say(connection, this.room, '/roomban ' + by + ', Usuario baneado permanentemente');
 				this.chatMessage(spl.join('|'), by, this.room || 'lobby', connection);
 				if (lastMessage) this.room = '';
@@ -797,7 +798,7 @@ exports.parse = {
 		req.write(toUpload);
 		req.end();
 	},
-	processChatData: function(user, room, connection, msg) {
+	processChatData: function(user, room, connection, msg, timeOffSet) {
 		// NOTE: this is still in early stages
 		var is_staff = false;
 		if (room.indexOf("battle") > -1) return;
@@ -818,7 +819,11 @@ exports.parse = {
 		room = toId(room);
 		msg = msg.trim().replace(/[ \u0000\u200B-\u200F]+/g, " "); // removes extra spaces and null characters so messages that should trigger stretching do so
 		this.updateSeen(user, 'c', room);
-		var time = Date.now();
+		
+		var time;
+		if (timeOffSet) time = timeOffSet;
+		else time = Date.now();
+		
 		if (!this.chatData[user]) this.chatData[user] = {
 			zeroTol: 0,
 			lastSeen: '',
