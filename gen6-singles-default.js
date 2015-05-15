@@ -173,8 +173,8 @@ module.exports = {
 			if (dataMove.name === "Endeavor" && data.statusData.self.pokemon[0]['hp'] >= data.statusData.foe.pokemon[0]['hp']) continue;
 			if (dataMove.name === "Entrainment" && data.statusData.foe.pokemon[0]['ability']) continue;
 			
-			/* Do not use this moves */
-			if (dataMove.name in {"Lunar Dance": 1, "Healing Wish": 1, "Whirlwind": 1, "Roar": 1, "Assist": 1}) continue;
+			/* Do not use this moves - todo list */
+			if (dataMove.name in {"Lunar Dance": 1, "Healing Wish": 1, "Whirlwind": 1, "Roar": 1, "Assist": 1, "Nature Power": 1, "Natural Gift": 1}) continue;
 			
 			//push
 			moves.push(i + 1);
@@ -224,6 +224,13 @@ module.exports = {
 			
 			if (dataMove.name === "Rapid Spin") {
 				if (!data.statusData.self.side['Spikes'] && !data.statusData.self.side['Toxic Spikes'] && !data.statusData.self.side['Stealth Rock'] && !data.statusData.self.side['Sticky Web']) continue;
+			}
+			
+			if (dataMove.name === "Solar Beam") {
+				var solarFlag = false;
+				if (data.weather && toId(data.weather) in {"sunnyday": 1, "desolateland": 1}) solarFlag = true;
+				if (req.side.pokemon[0].item && req.side.pokemon[0].item === "Power Herb") solarFlag = true;
+				if (!solarFlag) continue;
 			}
 			
 			if (dataMove.name === "Fake Out" && data.statusData.self.pokemon[0]['lastMove']) continue;
@@ -278,6 +285,12 @@ module.exports = {
 			if (!(dataMove.category in {"Physical": 1, "Special": 1})) continue;
 			if (dataMove.name === "Rapid Spin") {
 				if (!data.statusData.self.side['Spikes'] && !data.statusData.self.side['Toxic Spikes'] && !data.statusData.self.side['Stealth Rock'] && !data.statusData.self.side['Sticky Web']) continue;
+			}
+			if (dataMove.name === "Solar Beam") {
+				var solarFlag = false;
+				if (data.weather && toId(data.weather) in {"sunnyday": 1, "desolateland": 1}) solarFlag = true;
+				if (req.side.pokemon[0].item && req.side.pokemon[0].item === "Power Herb") solarFlag = true;
+				if (!solarFlag) continue;
 			}
 			if (dataMove.name === "Fake Out" && data.statusData.self.pokemon[0]['lastMove']) continue;
 			if (this.gen6_get_mux(dataMove.type, data2.types) === 0 && !not_inmune) continue;
