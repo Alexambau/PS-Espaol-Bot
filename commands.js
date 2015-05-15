@@ -1999,6 +1999,7 @@ exports.commands = {
 	
 	jointours: function(arg, by, room, con) { 
 		if (!this.hasRank(by, '~')) return false;
+		if (room.charAt(0) === ',') return false;
 		if (!this.settings.jointours) this.settings.jointours = {};
 		if (toId(arg) === "off") {
 			if (!this.settings.jointours[room]) return this.say(con, room, 'El modo "union a torneos" ya estaba desactivado en la sala ' + room);
