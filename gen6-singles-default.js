@@ -87,6 +87,7 @@ module.exports = {
 				}
 				if (dataMove.flags && dataMove.flags['powder'] && (data2.types[0] === "Grass" || (data2.types[1] && data2.types[1] === "Grass"))) continue;
 				if (this.inmune(dataMove, pokemonB)) continue;
+				if (data.statusData.foe.pokemon[0]['volatiles'] && data.statusData.foe.pokemon[0]['volatiles']['Substitute']) continue;
 			}
 			
 			/* Bounceable */
@@ -170,9 +171,10 @@ module.exports = {
 				if (!bosts) continue;
 			}
 			if (dataMove.name === "Endeavor" && data.statusData.self.pokemon[0]['hp'] >= data.statusData.foe.pokemon[0]['hp']) continue;
+			if (dataMove.name === "Entrainment" && data.statusData.foe.pokemon[0]['ability']) continue;
 			
 			/* Do not use this moves */
-			if (dataMove.name in {"Lunar Dance": 1, "Healing Wish": 1}) continue;
+			if (dataMove.name in {"Lunar Dance": 1, "Healing Wish": 1, "Whirlwind": 1, "Roar": 1, "Assist": 1}) continue;
 			
 			//push
 			moves.push(i + 1);
@@ -218,6 +220,10 @@ module.exports = {
 			if (data.statusData.self.pokemon[0]['boost']) {
 				if (dataMove.category === "Special" && data.statusData.self.pokemon[0]['boost']['spa'] && data.statusData.self.pokemon[0]['boost']['spa'] < -1) continue;
 				if (dataMove.category === "Physical" && data.statusData.self.pokemon[0]['boost']['atk'] && data.statusData.self.pokemon[0]['boost']['atk'] < -1) continue;
+			}
+			
+			if (dataMove.name === "Rapid Spin") {
+				if (!data.statusData.self.side['Spikes'] && !data.statusData.self.side['Toxic Spikes'] && !data.statusData.self.side['Stealth Rock'] && !data.statusData.self.side['Sticky Web']) continue;
 			}
 			
 			if (dataMove.name === "Fake Out" && data.statusData.self.pokemon[0]['lastMove']) continue;
@@ -270,6 +276,9 @@ module.exports = {
 			if (req.active[0].baseAbility === "Scrappy" && dataMove.type in {"Normal": 1, "Fighting": 1}) not_inmune = true;
 			//discard moves
 			if (!(dataMove.category in {"Physical": 1, "Special": 1})) continue;
+			if (dataMove.name === "Rapid Spin") {
+				if (!data.statusData.self.side['Spikes'] && !data.statusData.self.side['Toxic Spikes'] && !data.statusData.self.side['Stealth Rock'] && !data.statusData.self.side['Sticky Web']) continue;
+			}
 			if (dataMove.name === "Fake Out" && data.statusData.self.pokemon[0]['lastMove']) continue;
 			if (this.gen6_get_mux(dataMove.type, data2.types) === 0 && !not_inmune) continue;
 			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Balloon") continue;
@@ -278,6 +287,38 @@ module.exports = {
 			moves.push(i + 1);
 		}
 		return moves;
+	},
+	getBestLead1v1: function (data) {
+		var res = {};
+		if (!data) return 0; // no data
+		var req = data.request;
+		if (!req) return 0; //no request
+		var pokedex = require('./pokedex.js').BattlePokedex;
+		var movedex = require('./moves.js').BattleMovedex;
+		var viablePokemon = [];
+		var aux, poke, actPoke, dataPoke;
+		for (var i = 0; i < req.side.pokemon.length; i++) {
+			//discard pokemon without good moves (stab or 90+ base power)
+			aux = [];
+			actPoke = req.side.pokemon[i];
+			if (req.side.pokemon[i].details.indexOf(",") > -1) poke = req.side.pokemon[i].details.substr(0, req.side.pokemon[i].details.indexOf(","));
+			else poke = req.side.pokemon[i].details;																																																																
+			var dataPoke =  pokedex[toId(poke)];
+			if (!dataPoke) continue;
+			for (var j = 0; j < actPoke.moves.length; j++) {
+				var actMove = toId(actPoke.moves[j]);
+				var dataMove = movedex[actMove];
+				if (!dataMove) continue;
+				if (!(dataMove.category in {"Physical": 1, "Special": 1})) continue;
+				if (dataMove.type === dataPoke.types[0] || (dataPoke.types[1] && dataMove.type === dataPoke.types[1])) aux.push(actMove); //Stab
+				if (dataMove.basePower && dataMove.basePower > 80) aux.push(actMove); //powerfull
+			}
+			if (aux.length) viablePokemon.push(i + 1);
+		}
+		if (!viablePokemon.length) return 0;
+		
+		//random choose
+		return viablePokemon[Math.floor(Math.random() * viablePokemon.length)];
 	},
 	getBestSwitch: function (data) {
 		var res = {};
@@ -293,11 +334,16 @@ module.exports = {
 			disAdvantage =  this.gen6_getDisadvantage(data.statusData.self.pokemon[0].species, data.statusData.foe.pokemon[0].species);
 		}
 		var chosen = -1;
+		var pokeName;
 		for (var i = 0; i < req.side.pokemon.length; i++) {
 			if (req.side.pokemon[i].condition !== '0 fnt' && !req.side.pokemon[i].active) {
+				
+				if (req.side.pokemon[i].details.indexOf(",") > -1) pokeName = req.side.pokemon[i].details.substr(0, req.side.pokemon[i].details.indexOf(","));
+				else pokeName = req.side.pokemon[i].details;
+				
 				absPos.push(i + 1);
 				if (!data.statusData.foe.pokemon[0].species) disaux = 1;
-				else disaux = this.gen6_getDisadvantage(req.side.pokemon[i].details.substr(0, req.side.pokemon[i].details.indexOf(",")), data.statusData.foe.pokemon[0].species);
+				else disaux = this.gen6_getDisadvantage(pokeName, data.statusData.foe.pokemon[0].species);
 				posibbles[i + 1] = disaux;
 				if (disAdvantage === -1 || disAdvantage > disaux) {
 					if (disAdvantage !== -1 && !this.getSideViableMoves(data, i).length) continue;
@@ -395,6 +441,16 @@ module.exports = {
 			return [{type: 'move', mega: actualDes.mega, move: actualDes.move}];
 			
 		} else if (req.teamPreview) {
+			if (data.tier && toId(data.tier) in {"battlecup1v1": 1, "1v1": 1}) {
+				debug("Using getBestLead1v1 function...");
+				var lead = this.getBestLead1v1(data);
+				if (lead) {
+					return [
+						{type: 'team', team: lead}
+					];
+				}
+			}
+			debug("Using randomlead function...");
 			var teamPreData = [];
 			for (var i = 0; i < req.side.pokemon.length; i++) teamPreData.push(i + 1);
 			teamPreData = teamPreData.randomize().join("");
@@ -449,6 +505,9 @@ module.exports = {
 			if (req.side.pokemon[idSide].baseAbility === "Scrappy" && dataMove.type in {"Normal": 1, "Fighting": 1}) not_inmune = true;
 			//discard moves
 			if (!(dataMove.category in {"Physical": 1, "Special": 1})) continue;
+			if (dataMove.name === "Rapid Spin") {
+				if (!data.statusData.self.side['Spikes'] && !data.statusData.self.side['Toxic Spikes'] && !data.statusData.self.side['Stealth Rock'] && !data.statusData.self.side['Sticky Web']) continue;
+			}
 			if (this.gen6_get_mux(dataMove.type, data2.types) === 0 && !not_inmune) continue;
 			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Balloon") continue;
 			if (this.inmune(dataMove, pokemonB) && req.side.pokemon[idSide].baseAbility !== "Mold Breaker") continue;
