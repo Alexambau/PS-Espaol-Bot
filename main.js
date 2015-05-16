@@ -212,13 +212,13 @@ console.log('');
 
 // Config and config.js watching...
 global.fs = require('fs');
-global.ResourceMonitor = require('./resourcemonitor.js').monitor;
+global.ResourceMonitor = require('./tools/resourcemonitor.js').monitor;
 
 global.BattleBot = require('./battle.js');
 BattleBot.init();
 
 try {
-	global.eTourConfig = require('./etourconfig.js');
+	global.eTourConfig = require('./tools/etourconfig.js');
 } catch (e) {
 	global.eTourConfig = {
 		toursRoom: '',

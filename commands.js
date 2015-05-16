@@ -7,7 +7,7 @@
 var http = require('http');
 var sys = require('sys');
 
-var MD5 = require('./md5.js').MD5;
+var MD5 = require('./tools/md5.js').MD5;
 
 const EVENTS_ROOMS = {'eventos': 1, 'salastaff': 1}; 
 
@@ -73,8 +73,8 @@ exports.commands = {
 	reloadtour: function(arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
 		try {
-			this.uncacheTree('./etourconfig.js');
-			eTourConfig = require('./etourconfig.js');
+			this.uncacheTree('./tools/etourconfig.js');
+			eTourConfig = require('./tools/etourconfig.js');
 			eTourStatus.statusData = 0;
 			eTourStatus.nextTour = 0;
 			this.checkETours(con);
@@ -87,7 +87,7 @@ exports.commands = {
 	reloadteams: function(arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
 		try {
-			this.uncacheTree('./teams.js');
+			this.uncacheTree('./tools/teams.js');
 			if (BattleBot.teamBuilder.loadTeamList())
 				this.say(con, room, 'Teams actualizados.');
 			else 
@@ -181,8 +181,8 @@ exports.commands = {
 				break;
 			case 'reload':
 				try {
-					this.uncacheTree('./resourcemonitor.js');
-					ResourceMonitor = require('./resourcemonitor.js').monitor;
+					this.uncacheTree('./tools/resourcemonitor.js');
+					ResourceMonitor = require('./tools/resourcemonitor.js').monitor;
 					ResourceMonitor.connection = con;
 					this.say(con, room, "Monitor de recursos actualizado.");
 				} catch (e) {
@@ -909,7 +909,7 @@ exports.commands = {
 			return this.say(con, room, '/pm ' + by + ', Escribe el comando por mensaje privado.');
 		}
 		try {
-			var trad = require('./tradobject.js').trad;
+			var trad = require('./tools/tradobject.js').trad;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
 			return this.say(con, room, 'Se ha encontrado un error: Vuelve a probar en unos segundos.');
@@ -2400,7 +2400,7 @@ exports.commands = {
 		if (arg) maxFail = parseInt(arg);
 		this.game[room] = {
 			type: 'Hangman',
-			game: require('./games.js').hangman
+			game: require('./tools/games.js').hangman
 		};
 		
 		/* Get random phrase */
@@ -2408,7 +2408,7 @@ exports.commands = {
 		var clue = '';
 		
 		try {
-			var hangmanWords = require('./hangman-data.js').hangmanWords;
+			var hangmanWords = require('./tools/hangman-data.js').hangmanWords;
 		} catch (e) {
 			delete this.game[room]; //deallocate
 			return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
@@ -2443,7 +2443,7 @@ exports.commands = {
 		if (arg) maxFail = parseInt(arg);
 		this.game[room] = {
 			type: 'Hangman',
-			game: require('./games.js').hangman
+			game: require('./tools/games.js').hangman
 		};
 		var phrase = '';
 		try {

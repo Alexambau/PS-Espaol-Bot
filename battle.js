@@ -884,7 +884,7 @@
 		
 		loadTeamList: function () {
 			try {
-				this.teams = require('./teams.js').teams;
+				this.teams = require('./tools/teams.js').teams;
 				return true;
 			} catch (e) {
 				error('failed to load teams: ' + sys.inspect(e));
