@@ -211,8 +211,19 @@ Además, existen una serie de comandos fundamentales a la hora de contrlar este 
  - `rank [user]` - Muestra la puntuacion de un usuario.
  - `infotour` - Muestra la información del torneo por puntos del día.
  - `calendar` - Link a un tema del foro con el calendario explicado.
- 
- 
+
+
+Juegos para la sala Eventos
+------------
+
+**Hangman (ahorcado):** Este juego se basa en adivinar una o varias palabras, el que primero acierte gana. Se puede intentar adivinar la palabra completa o letra por letra. El bot muestra el estado cada vez que se adivine una letra y al finalizar el juego. Los guiones bajos representan las letras que aun no se han adivinado y los guiones normales representan separación entre palabras, ya que con los espacios puede resultar ambiguo. Comandos:
+
+ - `hangman [errores max]` - Inicia un juego de hangman. La palabra se elige aleatoriamente de entre las que disponga el bot en ./tools/hangman-data.js. Si no se especifica máximo numero de errores, este es infinito por defecto.
+ - `pokehangman [errores max]` - Inicia un juego de hangman. La palabra se elige aleatoriamente de la pokedex y se da una pista.
+ - `g` o `guess` - Se usa para jugar. Se puede especificar una letra o la palabra completa.
+ - `endhangman` - Termina el juego abruptamente en caso de que se quiera iniciar otro distinto.
+
+
 Créditos
 ------------
 
