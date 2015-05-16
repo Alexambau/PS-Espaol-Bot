@@ -1,4 +1,4 @@
-/* Games generator */
+﻿/* Games generator */
 
 /*****************************************
 *				Hangman
@@ -48,11 +48,11 @@ exports.hangman = {
 		if (!phrase) return;
 		var datas = phrase.split(" ");
 		this.word = [];
-		this.wordStr = toId(phrase);
+		this.wordStr = phrase.toLowerCase().replace(/[^a-z0-9ñ]/g, '');
 		this.wordStrF = '';
 		var actWord;
 		for (var i = 0; i < datas.length; i++) {
-			actWord = toId(datas[i]);
+			actWord = datas[i].toLowerCase().replace(/[^a-z0-9ñ]/g, '');
 			if (!actWord.length) continue;
 			for (var j = 0; j < actWord.length; j++) {
 				this.word.push(
@@ -69,7 +69,7 @@ exports.hangman = {
 	},
 	
 	guess: function (key) {
-		key = toId(key);
+		key = key.toLowerCase().replace(/[^a-z0-9ñ]/g, '');
 		if (!key.length || key.length > 1) return;
 		if (this.saidKeys[key]) return;
 		var keyCount = 0;

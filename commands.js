@@ -2415,14 +2415,20 @@ exports.commands = {
 			return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
 		}
 		
-		if (!hangmanWords.length) {
+		var Opts = Object.keys(hangmanWords);
+		
+		if (!Opts.length) {
 			delete this.game[room]; //deallocate
 			return this.say(con, room, "No hay ninguna palabra en la base de datos del juego de hangman. No se puede iniciar el juego.");
 		}
 		
-		var rand = hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
-		phrase = rand.word;
-		clue = rand.clue;
+		
+		var randClue = Opts[Math.floor(Math.random() * Opts.length)];
+		
+		var wordsF = hangmanWords[randClue];
+		
+		phrase = wordsF[Math.floor(Math.random() * wordsF.length)];
+		clue = randClue;
 		
 		/* Init game */
 		var res = this.game[room].game.init(phrase);
