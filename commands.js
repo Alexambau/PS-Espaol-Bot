@@ -9,6 +9,8 @@ var sys = require('sys');
 
 var MD5 = require('./md5.js').MD5;
 
+const EVENTS_ROOMS = {'eventos': 1, 'salastaff': 1}; 
+
 function getHash(name, maxNum) {
 	var hash = parseInt(MD5(name), 16) % maxNum;
 	while (hash >= maxNum) hash /= maxNum;
@@ -2378,5 +2380,167 @@ exports.commands = {
 		}
 		if (data === '') return this.say(con, room, "No ha torneos programados en esta sala");
 		this.uploadToHastebin(con, room, by, "Torneos programdos en " + room + ":\n\n" + data);
+	},
+	
+	/*********************************************************
+	* Games Commands
+	*********************************************************/
+	
+	ahorcado: 'hangman',
+	hangman: function(arg, by, room, con) {
+		if (!(room in EVENTS_ROOMS)) return false;
+		if (!this.canUse('hangman', room, by)) return false;
+		if (this.game[room]) {
+			var res = this.game[room].game.getStatus();
+			return this.say(con, room, "**Hangman:** " + res.word + " | " + res.saidKeys + " | Pista: " + this.game[room].game.clue);
+		}
+		
+		/* Create game generator */
+		var maxFail = false;
+		if (arg) maxFail = parseInt(arg);
+		this.game[room] = {
+			type: 'Hangman',
+			game: require('./games.js').hangman
+		};
+		
+		/* Get random phrase */
+		var phrase = '';
+		var clue = '';
+		
+		try {
+			var hangmanWords = require('./hangman-data.js').hangmanWords;
+		} catch (e) {
+			delete this.game[room]; //deallocate
+			return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
+		}
+		
+		if (!hangmanWords.length) {
+			delete this.game[room]; //deallocate
+			return this.say(con, room, "No hay ninguna palabra en la base de datos del juego de hangman. No se puede iniciar el juego.");
+		}
+		
+		var rand = hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
+		phrase = rand.word;
+		clue = rand.clue;
+		
+		/* Init game */
+		var res = this.game[room].game.init(phrase);
+		this.game[room].game.clue = clue;
+		if (maxFail) {
+			this.game[room].game.maxFail = maxFail;
+			this.say(con, room, "**Hangman:** " + res.word + " | Pista: " + this.game[room].game.clue + " | Se permiten " + maxFail + " fallos");
+		} else {
+			this.say(con, room, "**Hangman:** " + res.word + " | Pista: " + this.game[room].game.clue);
+		}
+	},
+	
+	pokehangman: 'pokemonhangman',
+	pokemonhangman: function(arg, by, room, con) {
+		if (!(room in EVENTS_ROOMS)) return false;
+		if (!this.canUse('hangman', room, by)) return false;
+		if (this.game[room]) return this.say(con, room, "Ya hay un juego en marcha, no se puede iniciar otro.");
+		var maxFail = false;
+		if (arg) maxFail = parseInt(arg);
+		this.game[room] = {
+			type: 'Hangman',
+			game: require('./games.js').hangman
+		};
+		var phrase = '';
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+		} catch (e) {
+			delete this.game[room]; //deallocate
+			return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
+		}
+		var pokemon = Object.keys(pokedex);
+		do {
+			var rand = Math.floor(Math.random() * pokemon.length);
+		} while (pokedex[pokemon[rand]].num <= 0);
+		phrase = pokedex[pokemon[rand]].species.replace("-", " ");
+		var res = this.game[room].game.init(phrase);
+		var randClue = Math.floor(Math.random() * 4);
+		switch(randClue) {
+			case 0:
+				this.game[room].game.clue = pokedex[pokemon[rand]].types[0] + " type";
+				break;
+			case 1:
+				this.game[room].game.clue =  pokedex[pokemon[rand]].types[1] ? (pokedex[pokemon[rand]].types[1] + " type") : (pokedex[pokemon[rand]].types[0] + " type");
+				break;
+			case 2:
+				if (pokedex[pokemon[rand]].num <= 151) this.game[room].game.clue = 'Gen 1';
+				else if (pokedex[pokemon[rand]].num <= 251) this.game[room].game.clue = 'Gen 2';
+				else if (pokedex[pokemon[rand]].num <= 386) this.game[room].game.clue = 'Gen 3';
+				else if (pokedex[pokemon[rand]].num <= 493) this.game[room].game.clue = 'Gen 4';
+				else if (pokedex[pokemon[rand]].num <= 649) this.game[room].game.clue = 'Gen 5';
+				else this.game[room].game.clue = 'Gen 6';
+				break;
+			default:
+				var formatsData = require('./formats-data.js').BattleFormatsData;
+				this.game[room].game.clue = "Tier " + formatsData[pokemon[rand]].tier;
+		}
+		if (maxFail) {
+			this.game[room].game.maxFail = maxFail;
+			this.say(con, room, "**Hangman:** " + res.word + " | Pista: " + this.game[room].game.clue + " | Se permiten " + maxFail + " fallos");
+		} else {
+			this.say(con, room, "**Hangman:** " + res.word + " | Pista: " + this.game[room].game.clue);
+		}
+		
+	},
+	
+	g: 'guess',
+	guess: function(arg, by, room, con) {
+		if (!(room in EVENTS_ROOMS)) return false;
+		if (!this.game[room] || !this.game[room].type) return;
+		switch (this.game[room].type) {
+			case 'Hangman':
+				if (arg.length > 1) {
+					if (toId(arg) === this.game[room].game.wordStr) {
+						var winner = by.substr(1);
+						this.say(con, room, "Felicidades a **" + winner + "** por ganar el juego de hangman! La palabra era **" + this.game[room].game.wordStrF + "**");
+						delete this.game[room]; //deallocate
+						break;
+					} else {
+						this.game[room].game.failCount++;
+					}
+				}
+				var res = this.game[room].game.guess(arg);
+				if (this.game[room].game.maxFail && this.game[room].game.failCount > this.game[room].game.maxFail) {
+					var losser = by.substr(1);
+					this.say(con, room, "Se ha excedido el número máximo de errores y **" + losser + "** ha sido ahorcado! La palabra era **" + this.game[room].game.wordStrF + "**");
+					delete this.game[room]; //deallocate
+					break;
+				}
+				if (!res) break;
+				if (res.type === 'end') {
+					var winner = by.substr(1);
+					this.say(con, room, "Felicidades a **" + winner + "** por ganar el juego de hangman! La palabra era **" + this.game[room].game.wordStrF + "**");
+					delete this.game[room]; //deallocate
+					break;
+				}
+				this.say(con, room, "**Hangman:** " + res.word + " | " + res.saidKeys + " | Pista: " + this.game[room].game.clue);
+				break;
+		}
+	},
+	
+	endhangman: function(arg, by, room, con) {
+		if (!(room in EVENTS_ROOMS)) return false;
+		if (!this.canUse('hangman', room, by)) return false;
+		if (!this.game[room] || this.game[room].type !== 'Hangman') return this.say(con, room, "No hay ningun juego  de hangman en marcha.");
+		this.say(con, room, "El juego de " + this.game[room].type + " ha terminado! La palabra era " + this.game[room].game.wordStrF);
+		delete this.game[room]; //deallocate
+	},
+	
+	endgame: function(arg, by, room, con) {
+		if (!(room in EVENTS_ROOMS)) return false;
+		if (!this.canUse('banword', room, by)) return false;
+		if (!this.game[room]) return this.say(con, room, "No hay ningun juego en marcha.");
+		this.say(con, room, "El juego de " + this.game[room].type + " ha terminado!");
+		delete this.game[room]; //deallocate
+	},
+	
+	/*********************************************************/
+	
+	nop: function(arg, by, room, con) {
+		return;
 	}
 };

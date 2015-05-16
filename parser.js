@@ -47,6 +47,7 @@ exports.parse = {
 	recentPMInfo: {},
 	sicCache: '',
 	users: {},
+	game: {},
 
 	data: function(data, connection) {
 		if (data.substr(0, 1) === 'a') {
