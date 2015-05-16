@@ -2441,6 +2441,7 @@ exports.commands = {
 		}
 	},
 	
+	ph: 'pokemonhangman',
 	pokehangman: 'pokemonhangman',
 	pokemonhangman: function(arg, by, room, con) {
 		if (!(room in EVENTS_ROOMS)) return false;
@@ -2453,38 +2454,97 @@ exports.commands = {
 			game: require('./tools/games.js').hangman
 		};
 		var phrase = '';
-		try {
-			var pokedex = require('./pokedex.js').BattlePokedex;
-		} catch (e) {
-			delete this.game[room]; //deallocate
-			return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
+		var Opts = ['pokemon', 'pokemon', 'move', 'ability', 'nature', 'item'];
+		var chosen = Opts[Math.floor(Math.random() * Opts.length)];
+		switch (chosen) {
+			case 'pokemon':
+				try {
+					var pokedex = require('./pokedex.js').BattlePokedex;
+				} catch (e) {
+					delete this.game[room]; //deallocate
+					return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
+				}
+				var pokemon = Object.keys(pokedex);
+				do {
+					var rand = Math.floor(Math.random() * pokemon.length);
+				} while (pokedex[pokemon[rand]].num <= 0);
+				phrase = pokedex[pokemon[rand]].species.replace(/[-]/, " ");
+				var res = this.game[room].game.init(phrase);
+				var randClue = Math.floor(Math.random() * 4);
+				switch(randClue) {
+					case 0:
+						this.game[room].game.clue = pokedex[pokemon[rand]].types[0] + " type";
+						break;
+					case 1:
+						this.game[room].game.clue =  pokedex[pokemon[rand]].types[1] ? (pokedex[pokemon[rand]].types[1] + " type") : (pokedex[pokemon[rand]].types[0] + " type");
+						break;
+					case 2:
+						if (pokedex[pokemon[rand]].num <= 151) this.game[room].game.clue = 'Gen 1';
+						else if (pokedex[pokemon[rand]].num <= 251) this.game[room].game.clue = 'Gen 2';
+						else if (pokedex[pokemon[rand]].num <= 386) this.game[room].game.clue = 'Gen 3';
+						else if (pokedex[pokemon[rand]].num <= 493) this.game[room].game.clue = 'Gen 4';
+						else if (pokedex[pokemon[rand]].num <= 649) this.game[room].game.clue = 'Gen 5';
+						else this.game[room].game.clue = 'Gen 6';
+						break;
+					default:
+						var formatsData = require('./formats-data.js').BattleFormatsData;
+						if (formatsData[pokemon[rand]].tier) {
+							this.game[room].game.clue = "Tier " + formatsData[pokemon[rand]].tier;
+						} else {
+							this.game[room].game.clue =  pokedex[pokemon[rand]].types[1] ? (pokedex[pokemon[rand]].types[1] + " type") : (pokedex[pokemon[rand]].types[0] + " type");
+						}
+				}
+				break;
+			case 'move':
+				try {
+					var movedex = require('./moves.js').BattleMovedex;
+				} catch (e) {
+					delete this.game[room]; //deallocate
+					return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
+				}
+				var moves = Object.keys(movedex);
+				var rand = moves[Math.floor(Math.random() * moves.length)];
+				var moveChosen = movedex[rand];
+				phrase = moveChosen.name.replace(/[-]/, " ");
+				var res = this.game[room].game.init(phrase);
+				this.game[room].game.clue = "Move " + moveChosen.type + " type";
+				break;
+			case 'item':
+				try {
+					var items = require('./items.js').BattleItems;
+				} catch (e) {
+					delete this.game[room]; //deallocate
+					return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
+				}
+				var itemArr = Object.keys(items);
+				var rand = itemArr[Math.floor(Math.random() * itemArr.length)];
+				var itChosen = items[rand];
+				phrase = itChosen.name.replace(/[-]/, " ");
+				var res = this.game[room].game.init(phrase);
+				this.game[room].game.clue = "Item gen " + itChosen.gen;
+				break;
+			case 'ability':
+				try {
+					var abilities = require('./abilities.js').BattleAbilities;
+				} catch (e) {
+					delete this.game[room]; //deallocate
+					return this.say(con, '', '/pm ' + by + ', Se ha encontrado un error: Vuelve a probar en unos segundos.');
+				}
+				var abilitiesArr = Object.keys(abilities);
+				var rand = abilitiesArr[Math.floor(Math.random() * abilitiesArr.length)];
+				var abChosen = abilities[rand];
+				phrase = abChosen.name.replace(/[-]/, " ");
+				var res = this.game[room].game.init(phrase);
+				this.game[room].game.clue = "Ability";
+				break;
+			case 'nature':
+				var natures = ['Adamant', 'Bashful', 'Bold', 'Brave', 'Calm', 'Careful', 'Docile', 'Gentle', 'Hardy', 'Hasty', 'Impish', 'Jolly', 'Lax', 'Lonely', 'Mild', 'Modest', 'Naive', 'Naughty', 'Quiet', 'Quirky', 'Rash', 'Relaxed', 'Sassy', 'Serious', 'Timid'];
+				phrase = natures[Math.floor(Math.random() * natures.length)].replace(/[-]/, " ");
+				var res = this.game[room].game.init(phrase);
+				this.game[room].game.clue = "Nature";
+				break;
 		}
-		var pokemon = Object.keys(pokedex);
-		do {
-			var rand = Math.floor(Math.random() * pokemon.length);
-		} while (pokedex[pokemon[rand]].num <= 0);
-		phrase = pokedex[pokemon[rand]].species.replace("-", " ");
-		var res = this.game[room].game.init(phrase);
-		var randClue = Math.floor(Math.random() * 4);
-		switch(randClue) {
-			case 0:
-				this.game[room].game.clue = pokedex[pokemon[rand]].types[0] + " type";
-				break;
-			case 1:
-				this.game[room].game.clue =  pokedex[pokemon[rand]].types[1] ? (pokedex[pokemon[rand]].types[1] + " type") : (pokedex[pokemon[rand]].types[0] + " type");
-				break;
-			case 2:
-				if (pokedex[pokemon[rand]].num <= 151) this.game[room].game.clue = 'Gen 1';
-				else if (pokedex[pokemon[rand]].num <= 251) this.game[room].game.clue = 'Gen 2';
-				else if (pokedex[pokemon[rand]].num <= 386) this.game[room].game.clue = 'Gen 3';
-				else if (pokedex[pokemon[rand]].num <= 493) this.game[room].game.clue = 'Gen 4';
-				else if (pokedex[pokemon[rand]].num <= 649) this.game[room].game.clue = 'Gen 5';
-				else this.game[room].game.clue = 'Gen 6';
-				break;
-			default:
-				var formatsData = require('./formats-data.js').BattleFormatsData;
-				this.game[room].game.clue = "Tier " + formatsData[pokemon[rand]].tier;
-		}
+		
 		if (maxFail) {
 			this.game[room].game.maxFail = maxFail;
 			this.say(con, room, "**Hangman:** " + res.word + " | Pista: " + this.game[room].game.clue + " | Se permiten " + maxFail + " fallos");
@@ -2501,7 +2561,7 @@ exports.commands = {
 		switch (this.game[room].type) {
 			case 'Hangman':
 				if (arg.length > 1) {
-					if (toId(arg) === this.game[room].game.wordStr) {
+					if (arg.toLowerCase().replace(/[^a-z0-9ñ]/g, '') === this.game[room].game.wordStr) {
 						var winner = by.substr(1);
 						this.say(con, room, "Felicidades a **" + winner + "** por ganar el juego de hangman! La palabra era **" + this.game[room].game.wordStrF + "**");
 						delete this.game[room]; //deallocate
