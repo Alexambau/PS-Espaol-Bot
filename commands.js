@@ -1371,6 +1371,7 @@ exports.commands = {
 			poke: 1,
 			busca: 1,
 			sken: 1,
+			hangman: 1,
 			setrp: 1
 
 		};
