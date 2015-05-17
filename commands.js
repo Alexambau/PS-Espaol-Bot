@@ -1377,6 +1377,7 @@ exports.commands = {
 		};
 		var modOpts = {
 			flooding: 1,
+			flood: 1,
 			caps: 1,
 			stretching: 1,
 			bannedwords: 1,
