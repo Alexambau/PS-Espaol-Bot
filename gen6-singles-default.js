@@ -1,6 +1,18 @@
 module.exports = {
-	gen6_get_mux: function (typeA, typesB, not_inmune) {
+	gen6_get_mux: function (typeA, typesB, not_inmune, inverse) {
 		var mux = 1;
+		if (inverse) {
+			for (var i = 0; i < typesB.length; i++) {
+				if (this.TypeChartGen6[typesB[i]].damageTaken[typeA] === 1) {
+					mux /= 2;
+				} else if (this.TypeChartGen6[typesB[i]].damageTaken[typeA] === 2) {
+					mux *= 2;
+				} else if (this.TypeChartGen6[typesB[i]].damageTaken[typeA] === 3) {
+					mux *= 2;
+				}
+			}
+			return mux;
+		}
 		for (var i = 0; i < typesB.length; i++) {
 			if (this.TypeChartGen6[typesB[i]].damageTaken[typeA] === 1) {
 				mux *= 2;
@@ -33,13 +45,13 @@ module.exports = {
 		if (moveData.type === "Electric" && this.has_ability(pokemonA, ["Volt Absorb", "Lightning Rod"])) return true;
 		return false;
 	},
-	gen6_getDisadvantage: function (pokemonA, pokemonB) {
+	gen6_getDisadvantage: function (pokemonA, pokemonB, inverse) {
 		var pokedex = require('./pokedex.js').BattlePokedex;
 		var data1 = pokedex[toId(pokemonA)];
 		var data2 = pokedex[toId(pokemonB)];
 		if (!data1 || !data2) return 2;
-		var def = this.gen6_get_mux(data2.types[0], data1.types);
-		if (data2.types[1]) def += this.gen6_get_mux(data2.types[1], data1.types);
+		var def = this.gen6_get_mux(data2.types[0], data1.types, inverse);
+		if (data2.types[1]) def += this.gen6_get_mux(data2.types[1], data1.types, inverse);
 		else def += 1;
 		return def;
 	},
@@ -86,6 +98,7 @@ module.exports = {
 					if (dataMove.name === "Forest's Curse" && data.statusData.foe.pokemon[0]['volatiles']['typeadd']) continue;
 				}
 				if (dataMove.flags && dataMove.flags['powder'] && (data2.types[0] === "Grass" || (data2.types[1] && data2.types[1] === "Grass"))) continue;
+				if (dataMove.type === "Grass" && data.statusData.foe.pokemon[0].ability && data.statusData.foe.pokemon[0].ability === "Sap Sipper") continue;
 				if (this.inmune(dataMove, pokemonB)) continue;
 				if (data.statusData.foe.pokemon[0]['volatiles'] && data.statusData.foe.pokemon[0]['volatiles']['Substitute']) continue;
 			}
@@ -184,6 +197,7 @@ module.exports = {
 	getEffectiveOffMoves: function (data) {
 		var moves = [];
 		var req = data.request;
+		var inverse = (data.tier && toId(data.tier) === 'inversebattle') ? true : false;
 		var pokemonA = data.statusData.self.pokemon[0].species;
 		var pokemonB = data.statusData.foe.pokemon[0].species;
 		var dataMove;
@@ -233,11 +247,13 @@ module.exports = {
 				if (!solarFlag) continue;
 			}
 			
+			if (dataMove.type === "Grass" && data.statusData.foe.pokemon[0].ability && data.statusData.foe.pokemon[0].ability === "Sap Sipper") continue;
+			
 			if (dataMove.name === "Fake Out" && data.statusData.self.pokemon[0]['lastMove']) continue;
 			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Balloon") continue;
 			if (this.inmune(dataMove, pokemonB) && req.active[0].baseAbility !== "Mold Breaker") continue;
 			//push
-			if (this.gen6_get_mux(dataMove.type, data2.types, not_inmune) > 1 || (this.gen6_get_mux(dataMove.type, data2.types, not_inmune) === 1 && (dataMove.type === data1.types[0] || req.active[0].baseAbility === "Protean" || (data1.types[1] && dataMove.type === data1.types[1])))) {
+			if (this.gen6_get_mux(dataMove.type, data2.types, not_inmune, inverse) > 1 || (this.gen6_get_mux(dataMove.type, data2.types, not_inmune, inverse) === 1 && (dataMove.type === data1.types[0] || req.active[0].baseAbility === "Protean" || (data1.types[1] && dataMove.type === data1.types[1])))) {
 				moves.push(i + 1);
 			}
 		}
@@ -246,6 +262,7 @@ module.exports = {
 	getOffMoves: function (data) {
 		var moves = [];
 		var req = data.request;
+		var inverse = (data.tier && toId(data.tier) === 'inversebattle') ? true : false;
 		var pokemonA = data.statusData.self.pokemon[0].species;
 		var pokemonB = data.statusData.foe.pokemon[0].species;
 		var dataMove;
@@ -292,8 +309,9 @@ module.exports = {
 				if (req.side.pokemon[0].item && req.side.pokemon[0].item === "Power Herb") solarFlag = true;
 				if (!solarFlag) continue;
 			}
+			if (dataMove.type === "Grass" && data.statusData.foe.pokemon[0].ability && data.statusData.foe.pokemon[0].ability === "Sap Sipper") continue;
 			if (dataMove.name === "Fake Out" && data.statusData.self.pokemon[0]['lastMove']) continue;
-			if (this.gen6_get_mux(dataMove.type, data2.types) === 0 && !not_inmune) continue;
+			if (this.gen6_get_mux(dataMove.type, data2.types, not_inmune, inverse) === 0) continue;
 			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Balloon") continue;
 			if (this.inmune(dataMove, pokemonB) && req.active[0].baseAbility !== "Mold Breaker") continue;
 			//push
@@ -338,13 +356,14 @@ module.exports = {
 		if (!data) return []; // no data
 		var req = data.request;
 		if (!req) return []; //no request
+		var inverse = (data.tier && toId(data.tier) === 'inversebattle') ? true : false;
 		var disaux;
 		var disAdvantage;
 		var posibbles = {}, absPos = [];
 		if (!data.statusData.self.pokemon[0].species || !data.statusData.foe.pokemon[0].species) {
 			disAdvantage = -1;
 		} else {
-			disAdvantage =  this.gen6_getDisadvantage(data.statusData.self.pokemon[0].species, data.statusData.foe.pokemon[0].species);
+			disAdvantage =  this.gen6_getDisadvantage(data.statusData.self.pokemon[0].species, data.statusData.foe.pokemon[0].species, inverse);
 		}
 		var chosen = -1;
 		var pokeName;
@@ -356,7 +375,7 @@ module.exports = {
 				
 				absPos.push(i + 1);
 				if (!data.statusData.foe.pokemon[0].species) disaux = 1;
-				else disaux = this.gen6_getDisadvantage(pokeName, data.statusData.foe.pokemon[0].species);
+				else disaux = this.gen6_getDisadvantage(pokeName, data.statusData.foe.pokemon[0].species, inverse);
 				posibbles[i + 1] = disaux;
 				if (disAdvantage === -1 || disAdvantage > disaux) {
 					if (disAdvantage !== -1 && !this.getSideViableMoves(data, i).length) continue;
@@ -482,6 +501,7 @@ module.exports = {
 		*/
 		var moves = [];
 		var req = data.request;
+		var inverse = (data.tier && toId(data.tier) === 'inversebattle') ? true : false;
 		var pokemonA = req.side.pokemon[idSide].details;
 		if (pokemonA.indexOf(",") !== -1) pokemonA = req.side.pokemon[idSide].details.substr(0, req.side.pokemon[idSide].details.indexOf(","));
 		var pokemonB = data.statusData.foe.pokemon[0].species;
@@ -521,7 +541,8 @@ module.exports = {
 			if (dataMove.name === "Rapid Spin") {
 				if (!data.statusData.self.side['Spikes'] && !data.statusData.self.side['Toxic Spikes'] && !data.statusData.self.side['Stealth Rock'] && !data.statusData.self.side['Sticky Web']) continue;
 			}
-			if (this.gen6_get_mux(dataMove.type, data2.types) === 0 && !not_inmune) continue;
+			if (dataMove.type === "Grass" && data.statusData.foe.pokemon[0].ability && data.statusData.foe.pokemon[0].ability === "Sap Sipper") continue;
+			if (this.gen6_get_mux(dataMove.type, data2.types, not_inmune, inverse) === 0) continue;
 			if (dataMove.type === "Ground" && data.statusData.foe.pokemon[0]['item'] && data.statusData.foe.pokemon[0]['item'] === "Air Balloon") continue;
 			if (this.inmune(dataMove, pokemonB) && req.side.pokemon[idSide].baseAbility !== "Mold Breaker") continue;
 			

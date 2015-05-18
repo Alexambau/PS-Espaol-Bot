@@ -632,9 +632,11 @@
 							switch (typeData) {
 								case 'item':
 									this.data[room].oppTeamOffSet[ident.pokeId]['item'] = targetData;
+									this.data[room].statusData.foe.pokemon[ident.pokeIndex]['item'] = targetData;
 									break;
 								case 'ability':
 									this.data[room].oppTeamOffSet[ident.pokeId]['ability'] = targetData;
+									this.data[room].statusData.foe.pokemon[ident.pokeIndex]['ability'] = targetData;
 									break;
 							}
 						}
@@ -652,6 +654,24 @@
 					if (!this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost']) this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'] = {};
 					if (!this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'][args[2]]) this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'][args[2]] = 0;
 					this.data[room].statusData.foe.pokemon[ident.pokeIndex]['boost'][args[2]] += parseInt(args[3]);
+					if (kwargs.from) {
+						//get item or ability
+						var offData = kwargs.from.split(": ");
+						if (offData[1]) {
+							var targetData = offData[1];
+							var typeData = toId(offData[0]);
+							switch (typeData) {
+								case 'item':
+									this.data[room].oppTeamOffSet[ident.pokeId]['item'] = targetData;
+									this.data[room].statusData.foe.pokemon[ident.pokeIndex]['item'] = targetData;
+									break;
+								case 'ability':
+									this.data[room].oppTeamOffSet[ident.pokeId]['ability'] = targetData;
+									this.data[room].statusData.foe.pokemon[ident.pokeIndex]['ability'] = targetData;
+									break;
+							}
+						}
+					}
 				} else {
 					if (!this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost']) this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'] = {};
 					if (!this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'][args[2]]) this.data[room].statusData.self.pokemon[ident.pokeIndex]['boost'][args[2]] = 0;
