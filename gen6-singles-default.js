@@ -185,9 +185,16 @@ module.exports = {
 			}
 			if (dataMove.name === "Endeavor" && data.statusData.self.pokemon[0]['hp'] >= data.statusData.foe.pokemon[0]['hp']) continue;
 			if (dataMove.name === "Entrainment" && data.statusData.foe.pokemon[0]['ability']) continue;
+			if (dataMove.name in {"Haze": 1, "Whirlwind": 1, "Roar": 1}) {
+				if (!data.statusData.foe.pokemon[0]['boost']) continue;
+				var bosts = 0;
+				for (var j in data.statusData.foe.pokemon[0]['boost']) 
+					if (data.statusData.foe.pokemon[0]['boost'][j] && data.statusData.foe.pokemon[0]['boost'][j] > 0) bosts++;
+				if (!bosts) continue;
+			}
 			
 			/* Do not use this moves - todo list */
-			if (dataMove.name in {"Lunar Dance": 1, "Healing Wish": 1, "Whirlwind": 1, "Roar": 1, "Assist": 1, "Nature Power": 1, "Natural Gift": 1}) continue;
+			if (dataMove.name in {"Lunar Dance": 1, "Healing Wish": 1, "Assist": 1, "Nature Power": 1, "Natural Gift": 1}) continue;
 			
 			//push
 			moves.push(i + 1);
