@@ -1,9 +1,5 @@
 ﻿
-/* -------------- Hangman words ----------------
-
-Example: {word: 'palabra', clue: 'pista'}
-
-----------------------------------------------*/
+/* -------------- Hangman words ----------------*/
 
 exports.hangmanWords = {
 	"Paises": ['Mexico','España','Irlanda','Japon','China','Tailandia','Finlandia','Argentina','Colombia','Brasil','Dubai','Egipto','Pais Vasco','Islas Canarias','Rumania','Madagascar','Afganistan','Alemania','Papua Nueva Guinea','Noruega','Puerto Rico','Sahara Occidental','Singapur','Trinidad y Tobago','Reino Unido','Nagorno Karabaj','Malasia','Hong Kong','New York','California'],
@@ -15,5 +11,9 @@ exports.hangmanWords = {
 	"Animes": ['Dragon Ball', 'Ranma', 'Pretty Cure', 'Doraemon', 'Sinchan', 'Deadman Wonderland', 'Kill La Kill', 'Naruto', 'Bleach', 'Sword Art Online', 'Mirai Nikki', 'Guilty Crown', 'Fairy Tail', 'Zatch Bell', 'Pokemon', 'Beyblade', 'Hunter x Hunter', 'Soul Eater', 'Inuyasha', 'The Prince Of Tennis'],
 	"Paginas Web": ['facebook', 'amazon', 'google', 'ebay', 'youtube', 'instagram', 'hotmail', 'yahoo', 'wikipedia', 'twitter', 'my space', 'badoo', 'gmail', 'ask', 'pastebin', 'showdown', 'mercadolibre', 'mediafire', 'rapid share', 'taringa', 'softonic', 'hastebin', 'marca', 'skype'],
 	"Marcas": ['adidas', 'nike', 'vanz', 'hugo boss', 'calvin klein', 'supra', 'converse', 'coca cola', 'oreo', 'mc donald', 'nokia', 'iphone', 'motorola', 'movistar', 'disney', 'gillette', 'sony', 'toyota', 'microsoft', 'canon', 'ferrari', 'siemens', 'samsung', 'pepsi', 'kelloggs','Colgate', 'Palmolive', 'Snicker', 'SubWay', 'Burger King','Victoria Secret','Sony', 'Nokia', 'Sega', 'Starbucks','Nike','Carolina Herrera','Georgio Armani', 'Maruchan', 'Nissin', 'Visa', 'Pepsi', 'Android', 'Apple', 'Windows Phone', 'Red Bull'],
-	"Deportes": ['atletismo','remo','badminton', 'baloncesto', 'boxeo', 'canotaje', 'ciclismo', 'ecuestre', 'esgrima', 'futbol', 'gimnasia', 'halterofilia', 'balonmano', 'hockey', 'judo', 'natacion', 'pentatlon moderno', 'taekwondo', 'tenis', 'tenis de mesa', 'tiro', 'tiro con arco', 'triatlón','vela','voleibol']
+	"Deportes": ['atletismo','remo','badminton', 'baloncesto', 'boxeo', 'canotaje', 'ciclismo', 'ecuestre', 'esgrima', 'futbol', 'gimnasia', 'halterofilia', 'balonmano', 'hockey', 'judo', 'natacion', 'pentatlon moderno', 'taekwondo', 'tenis', 'tenis de mesa', 'tiro', 'tiro con arco', 'triatlón','vela','voleibol'],
+	"Personajes Anime de Pokemon": ['Ash', 'Misty', 'Brock', 'May', 'Dawn', 'Jessie', 'James', 'Joy', 'Mara', 'Tracey', 'Oak', 'Rojo', 'Cintia', 'Maximo', 'Mirto', 'Gary', 'Lance', 'Diantha', 'Iris', 'Clemont', 'Serena', 'Paul', 'Barry', 'Drew', 'Millo'],
+	"Estilos Pokemon Competitivo": ['Offense', 'Stall', 'Balanced', 'Dragmag', 'Semistall', 'Volt Turn', 'Weather'],
+	"VideoJuegos Pokemon": ['Rojo', 'Azul', 'Amarillo', 'Verde', 'Oro', 'Plata', 'Cristal', 'Esmeralda', 'Zafiro', 'Rubi', 'Rojo Fuego', 'Verde Hoja', 'Perla', 'Diamante', 'Platino', 'Heart Gold', 'Soul Silver', 'Negro', 'Blanco', 'Negro 2', 'Blanco 2', 'X', 'Y', 'Alfa Zafiro', 'Omega Rubi'],
+	"Servidores de PS": ['Pandora', 'Viridian', 'Nimbus', 'Infinite', 'Oasis', 'Smogon Tournaments', 'PokeCommunity', 'Pokestrat', 'Reborn', 'Gold', 'Core', 'Battle Tower', 'Parukia', 'Aqua', 'French Time', 'Pokebeach', 'Lumen', 'Indigo']
 };
