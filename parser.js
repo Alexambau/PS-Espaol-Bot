@@ -521,6 +521,11 @@ exports.parse = {
 					}, 1000);
 					
 				}
+				if (!this.settings.blockinvite) {
+					if (toId(this.room) === 'espaol' && this.staffRanks[toId(by)] && (!this.users['salastaff'] || (!this.users['salastaff'][toId(by)] && !this.users['salastaff'][toId(spl[3])]))) {
+						if (toId(by) !== toId(spl[3])) this.say(connection, '', '/invite ' + by + ', salastaff');
+					}
+				}
 				if (this.users[this.room] && this.users[this.room][toId(spl[3])]) {
 					delete this.users[this.room][toId(spl[3])];
 					this.users[this.room][toId(by)] = by.charAt(0);
