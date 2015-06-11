@@ -223,13 +223,13 @@ module.exports = {
 			//modify move
 			switch (req.active[0].baseAbility) {
 				case 'Aerilate':
-					if (dataMove.type === "Normal") dataMove.type === "Flying";
+					if (dataMove.type === "Normal") dataMove.type = "Flying";
 					break;
 				case 'Pixilate':
-					if (dataMove.type === "Normal") dataMove.type === "Fairy";
+					if (dataMove.type === "Normal") dataMove.type = "Fairy";
 					break;
 				case 'Refrigerate':
-					if (dataMove.type === "Normal") dataMove.type === "Ice";
+					if (dataMove.type === "Normal") dataMove.type = "Ice";
 					break;
 			}
 			if (dataMove.name === "Judgment") dataMove.type = data1.types[0];
@@ -293,13 +293,13 @@ module.exports = {
 			//modify move
 			switch (req.active[0].baseAbility) {
 				case 'Aerilate':
-					if (dataMove.type === "Normal") dataMove.type === "Flying";
+					if (dataMove.type === "Normal") dataMove.type = "Flying";
 					break;
 				case 'Pixilate':
-					if (dataMove.type === "Normal") dataMove.type === "Fairy";
+					if (dataMove.type === "Normal") dataMove.type = "Fairy";
 					break;
 				case 'Refrigerate':
-					if (dataMove.type === "Normal") dataMove.type === "Ice";
+					if (dataMove.type === "Normal") dataMove.type = "Ice";
 					break;
 			}
 			if (dataMove.name === "Judgment") dataMove.type = data1.types[0];
@@ -531,13 +531,13 @@ module.exports = {
 			//modify move
 			switch (req.side.pokemon[idSide].baseAbility) {
 				case 'Aerilate':
-					if (dataMove.type === "Normal") dataMove.type === "Flying";
+					if (dataMove.type === "Normal") dataMove.type = "Flying";
 					break;
 				case 'Pixilate':
-					if (dataMove.type === "Normal") dataMove.type === "Fairy";
+					if (dataMove.type === "Normal") dataMove.type = "Fairy";
 					break;
 				case 'Refrigerate':
-					if (dataMove.type === "Normal") dataMove.type === "Ice";
+					if (dataMove.type === "Normal") dataMove.type = "Ice";
 					break;
 			}
 			if (dataMove.name === "Judgment") dataMove.type = data1.types[0];
