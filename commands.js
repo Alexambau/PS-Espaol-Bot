@@ -2280,11 +2280,29 @@ exports.commands = {
 			this.say(con, room, '/tour new ou, elimination');
 		}
 		var args = arg.split(",");
-		if (toId(args[0]) === "random") args[0] = "randombattle";
-		if (toId(args[0]) === "randomdobles") args[0] = "randomdoublesbattle";
-		if (toId(args[0]) === "randomtriples") args[0] = "randomtriplesbattle";
-		if (toId(args[0]) === "vgc" || toId(args[0]) === "vgc2015") args[0] = "Battle Spot Doubles (VGC 2015)";
-		if (!this.tourFormats || !this.tourFormats[toId(args[0])]) return this.say(con, room, 'El formato ' + toId(args[0]) + ' no se reconoce como un formato valido para un torneo');
+		var format = toId(args[0]);
+		var formatAliases = {
+			'random': 'Random Battle',
+			'randomdoubles': 'Random Doubles Battle',
+			'randomtriples': 'Random Triples Battle',
+			'doubles': 'Doubles OU',
+			'triples': 'Smogon Triples',
+			'vgc': 'Battle Spot Doubles (VGC 2015)',
+			'vgc2015': 'Battle Spot Doubles (VGC 2015)',
+			'ag': 'Anything Goes',
+			'cc1v1': 'Challenge Cup 1v1',
+			'aaa': 'Almost Any Ability',
+			'hackcc': 'Monotype Random Battle',
+			'monorandom': 'Hackmons Cup',
+			'oras': 'OU',
+			'bw': '[Gen 5] OU',
+			'dpp': '[Gen 4] OU',
+			'adv': '[Gen 3] OU',
+			'gsc': '[Gen 2] OU',
+			'rby': '[Gen 1] OU'
+		};
+		if ((!this.tourFormats || !this.tourFormats[format]) && formatAliases[format]) format = toId(formatAliases[format]);
+		if (!this.tourFormats || !this.tourFormats[format]) return this.say(con, room, 'El formato ' + format + ' no se reconoce como un formato valido para un torneo');
 		this.tours[room] = {
 				players: 0,
 				maxPlayers: 0,
@@ -2295,7 +2313,7 @@ exports.commands = {
 		if (args[1] && parseInt(args[1])) this.tours[room].timeout = parseInt(args[1]) * 1000;
 		if (args[2] && parseInt(args[2])) this.tours[room].maxPlayers = parseInt(args[2]);
 		if (args[3] && parseInt(args[3])) this.tours[room].autodq = parseInt(args[3]);
-		this.say(con, room, '/tour new ' + args[0] + ', elimination');
+		this.say(con, room, '/tour new ' + format + ', elimination');
 	},
 	
 	tours: 'autotours',
