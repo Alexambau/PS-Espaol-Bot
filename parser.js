@@ -723,8 +723,16 @@ exports.parse = {
 
 		var req = require('http').request(reqOpts, function(res) {
 			res.on('data', function(chunk) {
-				self.say(con, room, (room.charAt(0) === ',' ? "" : "/pm " + by + ", ") + "hastebin.com/raw/" + JSON.parse(chunk.toString())['key']);
+				try {
+					self.say(con, room, (room.charAt(0) === ',' ? "" : "/pm " + by + ", ") + "hastebin.com/" + JSON.parse(chunk.toString())['key']);
+				} catch (e) {
+					self.say(con, '', '/pm ' + by + ', Error: No se puede subir a Hastebin (error en la conexión)');
+				}
 			});
+		});
+		
+		req.on('error', function (e) {
+			self.say(con, '', '/pm ' + by + ', Error: No se puede subir a Hastebin (error en la conexión)');
 		});
 
 		req.write(toUpload);
