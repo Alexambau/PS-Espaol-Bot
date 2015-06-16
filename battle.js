@@ -1,4 +1,6 @@
-﻿module.exports = {
+﻿const teamsDataFile = './teams.json';
+
+module.exports = {
 	/* Data and modules */
 	battlesCount: 0,
 	data: {},
@@ -901,15 +903,81 @@
 	---------------------------------------------------*/
 	teamBuilder: {
 		teams: {},
+		staticTeams: {},
+		dynTeams: {},
 		
 		loadTeamList: function () {
 			try {
-				this.teams = require('./tools/teams.js').teams;
+				this.staticTeams = require('./tools/teams.js').teams;
+				if (!fs.existsSync(teamsDataFile)) {
+					this.dynTeams = {};
+				} else {
+					this.dynTeams = JSON.parse(fs.readFileSync(teamsDataFile).toString());
+				}
+				this.mergeTeams();
 				return true;
 			} catch (e) {
 				error('failed to load teams: ' + sys.inspect(e));
 				return false;
 			}
+		},
+		
+		mergeTeams: function () {
+			if (this.teams) delete this.teams;
+			this.teams = {};
+			Object.merge(this.teams, this.staticTeams);
+			for (var i in this.dynTeams) {
+				var team = this.dynTeams[i];
+				if (!this.teams[team.format]) this.teams[team.format] = [];
+				this.teams[team.format].push(team.packed);
+			}
+		},
+		
+		addTeam: function (name, format, packed) {
+			if (this.dynTeams[name]) return false;
+			this.dynTeams[name] = {
+				format: format,
+				packed: packed
+			};
+			this.mergeTeams();
+			this.saveTeams();
+			return true;
+		},
+
+		removeTeam: function (name) {
+			if (!this.dynTeams[name]) return false;
+			delete this.dynTeams[name];
+			this.mergeTeams();
+			this.saveTeams();
+			return true;
+		},
+
+		writing: false,
+		writePending: false,
+		saveTeams: function () {
+			var data = JSON.stringify(this.dynTeams);
+			var finishWriting = function () {
+				this.writing = false;
+				if (this.writePending) {
+					this.writePending = false;
+					this.saveTeams();
+				}
+			};
+			if (this.writing) {
+				this.writePending = true;
+				return;
+			}
+			fs.writeFile(teamsDataFile + '.0', data, function () {
+				// rename is atomic on POSIX, but will throw an error on Windows
+				fs.rename(teamsDataFile + '.0', teamsDataFile, function (err) {
+					if (err) {
+						// This should only happen on Windows.
+						fs.writeFile(teamsDataFile, data, finishWriting);
+						return;
+					}
+					finishWriting();
+				});
+			});
 		},
 		
 		getTeam: function (format) {

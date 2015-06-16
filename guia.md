@@ -189,7 +189,13 @@ Además, puede buscar batallas en el Ladder, usando el comando searchbattle:
 
  - `sb [formato]` - Busca una batalla en ladder y devuelve el link a esta.
 
-En cuanto a el tema de los equipos, el bot puede jugar cualquier formato si bien es random o si posee algun equipo dentro de teams.js, donde se almacenan los equipos del bot. Hay tres formas de guardar un equipo en el array: Empaquetado (texto), JSON o con un generador de equipos aleatorios (mirar la ayuda en teams.js)
+En cuanto a el tema de los equipos, el bot puede jugar cualquier formato si bien es random o si posee algun equipo dentro de teams.js, donde se almacenan los equipos del bot. Hay tres formas de guardar un equipo en el array: Empaquetado (texto), JSON o con un generador de equipos aleatorios (mirar la ayuda en teams.js).
+
+Además, se pueden manejar equipos dinámicamente mediante los siguientes comandos:
+
+ - `team add, [id], [formato], [Hastebin]` - Añade un equipo a la lista.
+ - `team delete, [id]` - Elimina un equipo de la lista.
+ - `teamlist` - Muestra la lista de equipos dinámicos del Bot.
 
 
 Torneos por puntos y tablas de resultados

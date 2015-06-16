@@ -9,6 +9,8 @@ var sys = require('sys');
 
 var MD5 = require('./tools/md5.js').MD5;
 
+var teamTools = require('./tools/teamutils.js');
+
 const EVENTS_ROOMS = {'eventos': 1, 'salastaff': 1}; 
 
 function getHash(name, maxNum) {
@@ -2062,6 +2064,93 @@ exports.commands = {
 		if (!this.tourData[room] || !this.tourData[room].format) return this.say(con, room, 'No había ningún torneo en esta sala.');
 		if (!this.tourData[room].isJoined) return this.say(con, room, 'Error al intentar salir: No estoy participando en este torneo');
 		this.say(con, room, "/tour leave");
+	},
+	
+	teams: 'team',
+	botteams: 'team',
+	team: function(arg, by, room, con) {
+		if (room === 'salastaff') {
+			if (!this.hasRank(by, '@#&~')) return false;
+		} else {
+			if (!this.hasRank(by, '~')) return false;
+		}
+		if (!arg) return this.say(con, room, 'Uso correcto: ' + config.commandcharacter + 'team [add/delete], [name], [format], [Exportable en Hastebin: http://hastebin.com/raw/example]');
+		arg = arg.split(',');
+		var opt = toId(arg[0]);
+		var self = this;
+		switch (opt) {
+			case 'add':
+			case 'new':
+				if (arg.length < 4) return this.say(con, room, 'Uso correcto: ' + config.commandcharacter + 'team [add/delete], [name], [format], [Exportable en Hastebin]');
+				var name = toId(arg[1]);
+				var format = toId(arg[2]);
+				var link = arg[3].trim();
+				var splink = link.split('/');
+				link = 'http://hastebin.com/raw/' + splink[splink.length - 1];
+				if (!this.tourFormats || !this.tourFormats[format]) return this.say(con, room, "El formato __" + format + "__ no existe");
+				this.say(con, room, 'Descargando y procesando equipo... (' + link + ')');
+				http.get(link, function (res) {
+					var data = '';
+					res.on('data', function (part) {
+						data += part;
+					});
+					res.on('end', function (end) {
+						if (data === '{"message":"Document not found."}') {
+							self.say(con, room, "Error: El documento de Hastebin especificado está vacío");
+							return;
+						}
+						var team, packed;
+						try {
+							team = teamTools.teamToJSON(data);
+							packed = BattleBot.teamBuilder.packTeam(team);
+						} catch (e) {
+							debug(e.stack);
+							self.say(con, room, "Error: Fallo en el formato del equipo, debe estar en formato exportable de PS");
+							return;
+						}
+						if (BattleBot.teamBuilder.addTeam(name, format, packed)) {
+							self.say(con, room, "El equipo __" + name + "__ ha sido agregado a la lista de equipos del bot");
+						} else {
+							self.say(con, room, "Error: Ya existía un equipo con ese id, especifique otro id distinto");
+						}
+					});
+					res.on('error', function (end) {
+						Bot.say(room, "Error al descargar el equipo: No se puede obtener ningún dato (Error en la conexión)");
+					});
+				}).on('error', function (e) {
+					self.say(room, "Error al descargar el equipo: La conexión se ha interrumpido");
+				});
+				break;
+			case 'delete':
+			case 'remove':
+				if (!this.hasRank(by, '~')) return this.say(con, room, 'Acceso denegado para eliminar equipos de la lista');
+				if (arg.length < 2) return this.say(con, room, 'Uso correcto: ' + config.commandcharacter + 'team [add/delete], [name], [format], [Exportable en Hastebin]');
+				var name = toId(arg[1]);
+				if (BattleBot.teamBuilder.removeTeam(name)) {
+					this.say(con, room, "El equipo __" + name + "__ fue eliminado correctamente de la lista de equipos");
+				} else {
+					this.say(con, room, "El equipo __" + name + "__ no estaba en la lista de equipos");
+				}
+				break;
+			default:
+				return this.say(con, room, 'Uso correcto: ' + config.commandcharacter + 'team [add/delete], [name], [format], [Exportable en Hastebin]');
+		}
+	},
+
+	viewteamlist: 'teamlist',
+	viewteamslist: 'teamlist',
+	teamslist: 'teamlist',
+	teamlist: function(arg, by, room, con) {
+		if (!this.hasRank(by, '~')) return false;
+		var teamsStr = 'Lista de equipos del Bot:\n\n';
+		var teams = BattleBot.teamBuilder.dynTeams;
+		var nTeams = 0;
+		for (var i in teams) {
+			teamsStr += 'Id: ' + i + ' | Formato: ' + teams[i].format + ' | Pokemon: ' + teamTools.teamOverview(teams[i].packed) + '\n';
+			nTeams++;
+		}
+		if (!nTeams) return this.say(con, '', '/pm ' + by + ',La lista de equipos del Bot está vacía');
+		this.uploadToHastebin(con, room, by, teamsStr);
 	},
 	
 	/*********************************************************
