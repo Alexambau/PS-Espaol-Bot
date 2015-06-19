@@ -8,17 +8,26 @@ module.exports = {
 	
 	
 	iaModList: {
-		'6gsinglesdefault': './gen6-singles-default.js'
+		'6gsinglesdefault': './gen6-singles-default.js',
+		'oldsinglesdefault': './tools/oldgen-singles-default.js',
+		'1v1mod': './tools/1v1-offense.js'
 	},
 	
 	/* Config - Edit this */
 	iaConfig: {
 		/* Exceptions */
+		'challengecup1v1': '1v1mod',
+		'1v1': '1v1mod'
 	},
 	
 	iaDefaultConfig: {
 		/* Default */
-		'singles-6': '6gsinglesdefault'
+		'singles-6': '6gsinglesdefault',
+		'singles-5': 'oldsinglesdefault',
+		'singles-4': 'oldsinglesdefault',
+		'singles-3': 'oldsinglesdefault',
+		'singles-2': 'oldsinglesdefault',
+		'singles-1': 'oldsinglesdefault'
 	},
 	
 	/* Functions */
@@ -414,6 +423,19 @@ module.exports = {
 				this.makeDecision(connection, room, true, 'forced');
 				break;
 			case 'callback':
+				if (args[1] === 'cant') {
+					var ident = this.getPokemonId(args[2]);
+					var moveDisabled = args[4];
+					if (moveDisabled) {
+						try {
+							for (var k = 0; k < this.data[room].request.active[ident.pokeIndex].moves.length; k++) {
+								if (this.data[room].request.active[ident.pokeIndex].moves[k].id === moveDisabled) {
+									this.data[room].request.active[ident.pokeIndex].moves[k].disabled = true;
+								}
+							}
+						} catch (e) {}
+					}
+				}
 				this.makeDecision(connection, room, false, args[1]);
 				break;
 			case 'win':
