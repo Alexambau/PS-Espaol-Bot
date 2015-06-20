@@ -580,15 +580,25 @@ exports.parse = {
 				if (indexmute !== -1) {
 					var mutemsg = spl[2].split(" was muted by ");
 					if (mutemsg.length > 1 && mutemsg[1].indexOf(config.nick) === -1) {
-						if (this.isZeroTol(toId(mutemsg[0]), this.room)) {
-							if (spl[2].indexOf("for 7 minutes") !== -1) this.say(connection, this.room, '/rb ' + mutemsg[0] + ', Moderación automática: Tolerancia cero');
-							else this.say(connection, this.room, '/rb ' + mutemsg[0] + ', Moderación automática: Tolerancia cero');
+						var zt = this.isZeroTol(toId(mutemsg[0]), this.room);
+						if (zt && zt !== 'low') {
+							if (zt === 'normal') {
+								if (spl[2].indexOf("for 7 minutes") !== -1) this.say(connection, this.room, '/hm ' + mutemsg[0] + ', Moderación automática: Tolerancia cero');
+								else this.say(connection, this.room, '/rb ' + mutemsg[0] + ', Moderación automática: Tolerancia cero');
+							} else {
+								this.say(connection, this.room, '/rb ' + mutemsg[0] + ', Moderación automática: Tolerancia cero');
+							}
 						}
 					}
 				} else if (indexwarn !== -1) {
 					var warnmsg = spl[2].split(" was warned by ");
 					if (warnmsg.length > 1 && warnmsg[1].indexOf(config.nick) === -1) {
-						if (this.isZeroTol(toId(warnmsg[0]), this.room)) this.say(connection, this.room, '/hm ' + warnmsg[0] + ', Moderación automática: Tolerancia cero');
+						var zt = this.isZeroTol(toId(warnmsg[0]), this.room);
+						if (zt && zt !== 'low') {
+							if (zt === 'normal') this.say(connection, this.room, '/m ' + warnmsg[0] + ', Moderación automática: Tolerancia cero');
+							else if (zt === 'max') this.say(connection, this.room, '/rb ' + warnmsg[0] + ', Moderación automática: Tolerancia cero');
+							else this.say(connection, this.room, '/hm ' + warnmsg[0] + ', Moderación automática: Tolerancia cero');
+						}
 					}
 				}
 				if (lastMessage) this.room = '';
@@ -669,7 +679,7 @@ exports.parse = {
 		var canUse = false;
 		var ranks = ' +%@&#~';
 		if (!this.settings[cmd] || !(room in this.settings[cmd])) {
-			canUse = this.hasRank(user, ranks.substr(ranks.indexOf((cmd === 'autoban' || cmd === 'banword' || cmd === 'joinphrase') ? '#' : config.defaultrank)));
+			canUse = this.hasRank(user, ranks.substr(ranks.indexOf((cmd === 'autoban' || cmd === 'banword' || cmd === '0tol' || cmd === 'joinphrase') ? '#' : config.defaultrank)));
 		} else if (this.settings[cmd][room] === true) {
 			canUse = true;
 		} else if (ranks.indexOf(this.settings[cmd][room]) > -1) {
@@ -697,7 +707,9 @@ exports.parse = {
 		return (this.settings.blacklist && this.settings.blacklist[room] && this.settings.blacklist[room][user]);
 	},
 	isZeroTol: function(user, room) {
-		return (this.settings.zerotol && this.settings.zerotol[room] && this.settings.zerotol[room][user]);
+		if (this.settings['0tol'] && this.settings['0tol'][user]) return this.settings['0tol'][user];
+		if (this.settings.zerotol && this.settings.zerotol[room] && this.settings.zerotol[room][user]) return 'normal';
+		return false;
 	},
 	zeroTolUser: function(user, room) {
 		if (!this.settings['zerotol']) this.settings['zerotol'] = {};
@@ -1066,9 +1078,18 @@ exports.parse = {
 				// if the bot has % and not @, it will default to hourmuting as its highest level of punishment instead of roombanning
 				if (chatData.points >= 4 && !this.hasRank(this.ranks[room] || ' ', '@&#~')) cmd = 'hourmute';
 				if (this.isZeroTol(toId(user), room)) { // if zero tolerance users break a rule they get an instant roomban or hourmute
+					var ztVal = this.isZeroTol(toId(user), room);
 					muteMessage += ' (Tolerancia 0)';
-					if (cmd === 'warn') cmd = 'hourmute';
-					else cmd = this.hasRank(this.ranks[room] || ' ', '@&#~') ? 'roomban' : 'hourmute';
+					if (ztVal === 'low' || ztVal === 'normal') {
+						if (cmd === 'warn') cmd = 'mute';
+						else if (cmd === 'mute') cmd = 'hourmute';
+						else cmd = this.hasRank(this.ranks[room] || ' ', '@&#~') ? 'roomban' : 'hourmute';
+					} else  if (ztVal === 'max') {
+						cmd = this.hasRank(this.ranks[room] || ' ', '@&#~') ? 'roomban' : 'hourmute';
+					} else {
+						if (cmd === 'warn') cmd = 'hourmute';
+						else cmd = this.hasRank(this.ranks[room] || ' ', '@&#~') ? 'roomban' : 'hourmute';
+					}
 				}
 				if (chatData.points >= 2) this.chatData[user].zeroTol++; // getting muted or higher increases your zero tolerance level (warns do not)
 				chatData.lastAction = time;

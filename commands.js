@@ -1360,6 +1360,7 @@ exports.commands = {
 		var settable = {
 			banword: 1,
 			autoban: 1,
+			'0tol': 1,
 			joinphrase: 1,
 			me: 1,
 			info: 1,
@@ -1635,7 +1636,6 @@ exports.commands = {
 		this.say(con, room, '/pm ' + by + ', ' + text);
 	},
 	
-	'0tol': 'zerotol',
 	zt: 'zerotol',
 	zerotol: function(arg, by, room, con) {
 		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
@@ -1669,7 +1669,6 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	
-	'un0tol': 'unzerotol',
 	unzt: 'unzerotol',
 	unzerotol: function(arg, by, room, con) {
 		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
@@ -2711,6 +2710,139 @@ exports.commands = {
 		if (!this.game[room]) return this.say(con, room, "No hay ningun juego en marcha.");
 		this.say(con, room, "El juego de " + this.game[room].type + " ha terminado!");
 		delete this.game[room]; //deallocate
+	},
+	
+	/*********************************************************
+	* 0tol Commands
+	*********************************************************/
+	
+	'0tole': '0tol',
+	'0tol': function(arg, by, room, con) {
+		var reply = function (text) {
+			if (config.excepts.indexOf(toId(by)) !== -1 || this.staffRanks[toId(by)]) {
+				this.say(con, room, text);
+			} else {
+				this.say(con, '', '/pm ' + by + ',' + text);
+			}
+		}.bind(this);
+		var levelTable = {
+			'low': 'Bajo',
+			'normal': 'Normal',
+			'high': 'Alto',
+			'max': 'Máximo'
+		};
+		if (!this.settings['0tol']) this.settings['0tol'] = {};
+		if (!arg) {
+			if (this.isZeroTol(toId(by), room)) return reply('Actualmente **SÍ** Estás en la lista de tolerancia cero');
+			else return reply('Actualmente **NO** estás en la lista de tolerancia cero');
+		}
+		if (toId(arg) === 'info') {
+			Commands['info'].call(this, '0tol', by, room, con);
+			return;
+		}
+		if (config.excepts.indexOf(toId(by)) === -1 && !this.staffRanks[toId(by)]) return false;
+		if (toId(arg) === 'list') {
+			if (config.excepts.indexOf(toId(by)) === -1) return false;
+			//upload to hastebin
+			if (this.settings['0tol']) {
+				var nickList = Object.keys(this.settings['0tol']);
+				if (!nickList.length) return reply('La lista de Cero Tolerancia está vacía.');
+				var str = '', userT = '', al;
+				for (var j in this.settings['0tol']) {
+					userT = j;
+					al = 18 - userT.length;
+					for (var g = 0; g < al; g++) userT += ' ';
+					str += 'User: ' + j + ' | 0tol: ' + this.settings['0tol'][j] + '\n';
+				}
+				this.uploadToHastebin(con, room, by, 'Los siguientes usuarios están en la lista de Tolerancia Cero:\n\n' + str)
+				return;
+			}
+			return reply('La lista de Cero Tolerancia está vacía.');
+		}
+		var args = arg.split(',');
+		if (args.length === 1) {
+			arg = toId(arg);
+			var subText = '';
+			if (this.settings['0tol'][arg]) subText = '(' + levelTable[this.settings['0tol'][arg]] + ')';
+			return reply('Usuario "' + arg + '" ' + (this.isZeroTol(arg, room) ? '**SÍ**' : '**NO**') + ' está en la lista de tolerancia cero. ' + subText);
+		}
+		if (config.excepts.indexOf(toId(by)) === -1) {
+			if (room !== 'salastaff') return false;
+			if (!this.canUse('0tol', room, by)) return false;
+		}
+		switch (toId(args[0])) {
+			case 'add':
+				if (args.length < 2) return reply('Uso correcto: ,0tol add, [usuario]:[low/normal/high/max], ...');
+				var added = [], illegal = [], fail = [], alreadyAdded = [];
+				var spl;
+				var alTable = {
+					'l': 'low',
+					'n': 'normal',
+					'h': 'high',
+					'm': 'max'
+				};
+				for (var i = 1; i < args.length; i++) {
+					spl = args[i].split(':');
+					var targetUser = toId(spl[0]);
+					if (!targetUser.length || targetUser.length > 18) {
+						illegal.push(targetUser);
+						continue;
+					}
+					var level = toId(spl[1] || 'normal');
+					if (alTable[level]) level = alTable[level];
+					if (!(level in {'low': 1, 'normal': 1, 'high': 1, 'max': 1})) {
+						fail.push(targetUser);
+						continue;
+					}
+					if (this.settings['0tol'][targetUser] && this.settings['0tol'][targetUser] === level) {
+						alreadyAdded.push(targetUser);
+						continue;
+					}
+					this.settings['0tol'][targetUser] = level;
+					added.push(targetUser);
+				}
+				var text = '';
+				if (added.length) {
+					text += 'Usuario(s) "' + added.join('", "') + '" agregado(s) a la lista de tolerancia cero. ';
+					this.writeSettings();
+				}
+				if (illegal.length) {
+					text += illegal.length + ' usuarios tenían nicks ilegales. ';
+				}
+				if (fail.length) {
+					text += 'Usuario(s) "' + fail.join('", "') + '" tenía(n) niveles no válidos. ';
+				}
+				if (alreadyAdded.length) {
+					text += 'Usuario(s) "' + alreadyAdded.join('", "') + '" ya estaba(n) presente(s) en la lista. ';
+				}
+				reply(text);
+				break;
+			case 'remove':
+			case 'delete':
+				if (args.length < 2) return reply('Uso correcto: ,0tol delete, [usuario]');
+				var removed = [], notRemoved = [];
+				for (var i = 1; i < args.length; i++) {
+					var targetUser = toId(args[i]);
+					if (!this.settings['0tol'][targetUser]) {
+						notRemoved.push(targetUser);
+						continue;
+					}
+					removed.push(targetUser);
+					delete this.settings['0tol'][targetUser];
+				}
+				var text = '';
+				if (removed.length) {
+					text += 'Usuario(s) "' + removed.join('", "') + '" eliminado(s) de la lista de tolerancia cero. ';
+					this.writeSettings();
+				}
+				if (notRemoved.length) {
+					text += 'Usuario(s) "' + notRemoved.join('", "') + '" no estaba(n) en la lista de tolerancia cero. ';
+				}
+				reply(text);
+				break;
+			default:
+				reply('Uso correcto: ,0tol [add/delete/list] o ,0tol [usuario]');
+		}
 	},
 	
 	/*********************************************************/
