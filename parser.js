@@ -712,9 +712,10 @@ exports.parse = {
 		return false;
 	},
 	zeroTolUser: function(user, room) {
-		if (!this.settings['zerotol']) this.settings['zerotol'] = {};
-		if (!this.settings.zerotol[room]) this.settings.zerotol[room] = {};
-
+		if (room === 'espaol' || room === 'eventos') {
+			if (!this.settings['zerotol']) this.settings['zerotol'] = {};
+			if (!this.settings.zerotol[room]) this.settings.zerotol[room] = {};
+		}
 		if (this.settings.zerotol[room][user]) return false;
 		this.settings.zerotol[room][user] = 1;
 		return true;
