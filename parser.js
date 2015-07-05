@@ -41,8 +41,8 @@ exports.parse = {
 	roomLogs: {},
 	tourData: {},
 	ratedRoom: 0,
-	chatLog: 0,
-	chatLogDay: 0,
+	chatLog: {},
+	chatLogDay: {},
 	busyInBattle: 0,
 	recentPMInfo: {},
 	sicCache: '',
@@ -88,16 +88,6 @@ exports.parse = {
 			} else {
 				spl = ['', 'raw', message];
 			}
-		}
-		if (config.logChat && this.room === config.logChat && spl[1] !== "pm" && spl[1] !== "tournament") {
-			//log chat
-			var f = new Date();
-			var fstr = toDoubleDigit(f.getDate()) + '_' + toDoubleDigit(f.getMonth() + 1) + '_' + f.getFullYear();
-			if (!this.chatLog || this.chatLogDay !== fstr) {
-				this.chatLog = fs.createWriteStream('logs/chatlog_' + fstr + '.log', {flags:'a+'});
-				this.chatLogDay = fstr;
-			}
-			this.chatLog.write('[' + toDoubleDigit(f.getHours()) + ':' + toDoubleDigit(f.getMinutes()) + ':' + toDoubleDigit(f.getSeconds()) + '] ' + message + '\n');
 		}
 		if (this.tours && this.tours[this.room] && !this.tours[this.room].started) {
 			var fTime = Date.now();
@@ -1033,8 +1023,8 @@ exports.parse = {
 				}
 			}
 			// moderation for stretching (over x consecutive characters in the message are the same)
-			var stretchMatch = msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g); // matches the same character (or group of characters) 8 (or 5) or more times in a row
-			if (stretchMatch) punishment.push("Stretch");
+			var stretchMatch = msg.toLowerCase().match(/(.)\1{9,}/g); // matches the same character (or group of characters) 8 (or 5) or more times in a row
+			if (msg.toLowerCase().match(/(.)\1{7,}/g) || msg.toLowerCase().match(/(..+)\1{4,}/g)) punishment.push("Stretch");
 			if ((useDefault || modSettings['stretching'] !== 0) && stretchMatch) {
 				if (pointVal < 1) {
 					pointVal = 1;
