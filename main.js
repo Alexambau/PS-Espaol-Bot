@@ -301,20 +301,32 @@ var connect = function(retry) {
 
 	ws.on('connect', function(connection) {
 		ok('connected to server ' + config.server);
+		
+		var timeOutRetry = null;
 
 		connection.on('error', function(err) {
 			error('connection error: ' + sys.inspect(err));
-			process.exit(-1);
+			if (!timeOutRetry) {
+				info('retrying in 10 seconds');
+
+				timeOutRetry = setTimeout(function() {
+					connect(true);
+					timeOutRetry = null;
+				}, 10000);
+			}
 		});
 
 		connection.on('close', function() {
 			// Is this always error or can this be intended...?
 			error('connection closed: ' + sys.inspect(arguments));
-			info('retrying in one minute');
+			if (!timeOutRetry) {
+				info('retrying in 10 seconds');
 
-			setTimeout(function() {
-				connect(true);
-			}, 10000);
+				timeOutRetry = setTimeout(function() {
+					connect(true);
+					timeOutRetry = null;
+				}, 10000);
+			}
 		});
 
 		connection.on('message', function(message) {
@@ -342,6 +354,7 @@ connect();
 
 //Crashlog
 process.on('uncaughtException', function (err) {
+	error(err.stack);
 	var stack = ("" + err.stack).split("\n").splice(0, 3).join(" ");
 	ResourceMonitor.log(stack, "e");
 	process.exit(-1);
