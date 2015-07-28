@@ -1,6 +1,8 @@
 Pokemon-Showdown-Bot
 ====================
 
+(Outdated)
+
 A chat bot for [Pokémon Showdown][1]. This bot has a number of commands, some helpful and some less so, as well as the capability to mod. It only reacts to basic offences such as flooding/caps/stretching.
 
   [1]: http://www.pokemonshowdown.com/
