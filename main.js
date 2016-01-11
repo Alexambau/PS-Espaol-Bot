@@ -7,6 +7,9 @@
  *
  * @license MIT license
  */
+ 
+console.log("This bot is outdated. Use this one instead: https://github.com/Ecuacion/Pokemon-Showdown-Node-Bot");
+process.exit(1);
 
 global.info = function(text) {
 	if (config.debuglevel > 3) return;
